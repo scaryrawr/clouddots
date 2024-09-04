@@ -25,7 +25,7 @@ git clone https://github.com/scaryrawr/base16-shell $ZSH_CUSTOM/plugins/base16-s
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' $HOME/.zshrc
 
-sed -i 's/plugins=\(.*\)/plugins=(encode64 cp brew fnm gh git fzf eza gh fast-syntax-highlighting base16-shell zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
+sed -i 's/plugins=\(.*\)/plugins=(encode64 brew fnm gh git fzf eza fast-syntax-highlighting base16-shell zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
 
 # Just append to zshrc if it's not in it.
 append_entries=(
