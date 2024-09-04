@@ -15,7 +15,6 @@ These are dotfiles for use with [GitHub CodeSpaces](https://docs.github.com/en/c
   - [zsh-autopair](https://github.com/hlissner/zsh-autopair)
   - [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting)
   - [zsh-autocomplete](https://github.com/marlonrichert/zsh-autocomplete)
-  - [base16-shell](https://github.com/scaryrawr/base16-shell) (personal fork for more themes)
   - Enables:
     - encode64
     - brew
@@ -30,6 +29,5 @@ These are dotfiles for use with [GitHub CodeSpaces](https://docs.github.com/en/c
   - [tide](https://github.com/IlanCosman/tide)
   - [fzf](https://github.com/PatrickF1/fzf.fish)
   - [autopair](https://github.com/jorgebucaran/autopair.fish)
-  - [base16-fish-shell](https://github.com/FabioAntunes/base16-fish-shell)
   - [zoxide](https://github.com/kidonng/zoxide.fish)
   - [fish-eza](https://github.com/scaryrawr/fish-eza) (with icons by default, personal fork with `ls` using `eza`)

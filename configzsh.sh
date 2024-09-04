@@ -21,11 +21,10 @@ git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/z
 git clone https://github.com/hlissner/zsh-autopair $ZSH_CUSTOM/plugins/zsh-autopair
 git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH_CUSTOM/plugins/fast-syntax-highlighting
 git clone https://github.com/marlonrichert/zsh-autocomplete $ZSH_CUSTOM/plugins/zsh-autocomplete
-git clone https://github.com/scaryrawr/base16-shell $ZSH_CUSTOM/plugins/base16-shell
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' $HOME/.zshrc
 
-sed -i 's/plugins=\(.*\)/plugins=(encode64 brew fnm gh git fzf eza fast-syntax-highlighting base16-shell zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
+sed -i 's/plugins=\(.*\)/plugins=(encode64 brew fnm gh git fzf eza fast-syntax-highlighting zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
 
 # Just append to zshrc if it's not in it.
 append_entries=(
