@@ -18,5 +18,5 @@ test -f /usr/local/bin/run-npx.sh && alias npx=/usr/local/bin/run-npx.sh
 test -f /usr/local/bin/run-rush.sh && alias rush=/usr/local/bin/run-rush.sh
 test -f /usr/local/bin/run-rush-pnpm.sh && alias rush-pnpm=/usr/local/bin/run-rush-pnpm.sh' > $HOME/.config/fish/conf.d/codespace.fish
 
-fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher ilancosman/tide@v6 kidonng/zoxide.fish jorgebucaran/autopair.fish patrickf1/fzf.fish scaryrawr/fish-eza </dev/null"
+fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher ilancosman/tide@v6 jethrokuan/z jorgebucaran/autopair.fish patrickf1/fzf.fish scaryrawr/fish-eza </dev/null"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
