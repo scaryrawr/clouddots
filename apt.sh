@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-packages=("fish" "zsh" "ripgrep")
+packages=("fish" "zsh" "ripgrep" "fzf" "zoxide")
 
 if command -v apt &> /dev/null
 then
