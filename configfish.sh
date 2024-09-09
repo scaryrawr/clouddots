@@ -67,5 +67,5 @@ function rush-pnpm
     end
 end' > $HOME/.config/fish/conf.d/codespace.fish
 
-fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher ilancosman/tide@v6 jorgebucaran/autopair.fish patrickf1/fzf.fish scaryrawr/fish-eza </dev/null"
+fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher scaryrawr/tide jorgebucaran/autopair.fish patrickf1/fzf.fish scaryrawr/fish-eza </dev/null"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
