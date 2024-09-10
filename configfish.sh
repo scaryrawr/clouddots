@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 mkdir -p $HOME/.config/fish/conf.d
+mkdir -p $HOME/.config/fish/functions
 
 echo 'test -f /home/linuxbrew/.linuxbrew/bin/brew && /home/linuxbrew/.linuxbrew/bin/brew shellenv | source' > $HOME/.config/fish/conf.d/brew.fish
 
