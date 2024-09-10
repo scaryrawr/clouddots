@@ -17,6 +17,7 @@ then
 	sudo apt install ${packages[@]} -y
 elif command -v dnf &> /dev/null
 then
+	packages+=("eza")
 	sudo dnf update -y
 	sudo dnf upgrade -y
 	sudo dnf install ${packages[@]} -y
