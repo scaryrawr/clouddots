@@ -74,7 +74,7 @@ set -Ux tide_kubectl_color black
 set -Ux tide_kubectl_icon \U000f10fe
 set -Ux tide_left_prompt_frame_enabled true
 set -Ux tide_left_prompt_items os\x1epwd\x1egit\x1enewline\x1echaracter
-set -Ux tide_left_prompt_prefix \ue0b6
+set -Ux tide_left_prompt_prefix \u2591\u2592\u2593
 set -Ux tide_left_prompt_separator_diff_color \ue0b0
 set -Ux tide_left_prompt_separator_same_color \ue0b1
 set -Ux tide_left_prompt_suffix \ue0b0
@@ -116,7 +116,7 @@ set -Ux tide_python_color cyan
 set -Ux tide_python_icon \U000f0320
 set -Ux tide_right_prompt_frame_enabled false
 set -Ux tide_right_prompt_items status\x1ecmd_duration\x1econtext\x1ejobs\x1edirenv\x1enode\x1epython\x1erustc\x1ejava\x1ephp\x1epulumi\x1eruby\x1ego\x1egcloud\x1ekubectl\x1edistrobox\x1etoolbox\x1eterraform\x1eaws\x1enix_shell\x1ecrystal\x1eelixir\x1ezig\x1etime
-set -Ux tide_right_prompt_prefix \u2591\u2592\u2593
+set -Ux tide_right_prompt_prefix \ue0b2
 set -Ux tide_right_prompt_separator_diff_color \ue0b2
 set -Ux tide_right_prompt_separator_same_color \ue0b3
 set -Ux tide_right_prompt_suffix \u2593\u2592\u2591
