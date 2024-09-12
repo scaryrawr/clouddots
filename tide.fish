@@ -86,7 +86,6 @@ set -Ux tide_node_color black
 set -Ux tide_node_icon \ue24f
 set -Ux tide_os_bg_color white
 set -Ux tide_os_color black
-set -Ux tide_os_icon \uf31b
 set -Ux tide_php_bg_color blue
 set -Ux tide_php_color black
 set -Ux tide_php_icon \ue608
