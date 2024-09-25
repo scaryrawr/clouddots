@@ -10,3 +10,5 @@ git config --global difftool.vscode.cmd "$CODE \$LOCAL \$REMOTE"
 git config --global alias.co checkout
 git config --global push.autoSetupRemote true
 git config --global grep.lineNumber true
+git config --global grep.column true
+
