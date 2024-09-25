@@ -68,7 +68,7 @@ echo 'function rush-pnpm
 end' > $HOME/.config/fish/functions/rush-pnpm.fish
 
 fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher scaryrawr/tide jorgebucaran/autopair.fish </dev/null"
+fish --command="tide configure --auto --style=Rainbow --prompt_colors='16 colors' --show_time='24-hour format' --rainbow_prompt_separators=Angled --powerline_prompt_heads=Sharp --powerline_prompt_tails=Fade --powerline_prompt_style='Two lines, character and frame' --prompt_connection=Disconnected --powerline_right_prompt_frame=No --prompt_spacing=Compact --icons='Many icons' --transient=Yes"
 fish --command="command -q fzf && fisher install patrickf1/fzf.fish"
 fish --command="command -q eza && fisher install scaryrawr/fish-eza"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
-fish --command="tide configure --auto --style=Rainbow --prompt_colors='16 colors' --show_time='24-hour format' --rainbow_prompt_separators=Angled --powerline_prompt_heads=Sharp --powerline_prompt_tails=Fade --powerline_prompt_style='Two lines, character and frame' --prompt_connection=Disconnected --powerline_right_prompt_frame=No --prompt_spacing=Compact --icons='Many icons' --transient=Yes"
