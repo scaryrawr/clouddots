@@ -7,7 +7,6 @@ These are dotfiles for use with [GitHub CodeSpaces](https://docs.github.com/en/c
 - [homebrew](https://brew.sh/) package manager
   - [fzf](https://github.com/junegunn/fzf)
   - [eza](https://github.com/eza-community/eza)
-  - [fnm](https://github.com/Schniz/fnm)
   - [zoxide](https://github.com/ajeetdsouza/zoxide)
 - oh-my-zsh (installed by default in CodeSpaces)
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k)
