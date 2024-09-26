@@ -5,15 +5,15 @@ packages=("fish" "zsh" "ripgrep" "fzf" "zoxide")
 if command -v apt &> /dev/null
 then
 	# Enable apt-add-respository
-	sudo apt install software-properties-common -y
+	sudo DEBIAN_FRONTEND="noninteractive" apt install software-properties-common -y
 
 	# Add fish shell repository
-	sudo apt-add-repository ppa:fish-shell/release-3 -y
+	sudo DEBIAN_FRONTEND="noninteractive" apt-add-repository ppa:fish-shell/release-3 -y
 
-	sudo apt update -y
+	sudo DEBIAN_FRONTEND="noninteractive" apt update -y
 
 	# Install fish and other useful fun stuff
-	sudo apt install ${packages[@]} -y
+	sudo DEBIAN_FRONTEND="noninteractive" apt install ${packages[@]} -y
 elif command -v dnf &> /dev/null
 then
 	packages+=("eza")
