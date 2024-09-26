@@ -11,7 +11,6 @@ then
 	sudo apt-add-repository ppa:fish-shell/release-3 -y
 
 	sudo apt update -y
-	sudo apt upgrade -y
 
 	# Install fish and other useful fun stuff
 	sudo apt install ${packages[@]} -y
