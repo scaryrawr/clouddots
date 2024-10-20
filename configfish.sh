@@ -72,3 +72,4 @@ fish --command="tide configure --auto --style=Rainbow --prompt_colors='16 colors
 fish --command="command -q fzf && fisher install patrickf1/fzf.fish </dev/null"
 fish --command="command -q eza && fisher install scaryrawr/fish-eza </dev/null"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
+fish --command="fish_add_path ~/.deno/bin"
