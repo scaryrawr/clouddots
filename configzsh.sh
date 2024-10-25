@@ -24,7 +24,7 @@ git clone https://github.com/marlonrichert/zsh-autocomplete $ZSH_CUSTOM/plugins/
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' $HOME/.zshrc
 
-sed -i 's/plugins=\(.*\)/plugins=(encode64 brew fnm gh git fzf eza fast-syntax-highlighting zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
+sed -i 's/plugins=\(.*\)/plugins=(encode64 brew fnm gh git fzf eza fast-syntax-highlighting yarn zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
 
 # Just append to zshrc if it's not in it.
 append_entries=(
