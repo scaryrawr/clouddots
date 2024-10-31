@@ -15,5 +15,6 @@ fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/m
 fish --command="tide configure --auto --style=Rainbow --prompt_colors='16 colors' --show_time='24-hour format' --rainbow_prompt_separators=Angled --powerline_prompt_heads=Sharp --powerline_prompt_tails=Fade --powerline_prompt_style='Two lines, character and frame' --prompt_connection=Disconnected --powerline_right_prompt_frame=No --prompt_spacing=Compact --icons='Many icons' --transient=Yes"
 fish --command="command -q fzf && fisher install patrickf1/fzf.fish </dev/null"
 fish --command="command -q eza && fisher install scaryrawr/fish-eza </dev/null"
+test -f "$NVM_DIR/nvm.sh" && fish --command="fisher install scaryrawr/codespace-nvm.fish </dev/null"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
 fish --command="fish_add_path ~/.deno/bin"
