@@ -30,7 +30,7 @@ if command -v apt &>/dev/null; then
 	# Enable apt-add-respository
 	sudo DEBIAN_FRONTEND="noninteractive" apt install software-properties-common -y
 
-	# Add fish shell repository
+	# Add fish shell repository	
 	if [[ " ${packages[@]} " =~ " fish " ]]; then
 		sudo DEBIAN_FRONTEND="noninteractive" apt-add-repository ppa:fish-shell/release-3 -y
 	fi
@@ -41,11 +41,11 @@ if command -v apt &>/dev/null; then
 	fi
 
 	sudo DEBIAN_FRONTEND="noninteractive" apt update -y
+	sudo DEBIAN_FRONTEND="noninteractive" apt upgrade -y
 
-	# Install fish and other useful fun stuff
+	# Install and upgrade packages
 	if [ ${#packages[@]} -ne 0 ]; then
 		sudo DEBIAN_FRONTEND="noninteractive" apt install ${packages[@]} -y
-		exit 0
 	fi
 
 	# Instal fzf from source
