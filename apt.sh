@@ -2,7 +2,7 @@
 
 [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-packages=("fish" "zsh" "rg" "fzf" "zoxide")
+packages=("fish" "zsh" "rg" "fzf" "zoxide" "sl")
 
 # Remove packages that are already installed
 for pkg in "${packages[@]}"; do
@@ -54,6 +54,11 @@ elif command -v dnf &>/dev/null; then
 	if ! command -v eza &>/dev/null; then
 		packages+=("eza")
 	fi
+
+	if [[ " ${packages[@]} " =~ " sl " ]]; then
+		sudo dnf copr enable scaryrawr/sl -y
+	fi
+
 	if [ ${#packages[@]} -ne 0 ]; then
 		sudo dnf update -y
 		sudo dnf install ${packages[@]} -y
