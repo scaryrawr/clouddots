@@ -8,7 +8,7 @@ prepend_entries=(
 for entry in "${prepend_entries[@]}"; do
 	if ! grep -q "$entry" "$HOME/.zshrc"; then
 		echo "$entry
-$(cat $HOME/.zshrc)" > $HOME/.zshrc
+$(cat $HOME/.zshrc)" >$HOME/.zshrc
 	fi
 done
 
@@ -25,7 +25,7 @@ git clone https://github.com/mattmc3/zfunctions $ZSH_CUSTOM/plugins/zfunctions
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' $HOME/.zshrc
 
-sed -i 's/plugins=\(.*\)/plugins=(encode64 brew fnm gh git fzf eza fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
+sed -i 's/plugins=\(.*\)/plugins=(encode64 brew fnm gh fzf eza fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
 
 # Just append to zshrc if it's not in it.
 append_entries=(
@@ -35,6 +35,6 @@ append_entries=(
 
 for entry in "${append_entries[@]}"; do
 	if ! grep -q "$entry" "$HOME/.zshrc"; then
-		echo "$entry" >> $HOME/.zshrc
+		echo "$entry" >>$HOME/.zshrc
 	fi
 done
