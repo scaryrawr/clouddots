@@ -5,7 +5,7 @@ prepend_entries=(
 	"zstyle ':omz:plugins:eza' 'icons' yes"
 )
 
-for entry in "${prepend_entries[@]}"; do
+for entry in "${prepefnd_entries[@]}"; do
 	if ! grep -q "$entry" "$HOME/.zshrc"; then
 		echo "$entry
 $(cat $HOME/.zshrc)" >$HOME/.zshrc
@@ -26,7 +26,7 @@ git clone https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' $HOME/.zshrc
 
-sed -i 's/plugins=\(.*\)/plugins=(brew gh fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete)/' $HOME/.zshrc
+sed -i 's/plugins=\(.*\)/plugins=(brew gh fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete fzf)/' $HOME/.zshrc
 
 # Just append to zshrc if it's not in it.
 append_entries=(
