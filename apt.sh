@@ -2,12 +2,12 @@
 
 [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-packages=("fish" "zsh" "rg" "fzf" "zoxide" "sl")
+packages=("fish" "zsh" "rg" "fzf" "zoxide" "sl" "file" "chafa" "bat")
 
 # Remove packages that are already installed
 for pkg in "${packages[@]}"; do
 	if command -v "$pkg" &>/dev/null; then
-		packages=("${packages[@]/$pkg}")
+		packages=("${packages[@]/$pkg/}")
 	fi
 done
 
@@ -30,7 +30,7 @@ if command -v apt &>/dev/null; then
 	# Enable apt-add-respository
 	sudo DEBIAN_FRONTEND="noninteractive" apt install software-properties-common -y
 
-	# Add fish shell repository	
+	# Add fish shell repository
 	if [[ " ${packages[@]} " =~ " fish " ]]; then
 		sudo DEBIAN_FRONTEND="noninteractive" apt-add-repository ppa:fish-shell/release-3 -y
 	fi
