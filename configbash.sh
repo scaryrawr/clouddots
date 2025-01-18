@@ -8,7 +8,7 @@ prepend_entries=(
 for entry in "${prepend_entries[@]}"; do
 	if ! grep -q "$entry" "$HOME/.bashrc"; then
 		echo "$entry
-$(cat $HOME/.bashrc)" > $HOME/.bashrc
+$(cat $HOME/.bashrc)" > "$HOME/.bashrc"
 	fi
 done
 
@@ -17,6 +17,6 @@ append_entries=()
 
 for entry in "${append_entries[@]}"; do
 	if ! grep -q "$entry" "$HOME/.bashrc"; then
-		echo "$entry" >> $HOME/.bashrc
+		echo "$entry" >> "$HOME/.bashrc"
 	fi
 done

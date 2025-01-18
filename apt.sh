@@ -31,12 +31,12 @@ if command -v apt &>/dev/null; then
 	sudo DEBIAN_FRONTEND="noninteractive" apt install software-properties-common -y
 
 	# Add fish shell repository
-	if [[ " ${packages[@]} " =~ " fish " ]]; then
+	if [[ " ${packages[*]} " =~ " fish " ]]; then
 		sudo DEBIAN_FRONTEND="noninteractive" apt-add-repository ppa:fish-shell/release-3 -y
 	fi
 
 	# Add Go repository if golang-go is in the packages to install
-	if [[ " ${packages[@]} " =~ " golang-go " ]]; then
+	if [[ " ${packages[*]} " =~ " golang-go " ]]; then
 		sudo DEBIAN_FRONTEND="noninteractive" add-apt-repository ppa:longsleep/golang-backports -y
 	fi
 
@@ -45,7 +45,7 @@ if command -v apt &>/dev/null; then
 
 	# Install and upgrade packages
 	if [ ${#packages[@]} -ne 0 ]; then
-		sudo DEBIAN_FRONTEND="noninteractive" apt install ${packages[@]} -y
+		sudo DEBIAN_FRONTEND="noninteractive" apt install "${packages[@]}" -y
 	fi
 
 	# Instal fzf from source
@@ -55,13 +55,13 @@ elif command -v dnf &>/dev/null; then
 		packages+=("eza")
 	fi
 
-	if [[ " ${packages[@]} " =~ " sl " ]]; then
+	if [[ " ${packages[*]} " =~ " sl " ]]; then
 		sudo dnf copr enable scaryrawr/sl -y
 	fi
 
 	if [ ${#packages[@]} -ne 0 ]; then
 		sudo dnf update -y
-		sudo dnf install ${packages[@]} -y
+		sudo dnf install "${packages[@]}" -y
 	fi
 else
 	echo "Unknown package manager"
