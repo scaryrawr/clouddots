@@ -5,7 +5,7 @@ prepend_entries=(
 	"zstyle ':omz:plugins:eza' 'icons' yes"
 )
 
-for entry in "${prepefnd_entries[@]}"; do
+for entry in "${prepend_entries[@]}"; do
 	if ! grep -q "$entry" "$HOME/.zshrc"; then
 		echo "$entry
 $(cat $HOME/.zshrc)" >$HOME/.zshrc
