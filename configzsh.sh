@@ -23,10 +23,11 @@ git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH
 git clone https://github.com/marlonrichert/zsh-autocomplete $ZSH_CUSTOM/plugins/zsh-autocomplete
 git clone https://github.com/mattmc3/zfunctions $ZSH_CUSTOM/plugins/zfunctions
 git clone https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf
+git clone https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' $HOME/.zshrc
 
-sed -i 's/plugins=\(.*\)/plugins=(brew gh fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide zsh-autocomplete fzf)/' $HOME/.zshrc
+sed -i 's/plugins=\(.*\)/plugins=(brew gh fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide fzf-tab fzf eza)/' $HOME/.zshrc
 
 # Just append to zshrc if it's not in it.
 append_entries=(
