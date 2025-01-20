@@ -3,7 +3,7 @@
 # Just prepend to zshrc if it's not in it.
 prepend_entries=(
 	"zstyle ':omz:plugins:eza' 'icons' yes"
-	'export PATH="$HOME/.cargo/bin:$PATH"'
+	'export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
 )
 
 for entry in "${prepend_entries[@]}"; do
