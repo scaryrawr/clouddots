@@ -3,6 +3,7 @@
 # Just prepend to zshrc if it's not in it.
 prepend_entries=(
 	"zstyle ':omz:plugins:eza' 'icons' yes"
+	'export PATH="$HOME/.cargo/bin:$PATH"'
 )
 
 for entry in "${prepend_entries[@]}"; do
@@ -15,15 +16,29 @@ done
 ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
 mkdir -p "$ZSH_CUSTOM"
 
-# Install zsh plugins
-git clone https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
-git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
-git clone https://github.com/hlissner/zsh-autopair "$ZSH_CUSTOM/plugins/zsh-autopair"
-git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "$ZSH_CUSTOM/plugins/fast-syntax-highlighting"
-git clone https://github.com/marlonrichert/zsh-autocomplete "$ZSH_CUSTOM/plugins/zsh-autocomplete"
-git clone https://github.com/mattmc3/zfunctions "$ZSH_CUSTOM/plugins/zfunctions"
-git clone https://github.com/scaryrawr/fzf.zsh "$ZSH_CUSTOM/plugins/fzf"
-git clone https://github.com/Aloxaf/fzf-tab "$ZSH_CUSTOM/plugins/fzf-tab"
+# Array of plugins to clone
+plugins=(
+	"https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k"
+	"https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions"
+	"https://github.com/hlissner/zsh-autopair $ZSH_CUSTOM/plugins/zsh-autopair"
+	"https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH_CUSTOM/plugins/fast-syntax-highlighting"
+	"https://github.com/marlonrichert/zsh-autocomplete $ZSH_CUSTOM/plugins/zsh-autocomplete"
+	"https://github.com/mattmc3/zfunctions $ZSH_CUSTOM/plugins/zfunctions"
+	"https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf"
+	"https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab"
+)
+
+# Clone or pull each plugin
+for plugin in "${plugins[@]}"; do
+	repo_url=$(echo "$plugin" | awk '{print $1}')
+	clone_dir=$(echo "$plugin" | awk '{print $2}')
+	if [ -d "$clone_dir" ] && [ "$(ls -A $clone_dir)" ]; then
+		pushd "$clone_dir" && git pull
+		popd
+	else
+		git clone "$repo_url" "$clone_dir"
+	fi
+done
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
 
