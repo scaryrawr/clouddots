@@ -2,32 +2,40 @@
 
 [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-packages=("fish" "zsh" "rg" "fzf" "zoxide" "sl" "file" "chafa" "bat")
+declare -A package_map=(
+	["fish"]="fish"
+	["zsh"]="zsh"
+	["rg"]="ripgrep"
+	["fzf"]="fzf"
+	["zoxide"]="zoxide"
+	["sl"]="sl"
+	["file"]="file"
+	["chafa"]="chafa"
+	["bat"]="bat"
+	["eza"]="eza"
+	["fd"]="fd-find"
+	["delta"]="git-delta"
+)
 
 # Remove packages that are already installed
-for pkg in "${packages[@]}"; do
-	if command -v "$pkg" &>/dev/null; then
-		packages=("${packages[@]/$pkg/}")
+for binary in "${!package_map[@]}"; do
+	if command -v "$binary" &>/dev/null; then
+		unset 'package_map["$binary"]'
 	fi
 done
 
-# Replace rg with package name ripgrep
-for i in "${!packages[@]}"; do
-	if [[ "${packages[i]}" == "rg" ]]; then
-		packages[i]="ripgrep"
-	fi
-done
+# Convert associative array to indexed array
+packages=("${package_map[@]}")
 
 if command -v apt &>/dev/null; then
-	# If we're installing fzf, we want to install from source, as the debian version is
-	# out-of-date
+	# If we're installing fzf, we want to install from source, as the debian version is out-of-date
 	for i in "${!packages[@]}"; do
 		if [[ "${packages[i]}" == "fzf" ]]; then
 			packages[i]="golang-go"
 		fi
 	done
 
-	# Enable apt-add-respository
+	# Enable apt-add-repository
 	sudo DEBIAN_FRONTEND="noninteractive" apt install software-properties-common -y
 
 	# Add fish shell repository
@@ -48,7 +56,7 @@ if command -v apt &>/dev/null; then
 		sudo DEBIAN_FRONTEND="noninteractive" apt install "${packages[@]}" -y
 	fi
 
-	# Instal fzf from source
+	# Install fzf from source
 	command -v go && go install github.com/junegunn/fzf@latest
 elif command -v dnf &>/dev/null; then
 	if ! command -v eza &>/dev/null; then
