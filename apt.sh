@@ -33,6 +33,11 @@ if command -v apt &>/dev/null; then
 		if [[ "${packages[i]}" == "fzf" ]]; then
 			packages[i]="golang-go"
 		fi
+		if [[ "${packages[i]}" == "eza" ]]; then
+			sudo DEBIAN_FRONTEND="noninteractive" apt install cargo -y
+			cargo install eza
+			unset 'packages[i]'
+		fi
 	done
 
 	# Enable apt-add-repository
@@ -59,10 +64,6 @@ if command -v apt &>/dev/null; then
 	# Install fzf from source
 	command -v go && go install github.com/junegunn/fzf@latest
 elif command -v dnf &>/dev/null; then
-	if ! command -v eza &>/dev/null; then
-		packages+=("eza")
-	fi
-
 	if [[ " ${packages[*]} " =~ " sl " ]]; then
 		sudo dnf copr enable scaryrawr/sl -y
 	fi
