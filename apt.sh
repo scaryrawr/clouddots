@@ -61,7 +61,7 @@ elif command -v dnf &>/dev/null; then
 
 	if [ ${#packages[@]} -ne 0 ]; then
 		sudo dnf update -y
-		sudo dnf install "${packages[@]}" -y
+		sudo dnf install --skip-unavailable "${packages[@]}" -y
 	fi
 else
 	echo "Unknown package manager"
