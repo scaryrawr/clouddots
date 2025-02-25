@@ -10,6 +10,7 @@ git config --global column.ui auto
 git config --global commit.verbose true
 git config --global core.editor "$CODE"
 git config --global core.fsmonitor true
+git config --global core.untrackedCache true
 git config --global diff.algorithm histogram
 git config --global diff.colorMoved plain
 git config --global diff.mnemonicPrefix true
