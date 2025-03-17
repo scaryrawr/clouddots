@@ -9,6 +9,8 @@ echo 'command -q fnm && fnm env --use-on-cd --shell fish | source' > "$HOME/.con
 
 echo 'test -f $HOME/.cargo/env.fish && source $HOME/.cargo/env.fish' > "$HOME/.config/fish/conf.d/cargo.fish"
 
+echo 'set -Ux SHELL (which fish)' > "$HOME/.config/fish/conf.d/shell.fish"
+
 echo 'command -sq zoxide && zoxide init fish | source' > "$HOME/.config/fish/conf.d/zoxide.fish"
 
 fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher jorgebucaran/replay.fish scaryrawr/tide scaryrawr/artifacts-helper.fish jorgebucaran/autopair.fish </dev/null"

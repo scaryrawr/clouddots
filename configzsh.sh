@@ -4,6 +4,7 @@
 prepend_entries=(
 	"zstyle ':omz:plugins:eza' 'icons' yes"
 	'export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+	'export SHELL=$(which zsh)'
 )
 
 for entry in "${prepend_entries[@]}"; do
