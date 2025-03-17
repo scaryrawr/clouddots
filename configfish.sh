@@ -9,7 +9,7 @@ echo 'command -q fnm && fnm env --use-on-cd --shell fish | source' > "$HOME/.con
 
 echo 'test -f $HOME/.cargo/env.fish && source $HOME/.cargo/env.fish' > "$HOME/.config/fish/conf.d/cargo.fish"
 
-echo 'set -Ux SHELL (which fish)' > "$HOME/.config/fish/conf.d/shell.fish"
+echo 'set -gx SHELL (which fish)' > "$HOME/.config/fish/conf.d/shell.fish"
 
 echo 'command -sq zoxide && zoxide init fish | source' > "$HOME/.config/fish/conf.d/zoxide.fish"
 
