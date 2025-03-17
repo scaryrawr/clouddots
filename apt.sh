@@ -15,6 +15,7 @@ declare -A package_map=(
 	["eza"]="eza"
 	["fd"]="fd-find"
 	["delta"]="git-delta"
+	["tmux"]="tmux"
 )
 
 # Remove packages that are already installed

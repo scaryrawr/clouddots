@@ -4,4 +4,4 @@ NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Ho
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-brew install fzf eza zoxide ripgrep scaryrawr/formulae/sl chafa bat fd git-delta
+brew install fzf eza zoxide ripgrep scaryrawr/formulae/sl chafa bat fd git-delta tmux fish
