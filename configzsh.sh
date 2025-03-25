@@ -5,6 +5,7 @@ prepend_entries=(
 	"zstyle ':omz:plugins:eza' 'icons' yes"
 	'export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
 	'export SHELL=$(which zsh)'
+	'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
 )
 
 for entry in "${prepend_entries[@]}"; do
