@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export DEBIAN_FRONTEND="noninteractive"
+
 [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 declare -A package_map=(
@@ -35,31 +37,31 @@ if command -v apt &>/dev/null; then
 			packages[i]="golang-go"
 		fi
 		if [[ "${packages[i]}" == "eza" ]]; then
-			sudo DEBIAN_FRONTEND="noninteractive" apt install cargo -y
+			sudo apt install cargo -y
 			cargo install eza
 			unset 'packages[i]'
 		fi
 	done
 
 	# Enable apt-add-repository
-	sudo DEBIAN_FRONTEND="noninteractive" apt install software-properties-common -y
+	sudo apt install software-properties-common -y
 
 	# Add fish shell repository
 	if [[ " ${packages[*]} " =~ " fish " ]]; then
-		sudo DEBIAN_FRONTEND="noninteractive" apt-add-repository ppa:fish-shell/release-3 -y
+		sudo apt-add-repository ppa:fish-shell/release-4 -y
 	fi
 
 	# Add Go repository if golang-go is in the packages to install
 	if [[ " ${packages[*]} " =~ " golang-go " ]]; then
-		sudo DEBIAN_FRONTEND="noninteractive" add-apt-repository ppa:longsleep/golang-backports -y
+		sudo add-apt-repository ppa:longsleep/golang-backports -y
 	fi
 
-	sudo DEBIAN_FRONTEND="noninteractive" apt update -y
-	sudo DEBIAN_FRONTEND="noninteractive" apt upgrade -y
+	sudo apt update -y
+	sudo apt upgrade -y
 
 	# Install and upgrade packages
 	if [ ${#packages[@]} -ne 0 ]; then
-		sudo DEBIAN_FRONTEND="noninteractive" apt install "${packages[@]}" -y
+		sudo apt install "${packages[@]}" -y
 	fi
 
 	# Install fzf from source
