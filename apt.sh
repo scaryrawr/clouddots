@@ -10,7 +10,6 @@ declare -A package_map=(
 	["rg"]="ripgrep"
 	["fzf"]="fzf"
 	["zoxide"]="zoxide"
-	["sl"]="sl"
 	["file"]="file"
 	["chafa"]="chafa"
 	["bat"]="bat"
@@ -67,10 +66,6 @@ if command -v apt &>/dev/null; then
 	# Install fzf from source
 	command -v go && go install github.com/junegunn/fzf@latest
 elif command -v dnf &>/dev/null; then
-	if [[ " ${packages[*]} " =~ " sl " ]]; then
-		sudo dnf copr enable scaryrawr/sl -y
-	fi
-
 	if [ ${#packages[@]} -ne 0 ]; then
 		sudo dnf update -y
 		sudo dnf install --skip-unavailable "${packages[@]}" -y
