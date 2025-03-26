@@ -2,7 +2,14 @@
 
 [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+mkdir -p "$HOME/.tmux/plugins"
+
+git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+git clone https://github.com/erikw/tmux-powerline "$HOME/.tmux/plugins/tmux-powerline"
+
+"$HOME/.tmux/plugins/tmux-powerline/generate_config.sh"
+mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerline/config.sh"
+sed -i 's/export TMUX_POWERLINE_THEME="default"/export TMUX_POWERLINE_THEME="base16"/' "$HOME/.config/tmux-powerline/config.sh"
 
 # Create or overwrite tmux configuration
 cat > "$HOME/.tmux.conf" << EOF
