@@ -3,9 +3,22 @@
 [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 mkdir -p "$HOME/.tmux/plugins"
+plugins=(
+  "https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm"
+  "https://github.com/erikw/tmux-powerline $HOME/.tmux/plugins/tmux-powerline"
+)
 
-git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-git clone https://github.com/erikw/tmux-powerline "$HOME/.tmux/plugins/tmux-powerline"
+# Clone or pull each plugin
+for plugin in "${plugins[@]}"; do
+	repo_url=$(echo "$plugin" | awk '{print $1}')
+	clone_dir=$(echo "$plugin" | awk '{print $2}')
+	if [ -d "$clone_dir" ] && [ "$(ls -A $clone_dir)" ]; then
+		pushd "$clone_dir" && git pull
+		popd
+	else
+		git clone "$repo_url" "$clone_dir"
+	fi
+done
 
 "$HOME/.tmux/plugins/tmux-powerline/generate_config.sh"
 mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerline/config.sh"
