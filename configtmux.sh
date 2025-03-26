@@ -27,7 +27,7 @@ EOF
 
 mkdir -p "$HOME/.config/tmux-powerline/themes"
 
-cat > "$HOME/.config/tmux-powerline/themes/base16.sh" << EOF
+cat > "$HOME/.config/tmux-powerline/themes/base16.sh" << 'EOF'
 # shellcheck shell=bash disable=SC2034
 ####################################################################################################
 # modified to use color names and less bubbly by @scaryrawr
