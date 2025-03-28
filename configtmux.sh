@@ -43,54 +43,65 @@ mkdir -p "$HOME/.config/tmux-powerline/themes"
 
 cat > "$HOME/.config/tmux-powerline/themes/base16.sh" << 'EOF'
 # shellcheck shell=bash disable=SC2034
-####################################################################################################
-# modified to use color names and less bubbly by @scaryrawr
-# This is a bubble theme created by @embe221ed (https://github.com/embe221ed)
-# colors are inspired by catppuccin palettes (https://github.com/catppuccin/catppuccin)
-####################################################################################################
-base="terminal"
-mantle="terminal"
-crust="black"
-eggplant="magenta"
-sky_blue="brightcyan"
-spotify_green="green"
-spotify_black="black"
+# Base16 Theme
+# Uses the base16 color palette to inherit theme from terminal/shell.
 
-if patched_font_in_use; then
-	TMUX_POWERLINE_SEPARATOR_LEFT_BOLD=""
-	TMUX_POWERLINE_SEPARATOR_LEFT_THIN=""
-	TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD=""
-	TMUX_POWERLINE_SEPARATOR_RIGHT_THIN=""
+if [ -n "$TMUX_POWERLINE_BUBBLE_SEPARATORS" ]; then
+	TMUX_POWERLINE_SEPARATOR_LEFT_BOLD=""
+	TMUX_POWERLINE_SEPARATOR_LEFT_THIN=""
+	TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD=""
+	TMUX_POWERLINE_SEPARATOR_RIGHT_THIN=""
+	TMUX_POWERLINE_SEPARATOR_THIN="|"
 else
-	TMUX_POWERLINE_SEPARATOR_LEFT_BOLD="◀"
-	TMUX_POWERLINE_SEPARATOR_LEFT_THIN="❮"
-	TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD="▶"
-	TMUX_POWERLINE_SEPARATOR_RIGHT_THIN="❯"
+	if patched_font_in_use; then
+		TMUX_POWERLINE_SEPARATOR_LEFT_BOLD=""
+		TMUX_POWERLINE_SEPARATOR_LEFT_THIN=""
+		TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD=""
+		TMUX_POWERLINE_SEPARATOR_RIGHT_THIN=""
+	else
+		TMUX_POWERLINE_SEPARATOR_LEFT_BOLD="◀"
+		TMUX_POWERLINE_SEPARATOR_LEFT_THIN="❮"
+		TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD="▶"
+		TMUX_POWERLINE_SEPARATOR_RIGHT_THIN="❯"
+	fi
 fi
 
 # See Color formatting section below for details on what colors can be used here.
 TMUX_POWERLINE_DEFAULT_BACKGROUND_COLOR=${TMUX_POWERLINE_DEFAULT_BACKGROUND_COLOR:-black}
 TMUX_POWERLINE_DEFAULT_FOREGROUND_COLOR=${TMUX_POWERLINE_DEFAULT_FOREGROUND_COLOR:-white}
+# shellcheck disable=SC2034
 TMUX_POWERLINE_SEG_AIR_COLOR=$(air_color)
 
 TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR=${TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR:-$TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD}
 TMUX_POWERLINE_DEFAULT_RIGHTSIDE_SEPARATOR=${TMUX_POWERLINE_DEFAULT_RIGHTSIDE_SEPARATOR:-$TMUX_POWERLINE_SEPARATOR_LEFT_BOLD}
 
 # See `man tmux` for additional formatting options for the status line.
-# The `format regular` and `format inverse` functions are provided as conveinences
+# The `format regular` and `format inverse` functions are provided as conveniences
 
 # shellcheck disable=SC2128
 if [ -z "$TMUX_POWERLINE_WINDOW_STATUS_CURRENT" ]; then
-	TMUX_POWERLINE_WINDOW_STATUS_CURRENT=(
-		"#[$(format regular)]"
-		"$TMUX_POWERLINE_DEFAULT_RIGHTSIDE_SEPARATOR"
-		"#[$(format inverse)]"
-		" #I#F "
-		"$TMUX_POWERLINE_SEPARATOR_THIN"
-		" #W "
-		"#[$(format regular)]"
-		"$TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR"
-	)
+	if [ -n "$TMUX_POWERLINE_BUBBLE_SEPARATORS" ]; then
+		TMUX_POWERLINE_WINDOW_STATUS_CURRENT=(
+			"#[$(format regular)]"
+			"$TMUX_POWERLINE_DEFAULT_RIGHTSIDE_SEPARATOR"
+			"#[$(format inverse)]"
+			" #I#F "
+			"$TMUX_POWERLINE_SEPARATOR_THIN"
+			" #W "
+			"#[$(format regular)]"
+			"$TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR"
+		)
+	else
+		TMUX_POWERLINE_WINDOW_STATUS_CURRENT=(
+			"#[$(format inverse)]"
+			"$TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR"
+			" #I#F "
+			"$TMUX_POWERLINE_SEPARATOR_RIGHT_THIN"
+			" #W "
+			"#[$(format regular)]"
+			"$TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR"
+		)
+	fi
 fi
 
 # shellcheck disable=SC2128
@@ -105,7 +116,7 @@ if [ -z "$TMUX_POWERLINE_WINDOW_STATUS_FORMAT" ]; then
 	TMUX_POWERLINE_WINDOW_STATUS_FORMAT=(
 		"#[$(format regular)]"
 		"  #I#{?window_flags,#F, } "
-		"$TMUX_POWERLINE_SEPARATOR_THIN"
+		"$TMUX_POWERLINE_SEPARATOR_RIGHT_THIN"
 		" #W "
 	)
 fi
@@ -131,11 +142,13 @@ fi
 #   * "left_disable" - disable space on the left
 #   * "right_disable" - disable space on the right
 #   * "both_disable" - disable spaces on both sides
+#   * - any other character/string produces no change to default behavior (eg "none", "X", etc.)
 #
 # * separator_disable - disables drawing a separator on this segment, very useful for segments
 #   with dynamic background colours (eg tmux_mem_cpu_load):
 #   * "no_separator_disable" - don't disable the separator (default)
 #   * "separator_disable" - disables the separator
+#   * - any other character/string produces no change to default behavior
 #
 # Example segment with separator disabled and right space character disabled:
 # "hostname 33 0 {TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD} 0 0 right_disable separator_disable"
@@ -148,7 +161,7 @@ fi
 #
 ## Note that although redundant the non_default_separator, separator_background_color and
 # separator_foreground_color options must still be specified so that appropriate index
-# of options to support the spacing_disable and separator_disable features can be used.
+# of options to support the spacing_disable and separator_disable features can be used
 # The default_* and no_* can be used to keep the default behaviour.
 
 # shellcheck disable=SC1143,SC2128
@@ -156,16 +169,17 @@ if [ -z "$TMUX_POWERLINE_LEFT_STATUS_SEGMENTS" ]; then
 	TMUX_POWERLINE_LEFT_STATUS_SEGMENTS=(
 		"tmux_session_info blue black"
 		"hostname magenta black"
+		#"mode_indicator 165 0"
 		#"ifstat 30 255"
 		#"ifstat_sys 30 255"
-		#"lan_ip $sky_blue black" #${TMUX_POWERLINE_SEPARATOR_RIGHT_THIN}"
-		#"wan_ip $sky_blue black"
-		"vcs_branch brightblack"
-		#"air ${TMUX_POWERLINE_SEG_AIR_COLOR} black"
-		# "vcs_compare red 255"
+		"lan_ip brightblue black ${TMUX_POWERLINE_SEPARATOR_RIGHT_THIN}"
+		#"vpn 24 255 ${TMUX_POWERLINE_SEPARATOR_RIGHT_THIN}"
+		"wan_ip brightblue black"
+		"vcs_branch brightcyan black"
+		#"vcs_compare 60 255"
 		"vcs_staged brightred brightwhite"
 		"vcs_modified red brightwhite"
-		# "vcs_others 245 0"
+		#"vcs_others 245 0"
 	)
 fi
 
@@ -178,9 +192,10 @@ if [ -z "$TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS" ]; then
 		#"mailcount 9 255"
 		#"now_playing green black"
 		#"cpu 240 136"
-		#"load 237 167"
+		#"load brightblack yellow"
 		#"tmux_mem_cpu_load 234 136"
 		#"battery blue black"
+		#"air ${TMUX_POWERLINE_SEG_AIR_COLOR} 255"
 		#"weather brightblue black"
 		#"rainbarf 0 ${TMUX_POWERLINE_DEFAULT_FOREGROUND_COLOR}"
 		#"xkb_layout 125 117"
@@ -190,5 +205,4 @@ if [ -z "$TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS" ]; then
 		#"utc_time 235 136 ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}"
 	)
 fi
-
 EOF
