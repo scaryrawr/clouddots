@@ -6,6 +6,10 @@ prepend_entries=(
 	'export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
 	'export SHELL=$(which zsh)'
 	'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
+	'ZSH_TMUX_AUTOSTART=true'
+	'ZSH_TMUX_AUTONAME_SESSION=true'
+	'ZSH_TMUX_AUTOREFRESH=true'
+	'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
 )
 
 for entry in "${prepend_entries[@]}"; do
@@ -44,7 +48,7 @@ done
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
 
-sed -i 's/plugins=\(.*\)/plugins=(brew gh fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide fzf-tab fzf eza)/' "$HOME/.zshrc"
+sed -i 's/plugins=\(.*\)/plugins=(brew gh fast-syntax-highlighting yarn zfunctions zsh-autosuggestions zsh-autopair zoxide fzf-tab fzf eza tmux)/' "$HOME/.zshrc"
 
 # Just append to zshrc if it's not in it.
 append_entries=(
