@@ -11,6 +11,7 @@ script_dir=$(dirname "$(readlink -f "$0")")
 "$script_dir/configzsh.sh"
 "$script_dir/configfish.sh"
 "$script_dir/configtmux.sh"
+"$script_dir/configvscode.sh"
 
 if [ "$CODESPACES" = "true" ]; then
     "$script_dir/configgit.sh"
