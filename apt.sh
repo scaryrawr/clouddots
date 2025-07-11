@@ -51,8 +51,6 @@ if command -v apt &>/dev/null; then
 	fi
 
 	sudo add-apt-repository ppa:git-core/ppa -y
-	sudo apt update -y
-	sudo apt ugprade -y
 
 	# Add Go repository if golang-go is in the packages to install
 	if [[ " ${packages[*]} " =~ " golang-go " ]]; then
