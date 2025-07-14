@@ -2,8 +2,6 @@
 
 export DEBIAN_FRONTEND="noninteractive"
 
-[[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
 declare -A package_map=(
 	["fish"]="fish"
 	["zsh"]="zsh"
@@ -30,15 +28,9 @@ done
 packages=("${package_map[@]}")
 
 if command -v apt &>/dev/null; then
-	# If we're installing fzf, we want to install from source, as the debian version is out-of-date
 	for i in "${!packages[@]}"; do
 		if [[ "${packages[i]}" == "fzf" ]]; then
 			packages[i]="golang-go"
-		fi
-		if [[ "${packages[i]}" == "eza" ]]; then
-			sudo apt install cargo -y
-			cargo install eza
-			unset 'packages[i]'
 		fi
 	done
 
@@ -67,12 +59,81 @@ if command -v apt &>/dev/null; then
 
 	# Install fzf from source
 	command -v go && go install github.com/junegunn/fzf@latest
+
+	# Ensure nodejs and npm are installed only if missing
+	if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
+		sudo apt install -y nodejs npm
+	fi
 elif command -v dnf &>/dev/null; then
 	if [ ${#packages[@]} -ne 0 ]; then
 		sudo dnf update -y
 		sudo dnf install --skip-unavailable "${packages[@]}" -y
 	fi
+
+	# Ensure nodejs and npm are installed only if missing
+	if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
+		sudo dnf install -y nodejs npm
+	fi
 else
 	echo "Unknown package manager"
 	exit 1
+fi
+
+# Shared install logic for all platforms
+
+# Ensure rust/cargo is installed via rustup if not present
+if ! command -v cargo &>/dev/null; then
+	curl https://sh.rustup.rs -sSf | sh -s -- -y
+	. "$HOME/.cargo/env"
+	if ! grep -q 'export PATH="$HOME/.cargo/bin:$PATH"' "$HOME/.profile"; then
+		echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$HOME/.profile"
+	fi
+fi
+
+# Install language servers and tools via npm
+npm install -g typescript typescript-language-server vscode-langservers-extracted pyright
+
+# Install eza, marksman, helix, zls via cargo if not present
+if ! command -v eza &>/dev/null; then
+	cargo install eza
+fi
+if ! command -v marksman &>/dev/null; then
+	cargo install marksman
+fi
+if ! command -v helix &>/dev/null; then
+	cargo install helix-term
+fi
+if ! command -v zls &>/dev/null; then
+	cargo install zls
+fi
+
+# Download and install latest opencode release for this platform
+if ! command -v opencode &>/dev/null; then
+	os=$(uname -s | tr '[:upper:]' '[:lower:]')
+	arch=$(uname -m)
+	case "$arch" in
+		x86_64|amd64)
+			arch=x64
+			;;
+		arm64|aarch64)
+			arch=arm64
+			;;
+		*)
+			echo "Unsupported architecture for opencode: $arch"; exit 1
+			;;
+	esac
+	asset_name="opencode-${os}-${arch}.tar.gz"
+	api_url="https://api.github.com/repos/scaryrawr/opencode/releases/latest"
+	asset_url=$(curl -s $api_url | grep browser_download_url | grep "$asset_name" | cut -d '"' -f 4)
+	if [ -z "$asset_url" ]; then
+		echo "Could not find opencode release for $os $arch"; exit 1
+	fi
+	mkdir -p "$HOME/.local/bin"
+	wget "$asset_url" -O /tmp/opencode.tar.gz
+	tar -xzf /tmp/opencode.tar.gz -C /tmp
+	chmod +x /tmp/opencode
+	mv /tmp/opencode "$HOME/.local/bin/opencode"
+	if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
+		echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile"
+	fi
 fi

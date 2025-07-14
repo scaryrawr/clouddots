@@ -2,7 +2,7 @@
 
 # Just prepend to bashrc if it's not in it.
 prepend_entries=(
-	'[[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+
 	'export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
 	'export SHELL=$(which bash)'
 )

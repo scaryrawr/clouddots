@@ -2,8 +2,6 @@
 
 script_dir=$(dirname "$(readlink -f "$0")")
 
-# Homebrew does not work on aarch64 linux
-[[ "$(uname -m)" != "aarch64" ]] && "$script_dir/homebrew.sh"
 
 "$script_dir/apt.sh"
 

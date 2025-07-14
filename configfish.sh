@@ -3,7 +3,9 @@
 mkdir -p "$HOME/.config/fish/conf.d"
 mkdir -p "$HOME/.config/fish/functions"
 
-echo 'test -f /home/linuxbrew/.linuxbrew/bin/brew && /home/linuxbrew/.linuxbrew/bin/brew shellenv | source' > "$HOME/.config/fish/conf.d/brew.fish"
+# Ensure $HOME/.local/bin is on the PATH in fish
+fish --command='fish_add_path $HOME/.local/bin'
+
 
 echo 'test -f $HOME/.cargo/env.fish && source $HOME/.cargo/env.fish' > "$HOME/.config/fish/conf.d/cargo.fish"
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-[[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 mkdir -p "$HOME/.tmux/plugins"
 plugins=(

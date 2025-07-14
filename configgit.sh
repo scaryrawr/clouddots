@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-[[ -f /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # code works as the command even when using code-insiders.
 CODE='code -w'
