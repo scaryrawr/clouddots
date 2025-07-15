@@ -15,8 +15,8 @@ jobs:
       - name: Run install.sh in Ubuntu Noble devcontainer
         uses: devcontainers/ci@v0.3
         with:
-          subFolder: .devcontainer/ubuntu-noble
-          runCmd: bash "${{ github.workspace }}/install.sh"
+          configFile: .devcontainer/ubuntu-noble/devcontainer.json
+          runCmd: bash "install.sh"
 
   fedora:
     runs-on: ubuntu-latest
@@ -26,5 +26,5 @@ jobs:
       - name: Run install.sh in Fedora devcontainer
         uses: devcontainers/ci@v0.3
         with:
-          subFolder: .devcontainer/fedora
-          runCmd: bash "${{ github.workspace }}/install.sh"
+          configFile: .devcontainer/fedora/devcontainer.json
+          runCmd: bash "install.sh"
