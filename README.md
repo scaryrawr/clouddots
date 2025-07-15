@@ -7,7 +7,9 @@ These are dotfiles for use with [GitHub CodeSpaces](https://docs.github.com/en/c
 - [homebrew](https://brew.sh/) package manager
   - [fzf](https://github.com/junegunn/fzf)
   - [eza](https://github.com/eza-community/eza)
-  - [zoxide](https://github.com/ajeetdsouza/zoxide)
+  - [delta](https://github.com/dandavison/delta) (installed via cargo for latest version)
+  - [zoxide](https://github.com/ajeetdsouza/zoxide) (installed via cargo for latest version)
+  - [helix](https://github.com/helix-editor/helix) (installed via cargo from latest git)
 - oh-my-zsh (installed by default in CodeSpaces)
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k)
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
