@@ -1,6 +1,5 @@
 {
   "name": "Fedora DevContainer",
   "image": "fedora:latest",
-  "workspaceFolder": "/workspaces/clouddots",
   "onCreateCommand": "dnf install -y git zsh"
 }
