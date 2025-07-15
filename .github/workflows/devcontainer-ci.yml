@@ -12,19 +12,19 @@ jobs:
     name: Ubuntu Noble DevContainer
     steps:
       - uses: actions/checkout@v4
-      - name: Run install.sh in Ubuntu Noble devcontainer
+      - name: Run setup.sh in Ubuntu Noble devcontainer
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/ubuntu-noble/devcontainer.json
-          runCmd: bash "install.sh"
+          runCmd: bash "setup.sh"
 
   fedora:
     runs-on: ubuntu-latest
     name: Fedora DevContainer
     steps:
       - uses: actions/checkout@v4
-      - name: Run install.sh in Fedora devcontainer
+      - name: Run setup.sh in Fedora devcontainer
         uses: devcontainers/ci@v0.3
         with:
           configFile: .devcontainer/fedora/devcontainer.json
-          runCmd: bash "install.sh"
+          runCmd: bash "setup.sh"
