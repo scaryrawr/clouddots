@@ -16,7 +16,7 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           subFolder: .devcontainer/ubuntu-noble
-          runCmd: bash ./install.sh
+          runCmd: bash "${{ github.workspace }}/install.sh"
 
   fedora:
     runs-on: ubuntu-latest
@@ -27,4 +27,4 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           subFolder: .devcontainer/fedora
-          runCmd: bash ./install.sh
+          runCmd: bash "${{ github.workspace }}/install.sh"
