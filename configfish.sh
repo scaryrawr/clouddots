@@ -6,6 +6,9 @@ mkdir -p "$HOME/.config/fish/functions"
 # Ensure $HOME/.local/bin is on the PATH in fish
 fish --command='fish_add_path $HOME/.local/bin'
 
+# Ensure $HOME/.cargo/bin is on the PATH in fish
+fish --command='fish_add_path $HOME/.cargo/bin'
+
 # Initialize fnm for fish
 cat > "$HOME/.config/fish/conf.d/fnm.fish" <<EOF
 fnm env --use-on-cd --shell fish | source
