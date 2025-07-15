@@ -121,8 +121,8 @@ if ! command -v opencode &>/dev/null; then
 	mkdir -p "$HOME/.local/bin"
 	wget "$asset_url" -O /tmp/opencode.tar.gz
 	tar -xzf /tmp/opencode.tar.gz -C /tmp
-	chmod +x /tmp/opencode
-	mv /tmp/opencode "$HOME/.local/bin/opencode"
+	chmod +x /tmp/bin/opencode
+	mv /tmp/bin/opencode "$HOME/.local/bin/opencode"
 	if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
 		echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile"
 	fi
