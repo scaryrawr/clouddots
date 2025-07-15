@@ -88,93 +88,15 @@ if ! command -v eza &>/dev/null; then
 fi
 # Install helix from latest git if not present or outdated
 if ! command -v hx &>/dev/null; then
-	cargo install --git https://github.com/helix-editor/helix helix-term --locked
-else
-	INSTALLED_VERSION=$(hx --version | awk '{print $2}')
-	LATEST_VERSION=$(cargo search helix-term | grep '^helix-term =' | awk -F '"' '{print $2}' | head -n1)
-	if [ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]; then
-		cargo install --git https://github.com/helix-editor/helix helix-term --locked
-	fi
+	cargo install --git https://github.com/helix-editor/helix helix-term
 fi
 # Install zoxide via cargo if not present or outdated
 if ! command -v zoxide &>/dev/null; then
-	cargo install zoxide --locked
-else
-	INSTALLED_VERSION=$(zoxide --version | awk '{print $2}')
-	LATEST_VERSION=$(cargo search zoxide | grep '^zoxide =' | awk -F '"' '{print $2}' | head -n1)
-	if [ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]; then
-		cargo install zoxide --locked
-	fi
+	cargo install zoxide
 fi
 # Install delta via cargo if not present or outdated
 if ! command -v delta &>/dev/null; then
-	cargo install git-delta --locked
-else
-	INSTALLED_VERSION=$(delta --version | awk '{print $2}')
-	LATEST_VERSION=$(cargo search git-delta | grep '^git-delta =' | awk -F '"' '{print $2}' | head -n1)
-	if [ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]; then
-		cargo install git-delta --locked
-	fi
-fi
-
-# Download and install latest Zig release for Linux (x86_64 and aarch64)
-if ! command -v zig &>/dev/null; then
-	ZIG_VERSION="0.14.1"
-	arch=$(uname -m)
-	case "$arch" in
-		x86_64|amd64)
-			zig_arch="x86_64"
-			;;
-		aarch64|arm64)
-			zig_arch="aarch64"
-			;;
-		*)
-			echo "Unsupported architecture for Zig: $arch"; exit 1
-			;;
-	esac
-	zig_url="https://ziglang.org/download/${ZIG_VERSION}/zig-linux-${zig_arch}-${ZIG_VERSION}.tar.xz"
-	tmp_dir=$(mktemp -d)
-	wget "$zig_url" -O "$tmp_dir/zig.tar.xz"
-	tar -xf "$tmp_dir/zig.tar.xz" -C "$tmp_dir"
-	zig_dir=$(find "$tmp_dir" -type d -name "zig-linux-${zig_arch}-${ZIG_VERSION}")
-	mkdir -p "$HOME/.local/bin"
-	cp "$zig_dir/zig" "$HOME/.local/bin/zig"
-	chmod +x "$HOME/.local/bin/zig"
-	rm -rf "$tmp_dir"
-	if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
-		echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile"
-	fi
-fi
-
-# Download and install latest zls release for Linux (x86_64 and aarch64)
-if ! command -v zls &>/dev/null; then
-	ZLS_VERSION="0.14.0"
-	arch=$(uname -m)
-	case "$arch" in
-		x86_64|amd64)
-			zls_arch="x86_64"
-			zls_asset="zls-x86_64-linux.tar.xz"
-			;;
-		aarch64|arm64)
-			zls_arch="aarch64"
-			zls_asset="zls-aarch64-linux.tar.xz"
-			;;
-		*)
-			echo "Unsupported architecture for zls: $arch"; exit 1
-			;;
-	esac
-	zls_url="https://github.com/zigtools/zls/releases/download/${ZLS_VERSION}/${zls_asset}"
-	tmp_dir=$(mktemp -d)
-	wget "$zls_url" -O "$tmp_dir/zls.tar.xz"
-	tar -xf "$tmp_dir/zls.tar.xz" -C "$tmp_dir"
-	zls_bin=$(find "$tmp_dir" -type f -name "zls")
-	mkdir -p "$HOME/.local/bin"
-	cp "$zls_bin" "$HOME/.local/bin/zls"
-	chmod +x "$HOME/.local/bin/zls"
-	rm -rf "$tmp_dir"
-	if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
-		echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile"
-	fi
+	cargo install git-delta
 fi
 
 # Download and install latest opencode release for this platform
