@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -ex
 
 mkdir -p "$HOME/.tmux/plugins"
 plugins=(

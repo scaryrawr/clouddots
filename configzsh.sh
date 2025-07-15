@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 
 # Just prepend to zshrc if it's not in it.
 prepend_entries=(

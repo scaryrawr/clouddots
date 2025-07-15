@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 
 export DEBIAN_FRONTEND="noninteractive"
 
@@ -25,6 +26,8 @@ done
 packages=("${package_map[@]}")
 
 if command -v apt &>/dev/null; then
+	sudo apt update -y
+
 	for i in "${!packages[@]}"; do
 		if [[ "${packages[i]}" == "fzf" ]]; then
 			packages[i]="golang-go"

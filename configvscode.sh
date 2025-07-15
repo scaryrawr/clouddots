@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 
 jq '. + {
   "chat.tools.autoApprove": true,
