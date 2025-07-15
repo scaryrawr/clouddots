@@ -3,21 +3,26 @@ set -ex
 
 export DEBIAN_FRONTEND="noninteractive"
 
-# Bash 3.2-compatible: use parallel arrays for binaries and packages
-binaries=(fish zsh rg fzf file chafa bat fd tmux)
-packages=(fish zsh ripgrep fzf file chafa bat fd-find tmux)
+# Bash 4+ required for associative arrays
 
-# Remove packages that are already installed
-keep_binaries=()
-keep_packages=()
-for i in "${!binaries[@]}"; do
-  if ! command -v "${binaries[$i]}" &>/dev/null; then
-    keep_binaries+=("${binaries[$i]}")
-    keep_packages+=("${packages[$i]}")
+declare -A bin_to_pkg=(
+  [fish]=fish
+  [zsh]=zsh
+  [rg]=ripgrep
+  [fzf]=fzf
+  [file]=file
+  [chafa]=chafa
+  [bat]=bat
+  [fd]=fd-find
+  [tmux]=tmux
+)
+
+packages=()
+for bin in "${!bin_to_pkg[@]}"; do
+  if ! command -v "$bin" &>/dev/null; then
+    packages+=("${bin_to_pkg[$bin]}")
   fi
 done
-
-packages=("${keep_packages[@]}")
 
 if command -v apt &>/dev/null; then
   sudo apt update -y
