@@ -15,7 +15,9 @@ $(cat $HOME/.bashrc)" > "$HOME/.bashrc"
 done
 
 # Just append to bashrc if it's not in it.
-append_entries=()
+append_entries=(
+	'eval "$(fnm env --use-on-cd --shell bash)"'
+)
 
 for entry in "${append_entries[@]}"; do
 	if ! grep -q "$entry" "$HOME/.bashrc"; then

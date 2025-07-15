@@ -1,0 +1,5 @@
+{
+  "name": "Ubuntu Noble DevContainer",
+  "image": "mcr.microsoft.com/devcontainers/base:noble",
+  "workspaceFolder": "/workspaces/clouddots"
+}

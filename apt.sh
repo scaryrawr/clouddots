@@ -58,20 +58,14 @@ if command -v apt &>/dev/null; then
 	# Install fzf from source
 	command -v go && go install github.com/junegunn/fzf@latest
 
-	# Ensure nodejs and npm are installed only if missing
-	if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
-		sudo apt install -y nodejs npm
-	fi
+
 elif command -v dnf &>/dev/null; then
 	if [ ${#packages[@]} -ne 0 ]; then
 		sudo dnf update -y
 		sudo dnf install --skip-unavailable "${packages[@]}" -y
 	fi
 
-	# Ensure nodejs and npm are installed only if missing
-	if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
-		sudo dnf install -y nodejs npm
-	fi
+
 else
 	echo "Unknown package manager"
 	exit 1
@@ -88,15 +82,10 @@ if ! command -v cargo &>/dev/null; then
 	fi
 fi
 
-# Install language servers and tools via npm
-npm install -g typescript typescript-language-server vscode-langservers-extracted pyright
 
-# Install eza, marksman, zoxide, delta via cargo if not present or outdated
+# Install eza, zoxide, delta via cargo if not present or outdated
 if ! command -v eza &>/dev/null; then
 	cargo install eza
-fi
-if ! command -v marksman &>/dev/null; then
-	cargo install marksman
 fi
 # Install helix from latest git if not present or outdated
 if ! command -v hx &>/dev/null; then

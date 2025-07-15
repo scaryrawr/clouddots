@@ -1,0 +1,30 @@
+name: DevContainer CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ubuntu-noble:
+    runs-on: ubuntu-latest
+    name: Ubuntu Noble DevContainer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run install.sh in Ubuntu Noble devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          subFolder: .devcontainer/ubuntu-noble
+          runCmd: bash ./install.sh
+
+  fedora:
+    runs-on: ubuntu-latest
+    name: Fedora DevContainer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run install.sh in Fedora devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          subFolder: .devcontainer/fedora
+          runCmd: bash ./install.sh

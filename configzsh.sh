@@ -53,6 +53,7 @@ sed -i 's/plugins=\(.*\)/plugins=(gh fast-syntax-highlighting yarn zfunctions zs
 
 # Just append to zshrc if it's not in it.
 append_entries=(
+	'eval "$(fnm env --use-on-cd --shell zsh)"'
 	'# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.'
 	'[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
 )
