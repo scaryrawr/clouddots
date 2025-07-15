@@ -4,7 +4,7 @@ set -ex
 script_dir=$(dirname "$(readlink -f "$0")")
 
 
-"$script_dir/apt.sh"
+bash "$script_dir/system-deps.sh"
 
 # Install fnm if not present
 if ! command -v fnm &>/dev/null; then
@@ -21,16 +21,16 @@ fnm install 22
 fnm default 22
 
 # Install global npm tools
-"$script_dir/npm-global-tools.sh"
+bash "$script_dir/npm-tools.sh"
 
-"$script_dir/configbash.sh"
-"$script_dir/configzsh.sh"
-"$script_dir/configfish.sh"
-"$script_dir/configtmux.sh"
-"$script_dir/configvscode.sh"
+bash "$script_dir/setup-bash.sh"
+bash bash "$script_dir/setup-zsh.sh"
+bash "$script_dir/setup-fish.sh"
+bash "$script_dir/setup-tmux.sh"
+bash "$script_dir/setup-vscode.sh"
 
 if [ "$CODESPACES" = "true" ]; then
-    "$script_dir/configgit.sh"
+    bash "$script_dir/setup-git.sh"
 fi
 
 cp "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"

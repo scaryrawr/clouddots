@@ -3,27 +3,22 @@ set -ex
 
 export DEBIAN_FRONTEND="noninteractive"
 
-declare -A package_map=(
-	["fish"]="fish"
-	["zsh"]="zsh"
-	["rg"]="ripgrep"
-	["fzf"]="fzf"
-	["file"]="file"
-	["chafa"]="chafa"
-	["bat"]="bat"
-	["fd"]="fd-find"
-	["tmux"]="tmux"
-)
+# Bash 3.2-compatible: use parallel arrays for binaries and packages
+binaries=(fish zsh rg fzf file chafa bat fd tmux)
+packages=(fish zsh ripgrep fzf file chafa bat fd-find tmux)
 
 # Remove packages that are already installed
-for binary in "${!package_map[@]}"; do
-	if command -v "$binary" &>/dev/null; then
-		unset 'package_map["$binary"]'
-	fi
+keep_binaries=()
+keep_packages=()
+for i in "${!binaries[@]}"; do
+    if ! command -v "${binaries[$i]}" &>/dev/null; then
+        keep_binaries+=("${binaries[$i]}")
+        keep_packages+=("${packages[$i]}")
+    fi
 done
 
-# Convert associative array to indexed array
-packages=("${package_map[@]}")
+packages=("${keep_packages[@]}")
+
 
 if command -v apt &>/dev/null; then
 	sudo apt update -y
