@@ -1,5 +1,5 @@
 {
   "name": "Fedora DevContainer",
   "image": "fedora:latest",
-  "onCreateCommand": "dnf install -y git zsh"
+  "onCreateCommand": "dnf install -y git zsh gcc gcc-c++"
 }
