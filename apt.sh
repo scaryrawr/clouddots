@@ -10,7 +10,6 @@ declare -A package_map=(
 	["file"]="file"
 	["chafa"]="chafa"
 	["bat"]="bat"
-	["eza"]="eza"
 	["fd"]="fd-find"
 	["tmux"]="tmux"
 )
