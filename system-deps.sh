@@ -75,9 +75,9 @@ fi
 # Detect architecture and create flexible pattern
 arch=$(uname -m)
 case "$arch" in
-  x86_64|amd64) arch_pattern="(x86_64|amd64|x64)" ;;
-  aarch64|arm64) arch_pattern="(aarch64|arm64)" ;;
-  *) echo "Unsupported architecture: $arch" && exit 1 ;;
+x86_64 | amd64) arch_pattern="(x86_64|amd64|x64)" ;;
+aarch64 | arm64) arch_pattern="(aarch64|arm64)" ;;
+*) echo "Unsupported architecture: $arch" && exit 1 ;;
 esac
 
 # Helper function to ensure ~/.local/bin is in PATH
@@ -87,51 +87,70 @@ ensure_local_bin_in_path() {
   fi
 }
 
+# Helper function to get download URL from GitHub releases
+get_github_release_url() {
+  local repo="$1"
+  local asset_pattern="$2"
+  local download_url
+
+  # Try GitHub CLI first (authenticated, no rate limits)
+  if command -v gh &>/dev/null; then
+    download_url=$(gh api "repos/$repo/releases/latest" --jq '.assets[] | select(.name | test("'"$asset_pattern"'")) | .browser_download_url' 2>/dev/null | head -1)
+  fi
+
+  # Fallback to curl if gh failed or isn't available
+  if [[ -z "$download_url" || "$download_url" == "null" ]]; then
+    download_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" |
+      jq -r --arg pattern "$asset_pattern" '.assets[] | select(.name | test($pattern)) | .browser_download_url' | head -1)
+  fi
+
+  echo "$download_url"
+}
+
 # Function to download and install binary releases
 install_binary_release() {
   local tool="$1"
   local repo="$2"
   local asset_pattern="$3"
-  local binary_name="${4:-$tool}"  # Default to tool name if not specified
-  
+  local binary_name="${4:-$tool}" # Default to tool name if not specified
+
   command -v "$binary_name" &>/dev/null && return 0
-  
+
   echo "Installing $tool from binary release..."
-  
+
   local temp_dir="/tmp/$tool-install"
   trap "rm -rf '$temp_dir'" EXIT
-  
+
   local download_url
-  download_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | \
-    jq -r --arg pattern "$asset_pattern" '.assets[] | select(.name | test($pattern)) | .browser_download_url' | head -1)
-  
+  download_url=$(get_github_release_url "$repo" "$asset_pattern")
+
   if [[ -z "$download_url" || "$download_url" == "null" ]]; then
     echo "Could not find binary release for $tool"
     return 1
   fi
-  
+
   mkdir -p "$temp_dir" "$HOME/.local/bin"
   local filename=$(basename "$download_url")
-  
+
   curl -L "$download_url" -o "$temp_dir/$filename" || {
     echo "Failed to download $tool"
     return 1
   }
-  
+
   # Extract archive
   case "$filename" in
-    *.tar.gz|*.tar.xz) tar -xf "$temp_dir/$filename" -C "$temp_dir" ;;
-    *.zip) unzip -q "$temp_dir/$filename" -d "$temp_dir" ;;
-    *) cp "$temp_dir/$filename" "$HOME/.local/bin/$binary_name" && chmod +x "$HOME/.local/bin/$binary_name" && ensure_local_bin_in_path && echo "$tool installed successfully" && return 0 ;;
+  *.tar.gz | *.tar.xz) tar -xf "$temp_dir/$filename" -C "$temp_dir" ;;
+  *.zip) unzip -q "$temp_dir/$filename" -d "$temp_dir" ;;
+  *) cp "$temp_dir/$filename" "$HOME/.local/bin/$binary_name" && chmod +x "$HOME/.local/bin/$binary_name" && ensure_local_bin_in_path && echo "$tool installed successfully" && return 0 ;;
   esac
-  
+
   # Find and install binary
   local extracted_binary=$(find "$temp_dir" -name "$binary_name" -type f -executable | head -1)
   if [[ -z "$extracted_binary" ]]; then
     echo "Could not find $binary_name in extracted archive"
     return 1
   fi
-  
+
   cp "$extracted_binary" "$HOME/.local/bin/$binary_name"
   chmod +x "$HOME/.local/bin/$binary_name"
   ensure_local_bin_in_path
