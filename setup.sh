@@ -6,7 +6,7 @@ script_dir=$(dirname "$(readlink -f "$0")")
 bash "$script_dir/system-deps.sh"
 
 # Check for node and npm before installing fnm
-if ! command -v node &>/dev/null && command -v npm &>/dev/null; then
+if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then
   # Install fnm if not present
   if ! command -v fnm &>/dev/null; then
     curl -fsSL https://fnm.vercel.app/install | bash
