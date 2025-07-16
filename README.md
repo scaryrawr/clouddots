@@ -1,8 +1,8 @@
 # Cloud Dots
 
-These are dotfiles for use with [GitHub CodeSpaces](https://docs.github.com/en/codespaces/setting-your-user-preferences/personalizing-github-codespaces-for-your-account) or [Visual Studio Code Containers](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories).
+**Cloud Dots** is a dotfiles repository specifically designed for use in [GitHub Codespaces](https://docs.github.com/en/codespaces/setting-your-user-preferences/personalizing-github-codespaces-for-your-account) and [VS Code Devcontainers](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories).
 
-## Script Organization (2025)
+## Script Organization
 
 Scripts are now organized by function for clarity and maintainability:
 
@@ -30,32 +30,26 @@ Scripts are now organized by function for clarity and maintainability:
 9. setup-git.sh (conditionally)
 10. Copy p10k.zsh
 
-## What it does
+## What it does in Codespaces & Devcontainers
 
-- [homebrew](https://brew.sh/) package manager
+- **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, ripgrep, fzf, file, chafa, bat, fd-find, tmux, neovim).
+- **Binary releases from GitHub** (to ~/.local/bin):
   - [fzf](https://github.com/junegunn/fzf)
   - [eza](https://github.com/eza-community/eza)
-  - [delta](https://github.com/dandavison/delta) (installed via cargo for latest version)
-  - [zoxide](https://github.com/ajeetdsouza/zoxide) (installed via cargo for latest version)
-  - [helix](https://github.com/helix-editor/helix) (installed via cargo from latest git)
-- oh-my-zsh (installed by default in CodeSpaces)
+  - [delta](https://github.com/dandavison/delta)
+  - [zoxide](https://github.com/ajeetdsouza/zoxide)
+  - [helix](https://github.com/helix-editor/helix) (`hx`)
+  - [opencode](https://github.com/scaryrawr/opencode)
+- **oh-my-zsh** (default in Codespaces):
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k)
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
   - [zsh-autopair](https://github.com/hlissner/zsh-autopair)
   - [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting)
   - [zsh-autocomplete](https://github.com/marlonrichert/zsh-autocomplete)
-  - Enables:
-    - encode64
-    - brew
-    - fnm
-    - gh
-    - git
-    - fzf
-    - eza (with icons by default)
-    - zoxide
-- [fish](https://fishshell.com/) shell
+  - Enables: encode64, fnm, gh, git, fzf, eza (with icons), zoxide
+- **fish shell**:
   - [fisher](https://github.com/jorgebucaran/fisher)
   - [tide](https://github.com/IlanCosman/tide)
   - [fzf](https://github.com/PatrickF1/fzf.fish)
   - [autopair](https://github.com/jorgebucaran/autopair.fish)
-  - [fish-eza](https://github.com/scaryrawr/fish-eza) (with icons by default, personal fork with `ls` using `eza`)
+  - [fish-eza](https://github.com/scaryrawr/fish-eza) (with icons, custom `ls`)
