@@ -25,6 +25,7 @@ bash "$script_dir/npm-tools.sh"
 bash "$script_dir/setup-bash.sh"
 bash "$script_dir/setup-zsh.sh"
 bash "$script_dir/setup-fish.sh"
+bash "$script_dir/setup-neovim.sh"
 bash "$script_dir/setup-tmux.sh"
 bash "$script_dir/setup-vscode.sh"
 

@@ -15,6 +15,7 @@ declare -A bin_to_pkg=(
   [bat]=bat
   [fd]=fd-find
   [tmux]=tmux
+  [neovim]=neovim
 )
 
 packages=()
