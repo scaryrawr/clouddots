@@ -62,7 +62,7 @@ elif command -v dnf &>/dev/null; then
   if [ ${#packages[@]} -ne 0 ]; then
     sudo dnf update -y
     sudo dnf install --skip-unavailable "${packages[@]}" -y
-    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq
+    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq gh
   fi
 
 else
