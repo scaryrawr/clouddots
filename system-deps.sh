@@ -64,7 +64,7 @@ elif command -v dnf &>/dev/null; then
   if [ ${#packages[@]} -ne 0 ]; then
     sudo dnf update -y
     sudo dnf install --skip-unavailable "${packages[@]}" -y
-    sudo dnf install -y git zsh gcc gcc-c++ which wget unzip jq
+    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq
   fi
 
 else
@@ -125,7 +125,7 @@ if ! command -v opencode &>/dev/null; then
     exit 1
   fi
   mkdir -p "$HOME/.local/bin"
-  wget "$asset_url" -O /tmp/opencode.tar.gz
+  curl -L "$asset_url" -o /tmp/opencode.tar.gz
   tar -xzf /tmp/opencode.tar.gz -C /tmp
   mv /tmp/$asset_base/bin/opencode "$HOME/.local/bin/opencode"
   if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
