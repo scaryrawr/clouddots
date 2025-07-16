@@ -15,7 +15,6 @@ declare -A bin_to_pkg=(
   [bat]=bat
   [fd]=fd-find
   [tmux]=tmux
-  [neovim]=neovim
 )
 
 packages=()
@@ -164,3 +163,4 @@ install_binary_release "zoxide" "ajeetdsouza/zoxide" "zoxide.*-${arch_pattern}.*
 install_binary_release "delta" "dandavison/delta" "delta.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
 install_binary_release "helix" "helix-editor/helix" "helix.*-${arch_pattern}-linux.*\\.tar\\.xz$" "hx"
 install_binary_release "opencode" "scaryrawr/opencode" "opencode-linux-${arch_pattern}\\.tar\\.gz$"
+install_binary_release "neovim" "neovim/neovim" "nvim-linux-${arch_pattern}\\.tar\\.gz$" "nvim"
