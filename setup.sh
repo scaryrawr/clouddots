@@ -5,19 +5,22 @@ script_dir=$(dirname "$(readlink -f "$0")")
 
 bash "$script_dir/system-deps.sh"
 
-# Install fnm if not present
-if ! command -v fnm &>/dev/null; then
-  curl -fsSL https://fnm.vercel.app/install | bash
+# Check for node and npm before installing fnm
+if ! command -v node &>/dev/null && command -v npm &>/dev/null; then
+  # Install fnm if not present
+  if ! command -v fnm &>/dev/null; then
+    curl -fsSL https://fnm.vercel.app/install | bash
+    export PATH="$HOME/.local/share/fnm:$PATH"
+  fi
+
+  # Ensure fnm is initialized for this script
   export PATH="$HOME/.local/share/fnm:$PATH"
+  eval "$(fnm env --shell bash)"
+
+  # Install latest LTS node and set as default
+  fnm install 22
+  fnm default 22
 fi
-
-# Ensure fnm is initialized for this script
-export PATH="$HOME/.local/share/fnm:$PATH"
-eval "$(fnm env --shell bash)"
-
-# Install latest LTS node and set as default
-fnm install 22
-fnm default 22
 
 # Install global npm tools
 bash "$script_dir/npm-tools.sh"

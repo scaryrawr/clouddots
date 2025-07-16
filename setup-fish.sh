@@ -19,9 +19,9 @@ if [[ -d "$HOME/go/bin" ]]; then
   fish --command='fish_add_path $HOME/go/bin'
 fi
 
-# Initialize fnm for fish
+# Initialize fnm for fish only if fnm is installed
 cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF
-fnm env --use-on-cd --shell fish | source
+command -q fnm && fnm env --use-on-cd --shell fish | source
 EOF
 
 echo 'test -f $HOME/.cargo/env.fish && source $HOME/.cargo/env.fish' >"$HOME/.config/fish/conf.d/cargo.fish"
