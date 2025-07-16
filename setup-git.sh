@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -ex
 
 # code works as the command even when using code-insiders.
 CODE='code -w'

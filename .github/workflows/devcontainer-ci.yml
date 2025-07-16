@@ -1,0 +1,34 @@
+name: DevContainer CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ubuntu-noble:
+    runs-on: ubuntu-latest
+    name: Ubuntu Noble DevContainer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run setup.sh in Ubuntu Noble devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/ubuntu-noble/devcontainer.json
+          runCmd: bash "setup.sh"
+
+  fedora:
+    runs-on: ubuntu-latest
+    name: Fedora DevContainer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run setup.sh in Fedora devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/fedora/devcontainer.json
+          runCmd: bash "setup.sh"

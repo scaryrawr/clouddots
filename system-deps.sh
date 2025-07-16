@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+set -ex
+
+export DEBIAN_FRONTEND="noninteractive"
+
+# Bash 4+ required for associative arrays
+
+declare -A bin_to_pkg=(
+  [fish]=fish
+  [zsh]=zsh
+  [rg]=ripgrep
+  [fzf]=fzf
+  [file]=file
+  [chafa]=chafa
+  [bat]=bat
+  [fd]=fd-find
+  [tmux]=tmux
+  [neovim]=neovim
+)
+
+packages=()
+for bin in "${!bin_to_pkg[@]}"; do
+  if ! command -v "$bin" &>/dev/null; then
+    packages+=("${bin_to_pkg[$bin]}")
+  fi
+done
+
+if command -v apt &>/dev/null; then
+  sudo apt update -y
+
+  for i in "${!packages[@]}"; do
+    if [[ "${packages[i]}" == "fzf" ]]; then
+      packages[i]="golang-go"
+    fi
+  done
+
+  # Enable apt-add-repository
+  sudo apt install software-properties-common -y
+
+  # Add fish shell repository
+  if [[ " ${packages[*]} " =~ " fish " ]]; then
+    sudo add-apt-repository ppa:fish-shell/release-4 -y
+  fi
+
+  sudo add-apt-repository ppa:git-core/ppa -y
+
+  # Add Go repository if golang-go is in the packages to install
+  if [[ " ${packages[*]} " =~ " golang-go " ]]; then
+    sudo add-apt-repository ppa:longsleep/golang-backports -y
+  fi
+
+  sudo apt update -y
+  sudo apt upgrade -y
+
+  # Install and upgrade packages
+  if [ ${#packages[@]} -ne 0 ]; then
+    sudo apt install "${packages[@]}" -y
+  fi
+
+  # Install fzf from source
+  command -v go && go install github.com/junegunn/fzf@latest
+
+elif command -v dnf &>/dev/null; then
+  if [ ${#packages[@]} -ne 0 ]; then
+    sudo dnf update -y
+    sudo dnf install --skip-unavailable "${packages[@]}" -y
+    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq
+  fi
+
+else
+  echo "Unknown package manager"
+  exit 1
+fi
+
+# Shared install logic for all platforms
+
+# Ensure rust/cargo is installed via rustup if not present
+if ! command -v cargo &>/dev/null; then
+  curl https://sh.rustup.rs -sSf | sh -s -- -y
+  . "$HOME/.cargo/env"
+  if ! grep -q 'export PATH="$HOME/.cargo/bin:$PATH"' "$HOME/.profile"; then
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >>"$HOME/.profile"
+  fi
+fi
+
+# Install eza, zoxide, delta via cargo if not present or outdated
+if ! command -v eza &>/dev/null; then
+  cargo install eza
+fi
+# Install helix from latest git if not present or outdated
+if ! command -v hx &>/dev/null; then
+  cargo install --git https://github.com/helix-editor/helix helix-term
+fi
+# Install zoxide via cargo if not present or outdated
+if ! command -v zoxide &>/dev/null; then
+  cargo install zoxide
+fi
+# Install delta via cargo if not present or outdated
+if ! command -v delta &>/dev/null; then
+  cargo install git-delta
+fi
+
+# Download and install latest opencode release for this platform
+if ! command -v opencode &>/dev/null; then
+  os=$(uname -s | tr '[:upper:]' '[:lower:]')
+  arch=$(uname -m)
+  case "$arch" in
+  x86_64 | amd64)
+    arch=x64
+    ;;
+  arm64 | aarch64)
+    arch=arm64
+    ;;
+  *)
+    echo "Unsupported architecture for opencode: $arch"
+    exit 1
+    ;;
+  esac
+  asset_base="opencode-${os}-${arch}"
+  asset_name="${asset_base}.tar.gz"
+  api_url="https://api.github.com/repos/scaryrawr/opencode/releases/latest"
+  asset_url=$(curl -s $api_url | grep browser_download_url | grep "$asset_name" | cut -d '"' -f 4)
+  if [ -z "$asset_url" ]; then
+    echo "Could not find opencode release for $os $arch"
+    exit 1
+  fi
+  mkdir -p "$HOME/.local/bin"
+  curl -L "$asset_url" -o /tmp/opencode.tar.gz
+  tar -xzf /tmp/opencode.tar.gz -C /tmp
+  mv /tmp/$asset_base/bin/opencode "$HOME/.local/bin/opencode"
+  if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >>"$HOME/.profile"
+  fi
+fi
