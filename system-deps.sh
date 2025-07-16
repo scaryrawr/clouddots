@@ -30,7 +30,8 @@ if command -v apt &>/dev/null; then
 
   for i in "${!packages[@]}"; do
     if [[ "${packages[i]}" == "fzf" ]]; then
-      packages[i]="golang-go"
+      # Remove fzf from packages since we'll install it from binary
+      unset packages[i]
     fi
   done
 
@@ -57,14 +58,11 @@ if command -v apt &>/dev/null; then
     sudo apt install "${packages[@]}" -y
   fi
 
-  # Install fzf from source
-  command -v go && go install github.com/junegunn/fzf@latest
-
 elif command -v dnf &>/dev/null; then
   if [ ${#packages[@]} -ne 0 ]; then
     sudo dnf update -y
     sudo dnf install --skip-unavailable "${packages[@]}" -y
-    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq
+    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq gh
   fi
 
 else
@@ -74,61 +72,95 @@ fi
 
 # Shared install logic for all platforms
 
-# Ensure rust/cargo is installed via rustup if not present
-if ! command -v cargo &>/dev/null; then
-  curl https://sh.rustup.rs -sSf | sh -s -- -y
-  . "$HOME/.cargo/env"
-  if ! grep -q 'export PATH="$HOME/.cargo/bin:$PATH"' "$HOME/.profile"; then
-    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >>"$HOME/.profile"
-  fi
-fi
+# Detect architecture and create flexible pattern
+arch=$(uname -m)
+case "$arch" in
+x86_64 | amd64) arch_pattern="(x86_64|amd64|x64)" ;;
+aarch64 | arm64) arch_pattern="(aarch64|arm64)" ;;
+*) echo "Unsupported architecture: $arch" && exit 1 ;;
+esac
 
-# Install eza, zoxide, delta via cargo if not present or outdated
-if ! command -v eza &>/dev/null; then
-  cargo install eza
-fi
-# Install helix from latest git if not present or outdated
-if ! command -v hx &>/dev/null; then
-  cargo install --git https://github.com/helix-editor/helix helix-term
-fi
-# Install zoxide via cargo if not present or outdated
-if ! command -v zoxide &>/dev/null; then
-  cargo install zoxide
-fi
-# Install delta via cargo if not present or outdated
-if ! command -v delta &>/dev/null; then
-  cargo install git-delta
-fi
-
-# Download and install latest opencode release for this platform
-if ! command -v opencode &>/dev/null; then
-  os=$(uname -s | tr '[:upper:]' '[:lower:]')
-  arch=$(uname -m)
-  case "$arch" in
-  x86_64 | amd64)
-    arch=x64
-    ;;
-  arm64 | aarch64)
-    arch=arm64
-    ;;
-  *)
-    echo "Unsupported architecture for opencode: $arch"
-    exit 1
-    ;;
-  esac
-  asset_base="opencode-${os}-${arch}"
-  asset_name="${asset_base}.tar.gz"
-  api_url="https://api.github.com/repos/scaryrawr/opencode/releases/latest"
-  asset_url=$(curl -s $api_url | grep browser_download_url | grep "$asset_name" | cut -d '"' -f 4)
-  if [ -z "$asset_url" ]; then
-    echo "Could not find opencode release for $os $arch"
-    exit 1
-  fi
-  mkdir -p "$HOME/.local/bin"
-  curl -L "$asset_url" -o /tmp/opencode.tar.gz
-  tar -xzf /tmp/opencode.tar.gz -C /tmp
-  mv /tmp/$asset_base/bin/opencode "$HOME/.local/bin/opencode"
+# Helper function to ensure ~/.local/bin is in PATH
+ensure_local_bin_in_path() {
   if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
     echo 'export PATH="$HOME/.local/bin:$PATH"' >>"$HOME/.profile"
   fi
-fi
+}
+
+# Helper function to get download URL from GitHub releases
+get_github_release_url() {
+  local repo="$1"
+  local asset_pattern="$2"
+  local download_url
+
+  # Try GitHub CLI first (authenticated, no rate limits)
+  if command -v gh &>/dev/null; then
+    download_url=$(gh api "repos/$repo/releases/latest" --jq '.assets[] | select(.name | test("'"$asset_pattern"'")) | .browser_download_url' 2>/dev/null | head -1)
+  fi
+
+  # Fallback to curl if gh failed or isn't available
+  if [[ -z "$download_url" || "$download_url" == "null" ]]; then
+    download_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" |
+      jq -r --arg pattern "$asset_pattern" '.assets[] | select(.name | test($pattern)) | .browser_download_url' | head -1)
+  fi
+
+  echo "$download_url"
+}
+
+# Function to download and install binary releases
+install_binary_release() {
+  local tool="$1"
+  local repo="$2"
+  local asset_pattern="$3"
+  local binary_name="${4:-$tool}" # Default to tool name if not specified
+
+  command -v "$binary_name" &>/dev/null && return 0
+
+  echo "Installing $tool from binary release..."
+
+  local temp_dir="/tmp/$tool-install"
+  trap "rm -rf '$temp_dir'" EXIT
+
+  local download_url
+  download_url=$(get_github_release_url "$repo" "$asset_pattern")
+
+  if [[ -z "$download_url" || "$download_url" == "null" ]]; then
+    echo "Could not find binary release for $tool"
+    return 1
+  fi
+
+  mkdir -p "$temp_dir" "$HOME/.local/bin"
+  local filename=$(basename "$download_url")
+
+  curl -L "$download_url" -o "$temp_dir/$filename" || {
+    echo "Failed to download $tool"
+    return 1
+  }
+
+  # Extract archive
+  case "$filename" in
+  *.tar.gz | *.tar.xz) tar -xf "$temp_dir/$filename" -C "$temp_dir" ;;
+  *.zip) unzip -q "$temp_dir/$filename" -d "$temp_dir" ;;
+  *) cp "$temp_dir/$filename" "$HOME/.local/bin/$binary_name" && chmod +x "$HOME/.local/bin/$binary_name" && ensure_local_bin_in_path && echo "$tool installed successfully" && return 0 ;;
+  esac
+
+  # Find and install binary
+  local extracted_binary=$(find "$temp_dir" -name "$binary_name" -type f -executable | head -1)
+  if [[ -z "$extracted_binary" ]]; then
+    echo "Could not find $binary_name in extracted archive"
+    return 1
+  fi
+
+  cp "$extracted_binary" "$HOME/.local/bin/$binary_name"
+  chmod +x "$HOME/.local/bin/$binary_name"
+  ensure_local_bin_in_path
+  echo "$tool installed successfully"
+}
+
+# Install tools from binary releases
+install_binary_release "fzf" "junegunn/fzf" "fzf.*linux.*${arch_pattern}.*\\.tar\\.gz$"
+install_binary_release "eza" "eza-community/eza" "eza.*${arch_pattern}.*linux.*\\.tar\\.gz$"
+install_binary_release "zoxide" "ajeetdsouza/zoxide" "zoxide.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
+install_binary_release "delta" "dandavison/delta" "delta.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
+install_binary_release "helix" "helix-editor/helix" "helix.*-${arch_pattern}-linux.*\\.tar\\.xz$" "hx"
+install_binary_release "opencode" "scaryrawr/opencode" "opencode-linux-${arch_pattern}\\.tar\\.gz$"
