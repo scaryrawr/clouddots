@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -ex
 
+SETTINGS_JSON="$HOME/.vscode-remote/data/Machine/settings.json"
+
+# If settings.json does not exist, exit early (not an error)
+if [ ! -f "$SETTINGS_JSON" ]; then
+  exit 0
+fi
+
 jq '. + {
   "chat.tools.autoApprove": true,
   "chat.agent.maxRequests": 9001,
@@ -20,6 +27,6 @@ jq '. + {
   "chat.edits2.enabled": true,
   "inlineChat.enableV2": true,
   "chat.agent.maxRequests": 9001,
-}' "$HOME/.vscode-remote/data/Machine/settings.json" >tmp.json
-mv tmp.json "$HOME/.vscode-remote/data/Machine/settings.json"
+}' "$SETTINGS_JSON" >tmp.json
+mv tmp.json "$SETTINGS_JSON"
 
