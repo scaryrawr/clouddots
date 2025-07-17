@@ -92,15 +92,14 @@ get_github_release_url() {
   local asset_pattern="$2"
   local download_url
 
-  # Try GitHub CLI first (authenticated, no rate limits)
+  # Try GitHub CLI first (fetch raw JSON, then pipe to jq)
   if command -v gh &>/dev/null; then
-    download_url=$(gh api "repos/$repo/releases/latest" --jq '.assets[] | select(.name | test("'"$asset_pattern"'")) | .browser_download_url' 2>/dev/null | head -1)
+    download_url=$(gh api "repos/$repo/releases/latest" | jq -r --arg pattern "$asset_pattern" '.assets[] | select(.name | test($pattern)) | .browser_download_url' | head -1)
   fi
 
   # Fallback to curl if gh failed or isn't available
   if [[ -z "$download_url" || "$download_url" == "null" ]]; then
-    download_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" |
-      jq -r --arg pattern "$asset_pattern" '.assets[] | select(.name | test($pattern)) | .browser_download_url' | head -1)
+    download_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r --arg pattern "$asset_pattern" '.assets[] | select(.name | test($pattern)) | .browser_download_url' | head -1)
   fi
 
   echo "$download_url"
