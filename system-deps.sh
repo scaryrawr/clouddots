@@ -94,7 +94,7 @@ get_github_release_url() {
 
   # Try GitHub CLI first (authenticated, no rate limits)
   if command -v gh &>/dev/null; then
-    download_url=$(gh api "repos/$repo/releases/latest" --jq '.assets[] | select(.name | test("'"$asset_pattern"'")) | .browser_download_url' 2>/dev/null | head -1)
+    download_url=$(gh api "repos/$repo/releases/latest" --jq ".assets[] | select(.name | test(\"$asset_pattern\")) | .browser_download_url" 2>/dev/null | head -1)
   fi
 
   # Fallback to curl if gh failed or isn't available
