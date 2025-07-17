@@ -9,12 +9,14 @@ declare -A bin_to_pkg=(
   [fish]=fish
   [zsh]=zsh
   [rg]=ripgrep
+  [hx]=helix
   [fzf]=fzf
   [file]=file
   [chafa]=chafa
   [bat]=bat
   [fd]=fd-find
   [tmux]=tmux
+  [nvim]=neovim
 )
 
 packages=()
@@ -36,18 +38,10 @@ if command -v apt &>/dev/null; then
 
   # Enable apt-add-repository
   sudo apt install software-properties-common -y
-
-  # Add fish shell repository
-  if [[ " ${packages[*]} " =~ " fish " ]]; then
-    sudo add-apt-repository ppa:fish-shell/release-4 -y
-  fi
-
+  sudo add-apt-repository ppa:fish-shell/release-4 -y
   sudo add-apt-repository ppa:git-core/ppa -y
-
-  # Add Go repository if golang-go is in the packages to install
-  if [[ " ${packages[*]} " =~ " golang-go " ]]; then
-    sudo add-apt-repository ppa:longsleep/golang-backports -y
-  fi
+  sudo add-apt-repository ppa:maveonair/helix-editor -y
+  sudo sudo add-apt-repository ppa:neovim-ppa/unstable -y
 
   sudo apt update -y
   sudo apt upgrade -y
@@ -160,6 +154,4 @@ install_binary_release "fzf" "junegunn/fzf" "fzf.*linux.*${arch_pattern}.*\\.tar
 install_binary_release "eza" "eza-community/eza" "eza.*${arch_pattern}.*linux.*\\.tar\\.gz$"
 install_binary_release "zoxide" "ajeetdsouza/zoxide" "zoxide.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
 install_binary_release "delta" "dandavison/delta" "delta.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
-install_binary_release "helix" "helix-editor/helix" "helix.*-${arch_pattern}-linux.*\\.tar\\.xz$" "hx"
 install_binary_release "opencode" "scaryrawr/opencode" "opencode-linux-${arch_pattern}\\.tar\\.gz$"
-install_binary_release "neovim" "neovim/neovim" "nvim-linux-${arch_pattern}\\.tar\\.gz$" "nvim"
