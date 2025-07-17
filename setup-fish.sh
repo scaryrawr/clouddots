@@ -36,4 +36,4 @@ fish --command="command -q eza && fisher install scaryrawr/fish-eza </dev/null"
 fish --command="command -q tmux && fisher install scaryrawr/tmux.fish </dev/null && set -Ux TMUX_POWERLINE_BUBBLE_SEPARATORS true && set -Ux TMUX_SSHAUTO_START true"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
 
-sudo chsh -s $(which fish) $USER
+sudo chsh -s $(which fish) $(whoami)
