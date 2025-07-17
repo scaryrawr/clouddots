@@ -21,8 +21,9 @@ jobs:
         with:
           configFile: .devcontainer/ubuntu-noble/devcontainer.json
           runCmd: bash "setup.sh"
+          env: GH_TOKEN
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   fedora:
     runs-on: ubuntu-latest
@@ -34,5 +35,6 @@ jobs:
         with:
           configFile: .devcontainer/fedora/devcontainer.json
           runCmd: bash "setup.sh"
+          env: GH_TOKEN
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
