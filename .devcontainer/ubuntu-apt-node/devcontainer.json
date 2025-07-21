@@ -1,0 +1,8 @@
+{
+  "name": "Ubuntu Noble DevContainer",
+  "image": "mcr.microsoft.com/devcontainers/base:noble",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "onCreateCommand": "sudo apt update -y && sudo apt install -y nodejs npm"
+}

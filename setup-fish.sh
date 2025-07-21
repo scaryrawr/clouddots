@@ -9,6 +9,11 @@ if [[ -d "$HOME/.local/bin" ]]; then
   fish --command='fish_add_path $HOME/.local/bin'
 fi
 
+# Ensure $HOME/.npm-global/bin is on the PATH in fish
+if [[ -d "$HOME/.npm-global/bin" ]]; then
+  fish --command='fish_add_path $HOME/.npm-global/bin'
+fi
+
 # Ensure $HOME/.cargo/bin is on the PATH in fish
 if [[ -d "$HOME/.cargo/bin" ]]; then
   fish --command='fish_add_path $HOME/.cargo/bin'
