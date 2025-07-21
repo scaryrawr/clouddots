@@ -12,7 +12,10 @@ on:
 
 jobs:
   ubuntu-noble:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.platform }}
     name: Ubuntu Noble DevContainer
     steps:
       - uses: actions/checkout@v4
@@ -25,8 +28,28 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  ubuntu-with-node:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.platform }}
+    name: Ubuntu Noble DevContainer with Node
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run setup.sh in Ubuntu Noble devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/ubuntu-apt-node/devcontainer.json
+          runCmd: bash "setup.sh"
+          env: GH_TOKEN
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   fedora:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.platform }}
     name: Fedora DevContainer
     steps:
       - uses: actions/checkout@v4
