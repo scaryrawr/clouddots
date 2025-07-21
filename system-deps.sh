@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
+# System dependencies installer
+# This script can be run multiple times safely (idempotent)
+# Automatically upgrades existing binaries to latest versions
+
 export DEBIAN_FRONTEND="noninteractive"
 
 # Bash 4+ required for associative arrays
@@ -106,9 +110,11 @@ install_binary_release() {
   local asset_pattern="$3"
   local binary_name="${4:-$tool}" # Default to tool name if not specified
 
-  command -v "$binary_name" &>/dev/null && return 0
-
-  echo "Installing $tool from binary release..."
+  if command -v "$binary_name" &>/dev/null; then
+    echo "Upgrading $tool to latest version..."
+  else
+    echo "Installing $tool from binary release..."
+  fi
 
   local temp_dir="/tmp/$tool-install"
   trap "rm -rf '$temp_dir'" EXIT
