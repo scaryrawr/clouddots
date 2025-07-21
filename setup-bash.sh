@@ -3,7 +3,7 @@ set -ex
 
 # Just prepend to bashrc if it's not in it.
 prepend_entries=(
-  'export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+  'export PATH="$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which bash)'
 )
 

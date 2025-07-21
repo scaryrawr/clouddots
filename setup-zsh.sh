@@ -4,7 +4,7 @@ set -ex
 # Just prepend to zshrc if it's not in it.
 prepend_entries=(
   "zstyle ':omz:plugins:eza' 'icons' yes"
-  'export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+  'export PATH="$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which zsh)'
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
   'ZSH_TMUX_AUTOSTART=false'
