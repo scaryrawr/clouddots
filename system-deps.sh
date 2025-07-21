@@ -3,8 +3,7 @@ set -ex
 
 # System dependencies installer
 # This script can be run multiple times safely (idempotent)
-# Set UPGRADE_BINARIES=true to upgrade existing binaries to latest versions
-# Example: UPGRADE_BINARIES=true ./system-deps.sh
+# Automatically upgrades existing binaries to latest versions
 
 export DEBIAN_FRONTEND="noninteractive"
 
@@ -110,15 +109,6 @@ install_binary_release() {
   local repo="$2"
   local asset_pattern="$3"
   local binary_name="${4:-$tool}" # Default to tool name if not specified
-
-  # Check if upgrade is requested via environment variable
-  local should_upgrade="${UPGRADE_BINARIES:-false}"
-  
-  # If binary exists and upgrade not requested, skip
-  if command -v "$binary_name" &>/dev/null && [[ "$should_upgrade" != "true" ]]; then
-    echo "$tool is already installed (use UPGRADE_BINARIES=true to upgrade)"
-    return 0
-  fi
 
   if command -v "$binary_name" &>/dev/null; then
     echo "Upgrading $tool to latest version..."
