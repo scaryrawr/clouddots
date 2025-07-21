@@ -4,5 +4,5 @@
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "onCreateCommand": "sudo apt install -y nodejs npm"
+  "onCreateCommand": "sudo apt update -y && sudo apt install -y nodejs npm"
 }
