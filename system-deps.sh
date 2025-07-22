@@ -161,4 +161,9 @@ install_binary_release "eza" "eza-community/eza" "eza.*${arch_pattern}.*linux.*\
 install_binary_release "delta" "dandavison/delta" "delta.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
 install_binary_release "opencode" "scaryrawr/opencode" "opencode-linux-${arch_pattern}\\.tar\\.gz$"
 
-curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+# Install zoxide with gh fallback to curl
+if command -v gh &>/dev/null; then
+  gh api repos/ajeetdsouza/zoxide/contents/install.sh --jq '.content' | base64 -d | sh
+else
+  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+fi
