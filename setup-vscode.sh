@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -ex
 
 SETTINGS_JSON="$HOME/.vscode-remote/data/Machine/settings.json"
 

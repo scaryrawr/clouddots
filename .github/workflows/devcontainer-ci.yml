@@ -24,9 +24,10 @@ jobs:
         with:
           configFile: .devcontainer/ubuntu-noble/devcontainer.json
           runCmd: bash "setup.sh" && bash ".github/test-binaries.sh"
-          env: GH_TOKEN
+          env: GH_TOKEN,STRICT_MODE
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STRICT_MODE: true
 
   ubuntu-with-node:
     strategy:
@@ -41,9 +42,10 @@ jobs:
         with:
           configFile: .devcontainer/ubuntu-apt-node/devcontainer.json
           runCmd: bash "setup.sh" && bash ".github/test-binaries.sh"
-          env: GH_TOKEN
+          env: GH_TOKEN,STRICT_MODE
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STRICT_MODE: true
 
   fedora:
     strategy:
@@ -58,6 +60,7 @@ jobs:
         with:
           configFile: .devcontainer/fedora/devcontainer.json
           runCmd: bash "setup.sh" && bash ".github/test-binaries.sh"
-          env: GH_TOKEN
+          env: GH_TOKEN,STRICT_MODE
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STRICT_MODE: true

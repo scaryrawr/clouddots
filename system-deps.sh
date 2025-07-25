@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -ex
 
 # System dependencies installer
 # This script can be run multiple times safely (idempotent)

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -ex
 
 # Check if node is installed at /usr/bin/node (system-wide) and configure user-local global prefix
 NODE_PATH=$(which node)
