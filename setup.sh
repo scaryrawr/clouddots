@@ -31,6 +31,7 @@ bash "$script_dir/setup-fish.sh"
 bash "$script_dir/setup-neovim.sh"
 bash "$script_dir/setup-tmux.sh"
 bash "$script_dir/setup-vscode.sh"
+bash "$script_dir/setup-opencode.sh"
 
 if [ "$CODESPACES" = "true" ]; then
   bash "$script_dir/setup-git.sh"
