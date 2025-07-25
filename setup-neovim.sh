@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -ex
 
 # Clone or update neovim configuration
 if [ -d "$HOME/.config/nvim" ] && [ "$(ls -A "$HOME/.config/nvim")" ]; then

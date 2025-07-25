@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -ex
 
 mkdir -p "$HOME/.config/fish/conf.d"
 mkdir -p "$HOME/.config/fish/functions"

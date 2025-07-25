@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
-set -ex
+
+# Enable strict mode in CI or when explicitly requested
+if [ "$STRICT_MODE" = "true" ] || [ "$CI" = "true" ]; then
+    set -e
+    BASH_FLAGS="-e"
+else
+    BASH_FLAGS=""
+fi
 
 script_dir=$(dirname "$(readlink -f "$0")")
 
-bash "$script_dir/system-deps.sh"
+bash $BASH_FLAGS "$script_dir/system-deps.sh"
 
 # Check for node and npm before installing fnm
 if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then
@@ -23,18 +30,18 @@ if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then
 fi
 
 # Install global npm tools
-bash "$script_dir/npm-tools.sh"
+bash $BASH_FLAGS "$script_dir/npm-tools.sh"
 
-bash "$script_dir/setup-bash.sh"
-bash "$script_dir/setup-zsh.sh"
-bash "$script_dir/setup-fish.sh"
-bash "$script_dir/setup-neovim.sh"
-bash "$script_dir/setup-tmux.sh"
-bash "$script_dir/setup-vscode.sh"
-bash "$script_dir/setup-opencode.sh"
+bash $BASH_FLAGS "$script_dir/setup-bash.sh"
+bash $BASH_FLAGS "$script_dir/setup-zsh.sh"
+bash $BASH_FLAGS "$script_dir/setup-fish.sh"
+bash $BASH_FLAGS "$script_dir/setup-neovim.sh"
+bash $BASH_FLAGS "$script_dir/setup-tmux.sh"
+bash $BASH_FLAGS "$script_dir/setup-vscode.sh"
+bash $BASH_FLAGS "$script_dir/setup-opencode.sh"
 
 if [ "$CODESPACES" = "true" ]; then
-  bash "$script_dir/setup-git.sh"
+  bash $BASH_FLAGS "$script_dir/setup-git.sh"
 fi
 
 cp "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"

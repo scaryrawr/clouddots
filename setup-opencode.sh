@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 echo "Setting up opencode configuration..."
 
 CONFIG_DIR="$HOME/.config/opencode"
