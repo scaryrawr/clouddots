@@ -14,6 +14,8 @@ Scripts are now organized by function for clarity and maintainability:
 - **setup-fish.sh**: Configures fish, Fisher plugins, fnm, zoxide, fzf, eza, tmux, etc.
 - **setup-tmux.sh**: Installs tmux plugins and configures tmux.
 - **setup-vscode.sh**: Modifies VSCode settings for Copilot and chat features.
+- **setup-neovim.sh**: Clones or updates neovim configuration from lazyvim.
+- **setup-opencode.sh**: Configures opencode CLI tool with MCP and theme settings.
 - **setup-git.sh**: Sets up git config, aliases, and delta integration (run only in Codespaces).
 - **p10k.zsh**: Powerlevel10k theme config (not a script, just a config file).
 
@@ -25,10 +27,12 @@ Scripts are now organized by function for clarity and maintainability:
 4. setup-bash.sh
 5. setup-zsh.sh
 6. setup-fish.sh
-7. setup-tmux.sh
-8. setup-vscode.sh
-9. setup-git.sh (conditionally)
-10. Copy p10k.zsh
+7. setup-neovim.sh
+8. setup-tmux.sh
+9. setup-vscode.sh
+10. setup-opencode.sh
+11. setup-git.sh (conditionally)
+12. Copy p10k.zsh
 
 ## What it does in Codespaces & Devcontainers
 
@@ -39,6 +43,7 @@ Scripts are now organized by function for clarity and maintainability:
   - [delta](https://github.com/dandavison/delta)
   - [zoxide](https://github.com/ajeetdsouza/zoxide)
   - [helix](https://github.com/helix-editor/helix) (`hx`)
+  - [lazygit](https://github.com/jesseduffield/lazygit)
   - [opencode](https://github.com/scaryrawr/opencode)
 - **oh-my-zsh** (default in Codespaces):
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k)
