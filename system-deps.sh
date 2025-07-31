@@ -158,6 +158,7 @@ install_binary_release() {
 install_binary_release "fzf" "junegunn/fzf" "fzf.*linux.*${arch_pattern}.*\\.tar\\.gz$"
 install_binary_release "eza" "eza-community/eza" "eza.*${arch_pattern}.*linux.*\\.tar\\.gz$"
 install_binary_release "delta" "dandavison/delta" "delta.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
+install_binary_release "lazygit" "jesseduffield/lazygit" "lazygit.*Linux.*${arch_pattern}.*\\.tar\\.gz$"
 install_binary_release "opencode" "scaryrawr/opencode" "opencode-linux-${arch_pattern}\\.tar\\.gz$"
 
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
