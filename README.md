@@ -44,7 +44,7 @@ Scripts are now organized by function for clarity and maintainability:
   - [zoxide](https://github.com/ajeetdsouza/zoxide)
   - [helix](https://github.com/helix-editor/helix) (`hx`)
   - [lazygit](https://github.com/jesseduffield/lazygit)
-  - [opencode](https://github.com/scaryrawr/opencode)
+  - [opencode](https://github.com/sst/opencode)
 - **oh-my-zsh** (default in Codespaces):
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k)
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -58,3 +58,4 @@ Scripts are now organized by function for clarity and maintainability:
   - [fzf](https://github.com/PatrickF1/fzf.fish)
   - [autopair](https://github.com/jorgebucaran/autopair.fish)
   - [fish-eza](https://github.com/scaryrawr/fish-eza) (with icons, custom `ls`)
+
