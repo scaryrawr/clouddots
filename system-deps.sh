@@ -162,3 +162,11 @@ install_binary_release "lazygit" "jesseduffield/lazygit" "lazygit.*Linux.*${arch
 
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 curl -fsSL https://opencode.ai/install | bash
+
+# Handle bat/batcat symlink for apt installations
+if ! command -v bat &>/dev/null && command -v batcat &>/dev/null; then
+  echo "Creating bat symlink to batcat..."
+  mkdir -p "$HOME/.local/bin"
+  ln -sf /usr/bin/batcat "$HOME/.local/bin/bat"
+  echo "Created bat symlink successfully"
+fi
