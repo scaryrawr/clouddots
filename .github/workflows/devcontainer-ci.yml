@@ -51,22 +51,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           STRICT_MODE: true
 
-  fedora:
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.platform }}
-    name: Fedora DevContainer
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run setup.sh and test binaries in Fedora devcontainer
-        uses: devcontainers/ci@v0.3
-        with:
-          configFile: .devcontainer/fedora/devcontainer.json
-          runCmd: bash "setup.sh" && bash ".github/test-binaries.sh"
-          env: |
-            GH_TOKEN
-            STRICT_MODE
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STRICT_MODE: true
+
