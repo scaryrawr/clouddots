@@ -162,3 +162,10 @@ install_binary_release "lazygit" "jesseduffield/lazygit" "lazygit.*Linux.*${arch
 
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 curl -fsSL https://opencode.ai/install | bash
+
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+if command -v uv &>/dev/null; then
+  # Markdown converter for adopilot
+  uv tool install grip
+fi
