@@ -29,7 +29,7 @@ fi
 
 # Initialize fnm for fish only if fnm is installed
 cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF
-command -q fnm && fnm env --use-on-cd --shell fish | source
+status is-interactive && command -q fnm && fnm env --use-on-cd --shell fish | source
 EOF
 
 echo 'test -f $HOME/.cargo/env.fish && source $HOME/.cargo/env.fish' >"$HOME/.config/fish/conf.d/cargo.fish"
