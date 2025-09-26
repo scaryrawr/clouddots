@@ -28,12 +28,19 @@ git config --global rebase.updateRefs true
 git config --global rerere.autoupdate true
 git config --global rerere.enabled true
 git config --global tag.sort version:refname
-if command -v delta &> /dev/null; then
+if command -v delta &>/dev/null; then
   git config --global interactive.diffFilter 'delta --color-only'
   git config --global core.pager delta
   git config --global delta.hyperlinks-file-link-format 'vscode-insiders://file/{path}:{line}'
   git config --global delta.line-numbers true
   git config --global delta.navigate true
-  git config --global delta.side-by-side true
+  git config --global delta.side-by-side false
   git config --global delta.true-color always
 fi
+
+cat >"$HOME/.config/lazygit/config.yml" <<'EOF'
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never
+EOF
