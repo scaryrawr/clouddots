@@ -165,7 +165,7 @@ curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh 
 curl -fsSL https://opencode.ai/install | bash
 
 if command -v npm &>/dev/null; then
-  npm install -g @github/copilot
+  npm install -g @github/copilot || echo 'Failed to install GitHub Copilot CLI'
 fi
 
 # Handle bat/batcat symlink for apt installations
