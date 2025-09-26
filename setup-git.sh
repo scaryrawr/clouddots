@@ -38,6 +38,7 @@ if command -v delta &>/dev/null; then
   git config --global delta.true-color always
 fi
 
+mkdir -p $HOME/.config/lazygit
 cat >"$HOME/.config/lazygit/config.yml" <<'EOF'
 git:
   paging:
