@@ -171,3 +171,10 @@ if ! command -v bat &>/dev/null && command -v batcat &>/dev/null; then
   ln -sf /usr/bin/batcat "$HOME/.local/bin/bat"
   echo "Created bat symlink successfully"
 fi
+
+if ! command -v fd &>/dev/null && command -v fdfind &>/dev/null; then
+  echo "Creating fd symlink to fdfind..."
+  mkdir -p "$HOME/.local/bin"
+  ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd"
+  echo "Created fd symlink successfully"
+fi
