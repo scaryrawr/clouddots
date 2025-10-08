@@ -6,7 +6,7 @@ prepend_entries=(
   'export PATH="$HOME/.npm-global/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which zsh)'
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  'ZSH_TMUX_AUTOSTART=false'
+  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY" ]] && echo true || echo false )'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
@@ -64,3 +64,5 @@ for entry in "${append_entries[@]}"; do
     echo "$entry" >>"$HOME/.zshrc"
   fi
 done
+
+sudo chsh -s $(which zsh) $(whoami)
