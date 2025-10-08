@@ -164,10 +164,6 @@ install_binary_release "magus" "scaryrawr/magus" "magus-linux-${arch_pattern}\\.
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 curl -fsSL https://opencode.ai/install | bash
 
-if command -v npm &>/dev/null; then
-  npm install -g @github/copilot || echo 'Failed to install GitHub Copilot CLI'
-fi
-
 # Handle bat/batcat symlink for apt installations
 if ! command -v bat &>/dev/null && command -v batcat &>/dev/null; then
   echo "Creating bat symlink to batcat..."
