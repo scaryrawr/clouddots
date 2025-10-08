@@ -27,6 +27,10 @@ if [[ -d "$HOME/.opencode/bin" ]]; then
   fish --command='fish_add_path $HOME/.opencode/bin'
 fi
 
+if [[ -d "$HOME/.local/share/fnm" ]]; then
+  fish --command='fish_add_path $HOME/.local/share/fnm'
+fi
+
 # Initialize fnm for fish only if fnm is installed
 cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF
 status is-interactive && command -q fnm && fnm env --use-on-cd --shell fish | source

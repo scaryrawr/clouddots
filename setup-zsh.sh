@@ -3,7 +3,7 @@
 # Just prepend to zshrc if it's not in it.
 prepend_entries=(
   "zstyle ':omz:plugins:eza' 'icons' yes"
-  'export PATH="$HOME/.npm-global/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+  'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which zsh)'
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
   'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY" ]] && echo true || echo false )'
@@ -54,7 +54,7 @@ sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting yarn 
 
 # Just append to zshrc if it's not in it.
 append_entries=(
-  'command -v fnm && eval "$(fnm env --use-on-cd --shell zsh)"'
+  'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"'
   '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.'
   '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
   'alias vi=nvim'

@@ -2,7 +2,7 @@
 
 # Just prepend to bashrc if it's not in it.
 prepend_entries=(
-  'export PATH="$HOME/.npm-global/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+  'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which bash)'
 )
 
@@ -15,7 +15,7 @@ done
 
 # Just append to bashrc if it's not in it.
 append_entries=(
-  'command -v fnm && eval "$(fnm env --use-on-cd --shell bash)"'
+  'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
 )
 
 for entry in "${append_entries[@]}"; do
