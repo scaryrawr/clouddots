@@ -6,7 +6,7 @@ git config --global alias.co checkout
 git config --global branch.sort -committerdate
 git config --global column.ui auto
 git config --global commit.verbose true
-git config --global core.editor "$CODE"
+git config --global core.editor "nvim"
 git config --global core.fsmonitor true
 git config --global core.untrackedCache true
 git config --global diff.algorithm histogram
@@ -28,7 +28,7 @@ git config --global rebase.updateRefs true
 git config --global rerere.autoupdate true
 git config --global rerere.enabled true
 git config --global tag.sort version:refname
-if command -v delta &> /dev/null; then
+if command -v delta &>/dev/null; then
   git config --global interactive.diffFilter 'delta --color-only'
   git config --global core.pager delta
   git config --global delta.hyperlinks-file-link-format 'vscode-insiders://file/{path}:{line}'
@@ -37,3 +37,11 @@ if command -v delta &> /dev/null; then
   git config --global delta.side-by-side true
   git config --global delta.true-color always
 fi
+
+mkdir -p $HOME/.config/lazygit
+cat >"$HOME/.config/lazygit/config.yml" <<'EOF'
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never
+EOF

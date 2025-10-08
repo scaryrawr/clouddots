@@ -57,6 +57,10 @@ append_entries=(
   'command -v fnm && eval "$(fnm env --use-on-cd --shell zsh)"'
   '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.'
   '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
+  'alias vi=nvim'
+  'alias vim=nvim'
+  'alias l="ls -lah"'
+  'yopilot() { copilot --allow-all-tools "$@"; }'
 )
 
 for entry in "${append_entries[@]}"; do
