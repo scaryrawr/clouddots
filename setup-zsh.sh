@@ -117,7 +117,13 @@ for entry in "${append_entries[@]}"; do
         {
           if (in_func == 0 && $0 ~ "^" func_name "\\(\\)[[:space:]]*{") {
             in_func=1
-            brace_count=1
+            # Count braces on the function declaration line itself
+            brace_count = gsub(/{/, "{", $0)
+            brace_count -= gsub(/}/, "}", $0)
+            # If braces balance on same line, function is done
+            if (brace_count == 0) {
+              in_func=0
+            }
             next
           }
           if (in_func) {
