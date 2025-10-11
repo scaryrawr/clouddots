@@ -15,7 +15,9 @@ for entry in "${prepend_entries[@]}"; do
   
   # Remove old entries if this is a variable assignment
   if [[ -n "$var_name" ]]; then
-    sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.bashrc"
+    # Escape special regex characters in var_name
+    escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+    sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.bashrc"
   fi
   
   # Add entry at the beginning (it will be added even if similar entry exists with different value)
@@ -44,12 +46,37 @@ for entry in "${append_entries[@]}"; do
   if [[ -n "$var_name" ]]; then
     if [[ "$var_name" =~ ^alias ]]; then
       alias_name="${var_name#alias }"
-      sed -i "/^alias[[:space:]]\+${alias_name}=/d" "$HOME/.bashrc"
+      # Escape special regex characters in alias_name
+      escaped_alias_name=$(printf '%s\n' "$alias_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^alias[[:space:]]\+${escaped_alias_name}=/d" "$HOME/.bashrc"
     elif [[ "$var_name" =~ \(\)$ ]]; then
       func_name="${var_name%()*}"
-      sed -i "/^${func_name}()[[:space:]]*{/,/^}/d" "$HOME/.bashrc"
+      # Escape special regex characters in func_name
+      escaped_func_name=$(printf '%s\n' "$func_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      # Use awk to properly remove function with brace counting
+      awk -v func_name="${escaped_func_name}" '
+        BEGIN { in_func=0; brace_count=0 }
+        {
+          if (in_func == 0 && $0 ~ "^" func_name "\\(\\)[[:space:]]*{") {
+            in_func=1
+            brace_count=1
+            next
+          }
+          if (in_func) {
+            brace_count += gsub(/{/, "{")
+            brace_count -= gsub(/}/, "}")
+            if (brace_count == 0) {
+              in_func=0
+            }
+            next
+          }
+          print
+        }
+      ' "$HOME/.bashrc" > "$HOME/.bashrc.tmp" && mv "$HOME/.bashrc.tmp" "$HOME/.bashrc"
     else
-      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.bashrc"
+      # Escape special regex characters in var_name
+      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.bashrc"
     fi
   fi
   
