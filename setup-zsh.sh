@@ -6,17 +6,42 @@ prepend_entries=(
   'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which zsh)'
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY" ]] && echo true || echo false )'
+  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
 )
 
 for entry in "${prepend_entries[@]}"; do
-  if ! grep -q "$entry" "$HOME/.zshrc"; then
-    echo "$entry
-$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
+  # Extract variable name if this is a variable assignment
+  var_name=""
+  zstyle_context=""
+  zstyle_style=""
+  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="${BASH_REMATCH[2]}"
+  elif [[ "$entry" =~ ^zstyle[[:space:]]+\'([^\']+)\'[[:space:]]+\'([^\']+)\' ]]; then
+    # For zstyle commands, match the context and style
+    zstyle_context="${BASH_REMATCH[1]}"
+    zstyle_style="${BASH_REMATCH[2]}"
+    var_name="zstyle '${zstyle_context}' '${zstyle_style}'"
   fi
+  
+  # Remove old entries if this is a variable assignment or zstyle
+  if [[ -n "$var_name" ]]; then
+    if [[ "$entry" =~ ^zstyle ]]; then
+      # Remove existing zstyle with same context and style
+      sed -i "/^zstyle '${zstyle_context}' '${zstyle_style}'/d" "$HOME/.zshrc"
+    else
+      # Remove any existing variable assignment (including different values)
+      # Escape special regex characters in var_name
+      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
+    fi
+  fi
+  
+  # Add entry at the beginning (it will be added even if similar entry exists with different value)
+  echo "$entry
+$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
 done
 
 ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
@@ -64,9 +89,63 @@ append_entries=(
 )
 
 for entry in "${append_entries[@]}"; do
-  if ! grep -q "$entry" "$HOME/.zshrc"; then
-    echo "$entry" >>"$HOME/.zshrc"
+  # Extract variable name if this is a variable assignment or alias
+  var_name=""
+  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="${BASH_REMATCH[2]}"
+  elif [[ "$entry" =~ ^alias[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="alias ${BASH_REMATCH[1]}"
+  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)\(\) ]]; then
+    # Function definition
+    var_name="${BASH_REMATCH[1]}()"
   fi
+  
+  # Remove old entries if this is a variable assignment, alias, or function
+  if [[ -n "$var_name" ]]; then
+    if [[ "$var_name" =~ ^alias ]]; then
+      alias_name="${var_name#alias }"
+      # Escape special regex characters in alias_name
+      escaped_alias_name=$(printf '%s\n' "$alias_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^alias[[:space:]]\+${escaped_alias_name}=/d" "$HOME/.zshrc"
+    elif [[ "$var_name" =~ \(\)$ ]]; then
+      func_name="${var_name%()*}"
+      # Escape special regex characters in func_name
+      escaped_func_name=$(printf '%s\n' "$func_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      # Use awk to properly remove function with brace counting
+      awk -v func_name="${escaped_func_name}" '
+        BEGIN { in_func=0; brace_count=0 }
+        {
+          if (in_func == 0 && $0 ~ "^" func_name "\\(\\)[[:space:]]*{") {
+            in_func=1
+            # Count braces on the function declaration line itself
+            brace_count = gsub(/{/, "{", $0)
+            brace_count -= gsub(/}/, "}", $0)
+            # If braces balance on same line, function is done
+            if (brace_count == 0) {
+              in_func=0
+            }
+            next
+          }
+          if (in_func) {
+            brace_count += gsub(/{/, "{")
+            brace_count -= gsub(/}/, "}")
+            if (brace_count == 0) {
+              in_func=0
+            }
+            next
+          }
+          print
+        }
+      ' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+    else
+      # Escape special regex characters in var_name
+      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
+    fi
+  fi
+  
+  # Add entry at the end (it will be added even if similar entry exists with different value)
+  echo "$entry" >>"$HOME/.zshrc"
 done
 
 sudo chsh -s $(which zsh) $(whoami)

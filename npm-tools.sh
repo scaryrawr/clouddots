@@ -11,3 +11,4 @@ fi
 
 # Install language servers and tools via npm
 npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @github/copilot
+npm upgrade -g
