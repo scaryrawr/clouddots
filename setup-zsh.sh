@@ -15,21 +15,27 @@ prepend_entries=(
 for entry in "${prepend_entries[@]}"; do
   # Extract variable name if this is a variable assignment
   var_name=""
+  zstyle_context=""
+  zstyle_style=""
   if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
     var_name="${BASH_REMATCH[2]}"
   elif [[ "$entry" =~ ^zstyle[[:space:]]+\'([^\']+)\'[[:space:]]+\'([^\']+)\' ]]; then
     # For zstyle commands, match the context and style
-    var_name="zstyle '${BASH_REMATCH[1]}' '${BASH_REMATCH[2]}'"
+    zstyle_context="${BASH_REMATCH[1]}"
+    zstyle_style="${BASH_REMATCH[2]}"
+    var_name="zstyle '${zstyle_context}' '${zstyle_style}'"
   fi
   
   # Remove old entries if this is a variable assignment or zstyle
   if [[ -n "$var_name" ]]; then
     if [[ "$entry" =~ ^zstyle ]]; then
       # Remove existing zstyle with same context and style
-      sed -i "/^zstyle '${BASH_REMATCH[1]}' '${BASH_REMATCH[2]}'/d" "$HOME/.zshrc"
+      sed -i "/^zstyle '${zstyle_context}' '${zstyle_style}'/d" "$HOME/.zshrc"
     else
       # Remove any existing variable assignment (including different values)
-      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
+      # Escape special regex characters in var_name
+      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
     fi
   fi
   
@@ -98,12 +104,37 @@ for entry in "${append_entries[@]}"; do
   if [[ -n "$var_name" ]]; then
     if [[ "$var_name" =~ ^alias ]]; then
       alias_name="${var_name#alias }"
-      sed -i "/^alias[[:space:]]\+${alias_name}=/d" "$HOME/.zshrc"
+      # Escape special regex characters in alias_name
+      escaped_alias_name=$(printf '%s\n' "$alias_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^alias[[:space:]]\+${escaped_alias_name}=/d" "$HOME/.zshrc"
     elif [[ "$var_name" =~ \(\)$ ]]; then
       func_name="${var_name%()*}"
-      sed -i "/^${func_name}()[[:space:]]*{/,/^}/d" "$HOME/.zshrc"
+      # Escape special regex characters in func_name
+      escaped_func_name=$(printf '%s\n' "$func_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      # Use awk to properly remove function with brace counting
+      awk -v func_name="${escaped_func_name}" '
+        BEGIN { in_func=0; brace_count=0 }
+        {
+          if (in_func == 0 && $0 ~ "^" func_name "\\(\\)[[:space:]]*{") {
+            in_func=1
+            brace_count=1
+            next
+          }
+          if (in_func) {
+            brace_count += gsub(/{/, "{")
+            brace_count -= gsub(/}/, "}")
+            if (brace_count == 0) {
+              in_func=0
+            }
+            next
+          }
+          print
+        }
+      ' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
     else
-      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
+      # Escape special regex characters in var_name
+      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
     fi
   fi
   
