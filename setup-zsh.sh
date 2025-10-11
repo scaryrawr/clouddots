@@ -6,17 +6,36 @@ prepend_entries=(
   'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which zsh)'
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY" ]] && echo true || echo false )'
+  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
 )
 
 for entry in "${prepend_entries[@]}"; do
-  if ! grep -q "$entry" "$HOME/.zshrc"; then
-    echo "$entry
-$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
+  # Extract variable name if this is a variable assignment
+  var_name=""
+  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="${BASH_REMATCH[2]}"
+  elif [[ "$entry" =~ ^zstyle[[:space:]]+\'([^\']+)\'[[:space:]]+\'([^\']+)\' ]]; then
+    # For zstyle commands, match the context and style
+    var_name="zstyle '${BASH_REMATCH[1]}' '${BASH_REMATCH[2]}'"
   fi
+  
+  # Remove old entries if this is a variable assignment or zstyle
+  if [[ -n "$var_name" ]]; then
+    if [[ "$entry" =~ ^zstyle ]]; then
+      # Remove existing zstyle with same context and style
+      sed -i "/^zstyle '${BASH_REMATCH[1]}' '${BASH_REMATCH[2]}'/d" "$HOME/.zshrc"
+    else
+      # Remove any existing variable assignment (including different values)
+      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
+    fi
+  fi
+  
+  # Add entry at the beginning (it will be added even if similar entry exists with different value)
+  echo "$entry
+$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
 done
 
 ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
@@ -64,9 +83,32 @@ append_entries=(
 )
 
 for entry in "${append_entries[@]}"; do
-  if ! grep -q "$entry" "$HOME/.zshrc"; then
-    echo "$entry" >>"$HOME/.zshrc"
+  # Extract variable name if this is a variable assignment or alias
+  var_name=""
+  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="${BASH_REMATCH[2]}"
+  elif [[ "$entry" =~ ^alias[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="alias ${BASH_REMATCH[1]}"
+  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)\(\) ]]; then
+    # Function definition
+    var_name="${BASH_REMATCH[1]}()"
   fi
+  
+  # Remove old entries if this is a variable assignment, alias, or function
+  if [[ -n "$var_name" ]]; then
+    if [[ "$var_name" =~ ^alias ]]; then
+      alias_name="${var_name#alias }"
+      sed -i "/^alias[[:space:]]\+${alias_name}=/d" "$HOME/.zshrc"
+    elif [[ "$var_name" =~ \(\)$ ]]; then
+      func_name="${var_name%()*}"
+      sed -i "/^${func_name}()[[:space:]]*{/,/^}/d" "$HOME/.zshrc"
+    else
+      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
+    fi
+  fi
+  
+  # Add entry at the end (it will be added even if similar entry exists with different value)
+  echo "$entry" >>"$HOME/.zshrc"
 done
 
 sudo chsh -s $(which zsh) $(whoami)
