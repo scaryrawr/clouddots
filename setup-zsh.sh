@@ -25,7 +25,7 @@ for entry in "${prepend_entries[@]}"; do
     zstyle_style="${BASH_REMATCH[2]}"
     var_name="zstyle '${zstyle_context}' '${zstyle_style}'"
   fi
-  
+
   # Remove old entries if this is a variable assignment or zstyle
   if [[ -n "$var_name" ]]; then
     if [[ "$entry" =~ ^zstyle ]]; then
@@ -38,7 +38,7 @@ for entry in "${prepend_entries[@]}"; do
       sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
     fi
   fi
-  
+
   # Add entry at the beginning (it will be added even if similar entry exists with different value)
   echo "$entry
 $(cat $HOME/.zshrc)" >"$HOME/.zshrc"
@@ -99,7 +99,7 @@ for entry in "${append_entries[@]}"; do
     # Function definition
     var_name="${BASH_REMATCH[1]}()"
   fi
-  
+
   # Remove old entries if this is a variable assignment, alias, or function
   if [[ -n "$var_name" ]]; then
     if [[ "$var_name" =~ ^alias ]]; then
@@ -136,16 +136,16 @@ for entry in "${append_entries[@]}"; do
           }
           print
         }
-      ' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+      ' "$HOME/.zshrc" >"$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
     else
       # Escape special regex characters in var_name
       escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
       sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
     fi
   fi
-  
+
   # Add entry at the end (it will be added even if similar entry exists with different value)
   echo "$entry" >>"$HOME/.zshrc"
 done
 
-sudo chsh -s $(which zsh) $(whoami)
+#sudo chsh -s $(which zsh) $(whoami)
