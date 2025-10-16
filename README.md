@@ -7,7 +7,7 @@
 Scripts are now organized by function for clarity and maintainability:
 
 - **setup.sh**: Main orchestrator. Runs all other scripts in the correct order.
-- **system-deps.sh**: Installs system-level dependencies (apt/dnf/cargo/go/opencode).
+- **system-deps.sh**: Installs system-level dependencies (apt/dnf/cargo/go).
 - **npm-tools.sh**: Installs global npm tools (language servers, etc).
 - **setup-bash.sh**: Configures bash environment and PATH.
 - **setup-zsh.sh**: Configures zsh, oh-my-zsh plugins, powerlevel10k, etc.
@@ -15,7 +15,6 @@ Scripts are now organized by function for clarity and maintainability:
 - **setup-tmux.sh**: Installs tmux plugins and configures tmux.
 - **setup-vscode.sh**: Modifies VSCode settings for Copilot and chat features.
 - **setup-neovim.sh**: Clones or updates neovim configuration from lazyvim.
-- **setup-opencode.sh**: Configures opencode CLI tool with MCP and theme settings.
 - **setup-git.sh**: Sets up git config, aliases, and delta integration (run only in Codespaces).
 - **p10k.zsh**: Powerlevel10k theme config (not a script, just a config file).
 
@@ -30,9 +29,8 @@ Scripts are now organized by function for clarity and maintainability:
 7. setup-neovim.sh
 8. setup-tmux.sh
 9. setup-vscode.sh
-10. setup-opencode.sh
-11. setup-git.sh (conditionally)
-12. Copy p10k.zsh
+10. setup-git.sh (conditionally)
+11. Copy p10k.zsh
 
 ## What it does in Codespaces & Devcontainers
 
@@ -44,7 +42,6 @@ Scripts are now organized by function for clarity and maintainability:
   - [zoxide](https://github.com/ajeetdsouza/zoxide)
   - [helix](https://github.com/helix-editor/helix) (`hx`)
   - [lazygit](https://github.com/jesseduffield/lazygit)
-  - [opencode](https://github.com/sst/opencode)
 - **oh-my-zsh** (default in Codespaces):
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k)
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
