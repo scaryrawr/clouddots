@@ -23,10 +23,6 @@ if [[ -d "$HOME/go/bin" ]]; then
   fish --command='fish_add_path $HOME/go/bin'
 fi
 
-if [[ -d "$HOME/.opencode/bin" ]]; then
-  fish --command='fish_add_path $HOME/.opencode/bin'
-fi
-
 if [[ -d "$HOME/.local/share/fnm" ]]; then
   fish --command='fish_add_path $HOME/.local/share/fnm'
 fi

@@ -3,7 +3,7 @@
 ## Build/Test Commands
 - **Main setup**: `./setup.sh` (orchestrates all setup scripts)
 - **Test binaries**: `.github/test-binaries.sh` (validates installed tools)
-- **Single test**: Test individual tools with `<tool> --version` (fzf, eza, zoxide, delta, opencode)
+- **Single test**: Test individual tools with `<tool> --version` (fzf, eza, zoxide, delta)
 - **⚠️ IMPORTANT**: Never run setup scripts locally - always test inside devcontainers only
 
 ## Code Style Guidelines

@@ -18,7 +18,6 @@ declare -A binary_tests=(
   [eza]="eza --version"
   [zoxide]="zoxide --version"
   [delta]="delta --version"
-  [opencode]="opencode --version"
 )
 
 failed_tests=()

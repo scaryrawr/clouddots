@@ -162,7 +162,6 @@ install_binary_release "lazygit" "jesseduffield/lazygit" "lazygit.*[lL]inux.*${a
 install_binary_release "magus" "scaryrawr/magus" "magus-linux-${arch_pattern}\\.tar\\.gz$"
 
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-curl -fsSL https://opencode.ai/install | bash
 
 # Handle bat/batcat symlink for apt installations
 if ! command -v bat &>/dev/null && command -v batcat &>/dev/null; then
