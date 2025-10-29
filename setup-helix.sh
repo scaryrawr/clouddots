@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Clone or update helix configuration
-if [ -d "$HOME/.config/helix" ] && [ "$(ls -A "$HOME/.config/helix")" ]; then
+if [ -d "$HOME/.config/helix" ] && [ "$(ls -A "$HOME/.config/helix")" ] && [ -d "$HOME/.config/helix/.git" ]; then
   pushd "$HOME/.config/helix" && git pull
   popd
 else
