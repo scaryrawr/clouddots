@@ -8,14 +8,14 @@ plugins=(
 
 # Clone or pull each plugin
 for plugin in "${plugins[@]}"; do
-	repo_url=$(echo "$plugin" | awk '{print $1}')
-	clone_dir=$(echo "$plugin" | awk '{print $2}')
-	if [ -d "$clone_dir" ] && [ "$(ls -A $clone_dir)" ]; then
-		pushd "$clone_dir" && git pull
-		popd
-	else
-		git clone "$repo_url" "$clone_dir"
-	fi
+  repo_url=$(echo "$plugin" | awk '{print $1}')
+  clone_dir=$(echo "$plugin" | awk '{print $2}')
+  if [ -d "$clone_dir" ] && [ "$(ls -A $clone_dir)" ]; then
+    pushd "$clone_dir" && git pull
+    popd
+  else
+    git clone "$repo_url" "$clone_dir"
+  fi
 done
 
 "$HOME/.tmux/plugins/tmux-powerline/generate_config.sh"
@@ -23,7 +23,7 @@ mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerlin
 sed -i 's/export TMUX_POWERLINE_THEME="default"/export TMUX_POWERLINE_THEME="base16"/' "$HOME/.config/tmux-powerline/config.sh"
 
 # Create or overwrite tmux configuration
-cat > "$HOME/.tmux.conf" << EOF
+cat >"$HOME/.tmux.conf" <<EOF
 set -g mouse on
 set -g escape-time 10
 set -g focus-events on
@@ -33,13 +33,14 @@ set -ga update-environment ' CODESPACE_VSCODE_FOLDER VSCODE_GIT_ASKPASS_NODE VSC
 
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'erikw/tmux-powerline'
+set -g @plugin 'sainnhe/tmux-fzf'
 
 run '~/.tmux/plugins/tpm/tpm'
 EOF
 
 mkdir -p "$HOME/.config/tmux-powerline/themes"
 
-cat > "$HOME/.config/tmux-powerline/themes/base16.sh" << 'EOF'
+cat >"$HOME/.config/tmux-powerline/themes/base16.sh" <<'EOF'
 # shellcheck shell=bash disable=SC2034
 # Base16 Theme
 # Uses the base16 color palette to inherit theme from terminal/shell.
