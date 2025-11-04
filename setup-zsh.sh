@@ -86,7 +86,6 @@ append_entries=(
   'alias vi=nvim'
   'alias vim=nvim'
   'alias l="ls -lah"'
-  'yopilot() { copilot --allow-all-tools "$@"; }'
 )
 
 for entry in "${append_entries[@]}"; do
