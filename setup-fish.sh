@@ -3,29 +3,11 @@
 mkdir -p "$HOME/.config/fish/conf.d"
 mkdir -p "$HOME/.config/fish/functions"
 
-# Ensure $HOME/.local/bin is on the PATH in fish
-if [[ -d "$HOME/.local/bin" ]]; then
-	fish --command='fish_add_path $HOME/.local/bin'
-fi
-
-# Ensure $HOME/.npm-global/bin is on the PATH in fish
-if [[ -d "$HOME/.npm-global/bin" ]]; then
-	fish --command='fish_add_path $HOME/.npm-global/bin'
-fi
-
-# Ensure $HOME/.cargo/bin is on the PATH in fish
-if [[ -d "$HOME/.cargo/bin" ]]; then
-	fish --command='fish_add_path $HOME/.cargo/bin'
-fi
-
-# Ensure $HOME/go/bin is on the PATH in fish if it exists
-if [[ -d "$HOME/go/bin" ]]; then
-	fish --command='fish_add_path $HOME/go/bin'
-fi
-
-if [[ -d "$HOME/.local/share/fnm" ]]; then
-	fish --command='fish_add_path $HOME/.local/share/fnm'
-fi
+fish --command='fish_add_path $HOME/.local/bin'
+fish --command='fish_add_path $HOME/.npm-global/bin'
+fish --command='fish_add_path $HOME/.cargo/bin'
+fish --command='fish_add_path $HOME/go/bin'
+fish --command='fish_add_path $HOME/.local/share/fnm'
 
 # Initialize fnm for fish only if fnm is installed
 cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF
