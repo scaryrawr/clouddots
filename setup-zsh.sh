@@ -1,15 +1,59 @@
 #!/usr/bin/env bash
 
+# ============================================================================
+# ZSHENV Configuration (loaded first for ALL shells - faster environment setup)
+# ============================================================================
+# .zshenv is read first for all zsh invocations (interactive, non-interactive,
+# login, non-login), making it the optimal place for PATH and environment vars.
+
+zshenv_entries=(
+  '# Path configuration - loaded early for all shells'
+  'typeset -U path  # Ensure unique entries in path'
+  'path=("$HOME/.local/share/fnm" "$HOME/.npm-global/bin" "$HOME/.cargo/bin" "$HOME/go/bin" "$HOME/.local/bin" $path)'
+  'export PATH'
+  ''
+  '# Environment variables'
+  'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
+)
+
+# Create or update .zshenv
+: > "$HOME/.zshenv.new"
+for entry in "${zshenv_entries[@]}"; do
+  echo "$entry" >> "$HOME/.zshenv.new"
+done
+
+# Preserve any existing custom content from .zshenv that we don't manage
+if [[ -f "$HOME/.zshenv" ]]; then
+  # Patterns for lines we manage (will be regenerated)
+  managed_patterns=(
+    '^typeset -U path'
+    '^path='
+    '^export PATH$'
+    '^export TMUX_POWERLINE_BUBBLE_SEPARATORS='
+    '^# Path configuration'
+    '^# Environment variables'
+  )
+  # Build grep pattern from array
+  grep_pattern=$(IFS='|'; echo "${managed_patterns[*]}")
+  # Remove our managed lines and keep user customizations
+  grep -v -E "$grep_pattern" "$HOME/.zshenv" 2>/dev/null | grep -v '^$' >> "$HOME/.zshenv.new" || true
+fi
+
+mv "$HOME/.zshenv.new" "$HOME/.zshenv"
+
+# ============================================================================
+# ZSHRC Configuration (interactive shells only)
+# ============================================================================
+# These settings only apply to interactive shells - keeps .zshrc lean
+
 # Just prepend to zshrc if it's not in it.
 prepend_entries=(
   "zstyle ':omz:plugins:eza' 'icons' yes"
-  'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
-  'export SHELL=$(which zsh)'
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
+  '# Auto-start tmux in remote sessions using zsh parameter expansion (no subshell)'
+  '[[ -n "${SSH_CONNECTION}${SSH_CLIENT}${SSH_TTY}${DEVPOD}" ]] && ZSH_TMUX_AUTOSTART=true || ZSH_TMUX_AUTOSTART=false'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
-  'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
 )
 
 for entry in "${prepend_entries[@]}"; do
@@ -41,8 +85,17 @@ for entry in "${prepend_entries[@]}"; do
 
   # Add entry at the beginning (it will be added even if similar entry exists with different value)
   echo "$entry
-$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
+$(cat "$HOME/.zshrc")" >"$HOME/.zshrc"
 done
+
+# Clean up old patterns from .zshrc (now in .zshenv or optimized)
+sed -i \
+  -e '/^export PATH=.*fnm.*npm-global.*cargo.*go/d' \
+  -e '/^export SHELL=\$(which zsh)/d' \
+  -e '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' \
+  -e '/^command -v fnm.*eval.*fnm env/d' \
+  -e '/^ZSH_TMUX_AUTOSTART=\$( \[\[/d' \
+  "$HOME/.zshrc"
 
 ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
 mkdir -p "$ZSH_CUSTOM"
@@ -66,9 +119,9 @@ plugins=(
 for plugin in "${plugins[@]}"; do
   repo_url=$(echo "$plugin" | awk '{print $1}')
   clone_dir=$(echo "$plugin" | awk '{print $2}')
-  if [ -d "$clone_dir" ] && [ "$(ls -A $clone_dir)" ]; then
+  if [ -d "$clone_dir" ] && [ "$(ls -A "$clone_dir")" ]; then
     pushd "$clone_dir" && git pull
-    popd
+    popd || true
   else
     git clone "$repo_url" "$clone_dir"
   fi
@@ -79,8 +132,11 @@ sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zs
 sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zfunctions zsh-autosuggestions zsh-completions zsh-autopair zoxide fzf-tab eza tmux)/' "$HOME/.zshrc"
 
 # Just append to zshrc if it's not in it.
+# Using (( $+commands[cmd] )) is the zsh-native way to check if a command exists
+# and is significantly faster than forking to `command -v`
 append_entries=(
-  'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"'
+  '# fnm initialization - uses zsh-native command check (faster than command -v)'
+  '(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"'
   '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.'
   '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
   'alias vi=nvim'
