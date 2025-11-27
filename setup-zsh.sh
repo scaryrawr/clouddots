@@ -13,7 +13,6 @@ zshenv_entries=(
   'export PATH'
   ''
   '# Environment variables'
-  'export SHELL="${SHELL:-$(command -v zsh)}"'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
 )
 
@@ -25,8 +24,19 @@ done
 
 # Preserve any existing custom content from .zshenv that we don't manage
 if [[ -f "$HOME/.zshenv" ]]; then
+  # Patterns for lines we manage (will be regenerated)
+  managed_patterns=(
+    '^typeset -U path'
+    '^path='
+    '^export PATH$'
+    '^export TMUX_POWERLINE_BUBBLE_SEPARATORS='
+    '^# Path configuration'
+    '^# Environment variables'
+  )
+  # Build grep pattern from array
+  grep_pattern=$(IFS='|'; echo "${managed_patterns[*]}")
   # Remove our managed lines and keep user customizations
-  grep -v -E '^(typeset -U path|path=|export PATH$|export SHELL=|export TMUX_POWERLINE_BUBBLE_SEPARATORS=|# Path configuration|# Environment variables)' "$HOME/.zshenv" 2>/dev/null | grep -v '^$' >> "$HOME/.zshenv.new" || true
+  grep -v -E "$grep_pattern" "$HOME/.zshenv" 2>/dev/null | grep -v '^$' >> "$HOME/.zshenv.new" || true
 fi
 
 mv "$HOME/.zshenv.new" "$HOME/.zshenv"
@@ -78,14 +88,14 @@ for entry in "${prepend_entries[@]}"; do
 $(cat "$HOME/.zshrc")" >"$HOME/.zshrc"
 done
 
-# Clean up old PATH/SHELL exports from .zshrc (now in .zshenv)
-sed -i '/^export PATH=.*fnm.*npm-global.*cargo.*go/d' "$HOME/.zshrc"
-sed -i '/^export SHELL=\$(which zsh)/d' "$HOME/.zshrc"
-sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
-# Clean up old slow command -v pattern for fnm
-sed -i '/^command -v fnm.*eval.*fnm env/d' "$HOME/.zshrc"
-# Clean up old subshell-based ZSH_TMUX_AUTOSTART pattern
-sed -i '/^ZSH_TMUX_AUTOSTART=\$( \[\[/d' "$HOME/.zshrc"
+# Clean up old patterns from .zshrc (now in .zshenv or optimized)
+sed -i \
+  -e '/^export PATH=.*fnm.*npm-global.*cargo.*go/d' \
+  -e '/^export SHELL=\$(which zsh)/d' \
+  -e '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' \
+  -e '/^command -v fnm.*eval.*fnm env/d' \
+  -e '/^ZSH_TMUX_AUTOSTART=\$( \[\[/d' \
+  "$HOME/.zshrc"
 
 ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
 mkdir -p "$ZSH_CUSTOM"
