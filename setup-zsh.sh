@@ -19,8 +19,8 @@ for entry in "${zshenv_entries[@]}"; do
   if [[ "$entry" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
     var_name="${BASH_REMATCH[1]}"
     # Remove any existing assignment for this variable
-    escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-    sed -i "/^export[[:space:]]\+${escaped_var_name}=/d" "$HOME/.zshenv"
+    # Note: var_name is alphanumeric so no escaping needed
+    sed -i "/^export[[:space:]]\+${var_name}=/d" "$HOME/.zshenv"
   fi
   # Append the entry
   echo "$entry" >> "$HOME/.zshenv"
@@ -78,9 +78,8 @@ for entry in "${prepend_entries[@]}"; do
       sed -i "/^zstyle '${zstyle_context}' '${zstyle_style}'/d" "$HOME/.zshrc"
     else
       # Remove any existing variable assignment (including different values)
-      # Escape special regex characters in var_name
-      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
+      # Note: var_name is alphanumeric so no escaping needed
+      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
     fi
   fi
 
@@ -124,19 +123,28 @@ sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copil
 # Ensure p10k instant prompt is at the VERY TOP of .zshrc
 # This must come before ANY output or command substitution
 # =============================================================================
-instant_prompt_block='# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+read -r -d '' instant_prompt_block << 'EOF'
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi'
+fi
+# END p10k instant prompt
+EOF
 
-# Remove any existing instant prompt block
-sed -i '/# Enable Powerlevel10k instant prompt/,/^fi$/d' "$HOME/.zshrc"
+# Remove any existing instant prompt block (using END marker for safety)
+sed -i '/# Enable Powerlevel10k instant prompt/,/# END p10k instant prompt/d' "$HOME/.zshrc"
+# Also clean up old-style blocks without END marker (first occurrence only)
+sed -i '0,/# Enable Powerlevel10k instant prompt/{/# Enable Powerlevel10k instant prompt/,/^fi$/d}' "$HOME/.zshrc"
 
-# Prepend instant prompt block at the very top
-echo "${instant_prompt_block}
-$(cat "$HOME/.zshrc")" > "$HOME/.zshrc"
+# Prepend instant prompt block at the very top (using temp file for safety)
+tmp_zshrc="$(mktemp)"
+{
+  echo "${instant_prompt_block}"
+  [ -f "$HOME/.zshrc" ] && cat "$HOME/.zshrc"
+} > "$tmp_zshrc"
+mv "$tmp_zshrc" "$HOME/.zshrc"
 
 # Just append to zshrc if it's not in it.
 append_entries=(
@@ -147,13 +155,14 @@ append_entries=(
 
 # p10k config sourcing - handle separately to avoid duplicates
 sed -i "/# To customize prompt, run.*p10k configure/d" "$HOME/.zshrc"
-sed -i "/\[\[.*\.p10k\.zsh.*source.*\.p10k\.zsh/d" "$HOME/.zshrc"
+sed -i "/source.*\.p10k\.zsh/d" "$HOME/.zshrc"
 echo '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.' >> "$HOME/.zshrc"
 echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> "$HOME/.zshrc"
 
 # Lazy-load fnm - only initialize when node/npm/npx/yarn/pnpm/fnm is first called
-# This saves ~50-100ms on shell startup when you don'"'"'t immediately need node
-fnm_lazy_load='# Lazy-load fnm (deferred initialization for faster shell startup)
+# This saves ~50-100ms on shell startup when you don't immediately need node
+read -r -d '' fnm_lazy_load << 'EOF'
+# Lazy-load fnm (deferred initialization for faster shell startup)
 if (( $+commands[fnm] )); then
   _fnm_lazy_load() {
     unfunction node npm npx yarn pnpm fnm 2>/dev/null
@@ -166,12 +175,14 @@ if (( $+commands[fnm] )); then
   yarn() { _fnm_lazy_load yarn "$@" }
   pnpm() { _fnm_lazy_load pnpm "$@" }
   fnm() { _fnm_lazy_load fnm "$@" }
-fi'
+fi
+# END fnm lazy-load
+EOF
 
 # Remove old fnm initialization
 sed -i '/command -v fnm.*eval.*fnm env/d' "$HOME/.zshrc"
-# Remove old lazy-load block if exists
-sed -i '/# Lazy-load fnm/,/^fi$/d' "$HOME/.zshrc"
+# Remove old lazy-load block if exists (using END marker for safety)
+sed -i '/# Lazy-load fnm/,/# END fnm lazy-load/d' "$HOME/.zshrc"
 
 for entry in "${append_entries[@]}"; do
   # Extract variable name if this is a variable assignment or alias
@@ -189,15 +200,13 @@ for entry in "${append_entries[@]}"; do
   if [[ -n "$var_name" ]]; then
     if [[ "$var_name" =~ ^alias ]]; then
       alias_name="${var_name#alias }"
-      # Escape special regex characters in alias_name
-      escaped_alias_name=$(printf '%s\n' "$alias_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-      sed -i "/^alias[[:space:]]\+${escaped_alias_name}=/d" "$HOME/.zshrc"
+      # Note: alias_name is alphanumeric so no escaping needed
+      sed -i "/^alias[[:space:]]\+${alias_name}=/d" "$HOME/.zshrc"
     elif [[ "$var_name" =~ \(\)$ ]]; then
       func_name="${var_name%()*}"
-      # Escape special regex characters in func_name
-      escaped_func_name=$(printf '%s\n' "$func_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+      # Note: func_name is alphanumeric so no escaping needed
       # Use awk to properly remove function with brace counting
-      awk -v func_name="${escaped_func_name}" '
+      awk -v func_name="${func_name}" '
         BEGIN { in_func=0; brace_count=0 }
         {
           if (in_func == 0 && $0 ~ "^" func_name "\\(\\)[[:space:]]*{") {
@@ -223,9 +232,8 @@ for entry in "${append_entries[@]}"; do
         }
       ' "$HOME/.zshrc" >"$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
     else
-      # Escape special regex characters in var_name
-      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.zshrc"
+      # Note: var_name is alphanumeric so no escaping needed
+      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
     fi
   fi
 
