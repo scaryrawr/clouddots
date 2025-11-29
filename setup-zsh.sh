@@ -1,15 +1,60 @@
 #!/usr/bin/env bash
 
-# Just prepend to zshrc if it's not in it.
+# =============================================================================
+# ZSHENV - Environment variables (loaded for ALL shells, before zshrc)
+# Moving static exports here speeds up shell startup significantly
+# =============================================================================
+
+# Ensure .zshenv exists
+touch "$HOME/.zshenv"
+
+# Entries to add to zshenv (idempotent - will update existing or add new)
+zshenv_entries=(
+  'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"'
+  'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
+)
+
+for entry in "${zshenv_entries[@]}"; do
+  # Extract variable name from export statement
+  if [[ "$entry" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="${BASH_REMATCH[1]}"
+    # Remove any existing assignment for this variable
+    escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
+    sed -i "/^export[[:space:]]\+${escaped_var_name}=/d" "$HOME/.zshenv"
+  fi
+  # Append the entry
+  echo "$entry" >> "$HOME/.zshenv"
+done
+
+# Add ZSH_TMUX_AUTOSTART detection block (idempotent)
+if ! grep -q "ZSH_TMUX_AUTOSTART" "$HOME/.zshenv"; then
+  cat >> "$HOME/.zshenv" << 'EOF'
+
+# Detect remote/devpod session once (used by tmux plugin)
+if [[ -n "${SSH_CONNECTION}${SSH_CLIENT}${SSH_TTY}${DEVPOD}" ]]; then
+  export ZSH_TMUX_AUTOSTART=true
+else
+  export ZSH_TMUX_AUTOSTART=false
+fi
+EOF
+fi
+
+# =============================================================================
+# ZSHRC - Interactive shell config
+# =============================================================================
+
+# Clean up old entries that are now in zshenv (from previous script versions)
+sed -i '/^export PATH=.*\.local\/share\/fnm/d' "$HOME/.zshrc"
+sed -i '/^export SHELL=/d' "$HOME/.zshrc"
+sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
+sed -i '/^ZSH_TMUX_AUTOSTART=\$(/d' "$HOME/.zshrc"
+
+# Prepend entries to zshrc (after instant prompt, before oh-my-zsh)
 prepend_entries=(
   "zstyle ':omz:plugins:eza' 'icons' yes"
-  'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
-  'export SHELL=$(which zsh)'
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
-  'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
 )
 
 for entry in "${prepend_entries[@]}"; do
@@ -51,10 +96,7 @@ mkdir -p "$ZSH_CUSTOM"
 plugins=(
   "https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k"
   "https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions"
-  "https://github.com/hlissner/zsh-autopair $ZSH_CUSTOM/plugins/zsh-autopair"
   "https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH_CUSTOM/plugins/fast-syntax-highlighting"
-  "https://github.com/marlonrichert/zsh-autocomplete $ZSH_CUSTOM/plugins/zsh-autocomplete"
-  "https://github.com/mattmc3/zfunctions $ZSH_CUSTOM/plugins/zfunctions"
   "https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf"
   "https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab"
   "https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-completions"
@@ -76,17 +118,60 @@ done
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
 
-sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zfunctions zsh-autosuggestions zsh-completions zsh-autopair zoxide fzf-tab eza tmux)/' "$HOME/.zshrc"
+sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zsh-autosuggestions zsh-completions zoxide fzf-tab eza tmux)/' "$HOME/.zshrc"
+
+# =============================================================================
+# Ensure p10k instant prompt is at the VERY TOP of .zshrc
+# This must come before ANY output or command substitution
+# =============================================================================
+instant_prompt_block='# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi'
+
+# Remove any existing instant prompt block
+sed -i '/# Enable Powerlevel10k instant prompt/,/^fi$/d' "$HOME/.zshrc"
+
+# Prepend instant prompt block at the very top
+echo "${instant_prompt_block}
+$(cat "$HOME/.zshrc")" > "$HOME/.zshrc"
 
 # Just append to zshrc if it's not in it.
 append_entries=(
-  'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"'
-  '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.'
-  '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
   'alias vi=nvim'
   'alias vim=nvim'
   'alias l="ls -lah"'
 )
+
+# p10k config sourcing - handle separately to avoid duplicates
+sed -i "/# To customize prompt, run.*p10k configure/d" "$HOME/.zshrc"
+sed -i "/\[\[.*\.p10k\.zsh.*source.*\.p10k\.zsh/d" "$HOME/.zshrc"
+echo '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.' >> "$HOME/.zshrc"
+echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> "$HOME/.zshrc"
+
+# Lazy-load fnm - only initialize when node/npm/npx/yarn/pnpm/fnm is first called
+# This saves ~50-100ms on shell startup when you don'"'"'t immediately need node
+fnm_lazy_load='# Lazy-load fnm (deferred initialization for faster shell startup)
+if (( $+commands[fnm] )); then
+  _fnm_lazy_load() {
+    unfunction node npm npx yarn pnpm fnm 2>/dev/null
+    eval "$(fnm env --use-on-cd --shell zsh)"
+    "$@"
+  }
+  node() { _fnm_lazy_load node "$@" }
+  npm() { _fnm_lazy_load npm "$@" }
+  npx() { _fnm_lazy_load npx "$@" }
+  yarn() { _fnm_lazy_load yarn "$@" }
+  pnpm() { _fnm_lazy_load pnpm "$@" }
+  fnm() { _fnm_lazy_load fnm "$@" }
+fi'
+
+# Remove old fnm initialization
+sed -i '/command -v fnm.*eval.*fnm env/d' "$HOME/.zshrc"
+# Remove old lazy-load block if exists
+sed -i '/# Lazy-load fnm/,/^fi$/d' "$HOME/.zshrc"
 
 for entry in "${append_entries[@]}"; do
   # Extract variable name if this is a variable assignment or alias
@@ -147,5 +232,13 @@ for entry in "${append_entries[@]}"; do
   # Add entry at the end (it will be added even if similar entry exists with different value)
   echo "$entry" >>"$HOME/.zshrc"
 done
+
+# Append fnm lazy-load at the end
+echo "$fnm_lazy_load" >> "$HOME/.zshrc"
+
+# Disable omz auto-update checks (speeds up startup)
+if ! grep -q "zstyle ':omz:update' mode disabled" "$HOME/.zshrc"; then
+  echo "zstyle ':omz:update' mode disabled" >> "$HOME/.zshrc"
+fi
 
 #sudo chsh -s $(which zsh) $(whoami)
