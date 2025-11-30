@@ -123,7 +123,8 @@ sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copil
 # Ensure p10k instant prompt is at the VERY TOP of .zshrc
 # This must come before ANY output or command substitution
 # =============================================================================
-read -r -d '' instant_prompt_block << 'EOF'
+# Note: read returns 1 when EOF is reached with -d '', so we use || true
+read -r -d '' instant_prompt_block << 'EOF' || true
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -161,7 +162,8 @@ echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> "$HOME/.zshrc"
 
 # Lazy-load fnm - only initialize when node/npm/npx/yarn/pnpm/fnm is first called
 # This saves ~50-100ms on shell startup when you don't immediately need node
-read -r -d '' fnm_lazy_load << 'EOF'
+# Note: read returns 1 when EOF is reached with -d '', so we use || true
+read -r -d '' fnm_lazy_load << 'EOF' || true
 # Lazy-load fnm (deferred initialization for faster shell startup)
 if (( $+commands[fnm] )); then
   _fnm_lazy_load() {
