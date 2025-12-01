@@ -1,0 +1,35 @@
+# Prompt
+romkatv/powerlevel10k
+scaryrawr/p10k-ext
+
+# Tools
+romkatv/zsh-bench kind:path
+
+# Completions
+zsh-users/zsh-completions kind:fpath path:src
+scaryrawr/copilot.zsh kind:fpath
+
+# oh-my-zsh
+getantidote/use-omz
+ohmyzsh/ohmyzsh path:plugins/encode64 kind:defer
+ohmyzsh/ohmyzsh path:plugins/docker kind:defer
+ohmyzsh/ohmyzsh path:plugins/docker-compose kind:defer
+ohmyzsh/ohmyzsh path:plugins/fnm kind:defer
+ohmyzsh/ohmyzsh path:plugins/gh kind:defer
+ohmyzsh/ohmyzsh path:plugins/bun kind:defer
+ohmyzsh/ohmyzsh path:plugins/golang kind:defer
+ohmyzsh/ohmyzsh path:plugins/cp kind:defer
+ohmyzsh/ohmyzsh path:plugins/eza kind:defer
+ohmyzsh/ohmyzsh path:plugins/rust kind:defer
+ohmyzsh/ohmyzsh path:plugins/yarn kind:defer
+ohmyzsh/ohmyzsh path:plugins/zoxide kind:defer
+
+# Fish-like
+mattmc3/zfunctions
+zsh-users/zsh-autosuggestions kind:defer
+zdharma-continuum/fast-syntax-highlighting kind:defer
+zsh-users/zsh-history-substring-search kind:defer
+ziglang/shell-completions kind:defer
+scaryrawr/fzf.zsh kind:defer
+scaryrawr/copilot.zsh kind:defer
+marlonrichert/zsh-autocomplete

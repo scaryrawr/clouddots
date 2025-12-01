@@ -43,5 +43,3 @@ bash $BASH_FLAGS "$script_dir/setup-vscode.sh"
 if [ "$CODESPACES" = "true" ] || [ -n "$DEVPOD" ]; then
   bash $BASH_FLAGS "$script_dir/setup-git.sh"
 fi
-
-cp "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"
