@@ -1,92 +1,98 @@
 #!/usr/bin/env bash
 
-# =============================================================================
-# ZSHENV - Environment variables (loaded for ALL shells, before zshrc)
-# Moving static exports here speeds up shell startup significantly
-# =============================================================================
+script_dir=$(dirname "$(readlink -f "$0")")
 
-# Ensure .zshenv exists
-touch "$HOME/.zshenv"
+cp "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"
+cp "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
 
-# Entries to add to zshenv (idempotent - will update existing or add new)
+# =============================================================================
+# Setup .zshenv for environment variables (loaded before .zshrc, faster startup)
+# =============================================================================
 zshenv_entries=(
-  'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$PATH"'
+  'export PATH="$HOME/.local/bin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+  'export SHELL=${commands[zsh]:-/bin/zsh}'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
+  'export EDITOR=code'
 )
 
+touch "$HOME/.zshenv"
+
 for entry in "${zshenv_entries[@]}"; do
-  # Extract variable name from export statement
+  # Extract variable name from export
   if [[ "$entry" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
     var_name="${BASH_REMATCH[1]}"
     # Remove any existing assignment for this variable
-    # Note: var_name is alphanumeric so no escaping needed
     sed -i "/^export[[:space:]]\+${var_name}=/d" "$HOME/.zshenv"
   fi
   # Append the entry
   echo "$entry" >> "$HOME/.zshenv"
 done
 
-# Add ZSH_TMUX_AUTOSTART detection block (idempotent)
-if ! grep -q "ZSH_TMUX_AUTOSTART" "$HOME/.zshenv"; then
-  cat >> "$HOME/.zshenv" << 'EOF'
-
-# Detect remote/devpod session once (used by tmux plugin)
-if [[ -n "${SSH_CONNECTION}${SSH_CLIENT}${SSH_TTY}${DEVPOD}" ]]; then
-  export ZSH_TMUX_AUTOSTART=true
-else
-  export ZSH_TMUX_AUTOSTART=false
-fi
-EOF
-fi
-
 # =============================================================================
-# ZSHRC - Interactive shell config
+# Clean up old entries that are now in .zshenv
 # =============================================================================
-
-# Clean up old entries that are now in zshenv (from previous script versions)
-sed -i '/^export PATH=.*\.local\/share\/fnm/d' "$HOME/.zshrc"
+# Remove exports that are now in .zshenv
+sed -i '/^export PATH=.*fnm.*npm-global.*cargo/d' "$HOME/.zshrc"
 sed -i '/^export SHELL=/d' "$HOME/.zshrc"
+sed -i '/^export NODE_OPTIONS=/d' "$HOME/.zshrc"
 sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
-sed -i '/^ZSH_TMUX_AUTOSTART=\$(/d' "$HOME/.zshrc"
 
-# Prepend entries to zshrc (after instant prompt, before oh-my-zsh)
+# =============================================================================
+# Comment out OMZ
+# =============================================================================
+sed -i 's/^source \$ZSH\/oh-my-zsh.sh/# source \$ZSH\/oh-my-zsh.sh/' "$HOME/.zshrc"
+sed -i 's/^plugins=/# plugins=/' "$HOME/.zshrc"
+sed -i 's/^ZSH_THEME=/# ZSH_THEME=/' "$HOME/.zshrc"
+# =============================================================================
+# Prepend entries to .zshrc (these go after instant prompt, before oh-my-zsh)
+# =============================================================================
 prepend_entries=(
+  'autoload -Uz promptinit && promptinit && prompt powerlevel10k'
+  'antidote load'
+  '! (( $+functions[antidote] )) && source "$HOME/.antidote/antidote.zsh"'
+  '[[ ! -d "$HOME/.antidote" ]] && git clone --depth=1 https://github.com/mattmc3/antidote.git "$HOME/.antidote"'
+  "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'"
   "zstyle ':omz:plugins:eza' 'icons' yes"
+  "zstyle ':omz:plugins:eza' 'git-status' yes"
+  "zstyle ':omz:plugins:eza' 'hyperlink' yes"
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
+  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
 )
 
 for entry in "${prepend_entries[@]}"; do
-  # Extract variable name if this is a variable assignment
-  var_name=""
-  zstyle_context=""
-  zstyle_style=""
-  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="${BASH_REMATCH[2]}"
-  elif [[ "$entry" =~ ^zstyle[[:space:]]+\'([^\']+)\'[[:space:]]+\'([^\']+)\' ]]; then
-    # For zstyle commands, match the context and style
-    zstyle_context="${BASH_REMATCH[1]}"
-    zstyle_style="${BASH_REMATCH[2]}"
-    var_name="zstyle '${zstyle_context}' '${zstyle_style}'"
+  # Build a sed pattern to match existing entries with same key but possibly different value
+  if [[ "$entry" =~ ^zstyle[[:space:]]+\'([^\']+)\'[[:space:]]+\'([^\']+)\' ]]; then
+    # zstyle: match on context and style name
+    sed -i "/^zstyle '${BASH_REMATCH[1]}' '${BASH_REMATCH[2]}'/d" "$HOME/.zshrc"
+  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    # Variable assignment: match on variable name
+    sed -i "/^${BASH_REMATCH[1]}=/d" "$HOME/.zshrc"
+  else
+    # For other entries, use grep -F for literal string matching (no regex issues)
+    grep -Fxv "$entry" "$HOME/.zshrc" > "$HOME/.zshrc.tmp" || true
+    mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
   fi
-
-  # Remove old entries if this is a variable assignment or zstyle
-  if [[ -n "$var_name" ]]; then
-    if [[ "$entry" =~ ^zstyle ]]; then
-      # Remove existing zstyle with same context and style
-      sed -i "/^zstyle '${zstyle_context}' '${zstyle_style}'/d" "$HOME/.zshrc"
-    else
-      # Remove any existing variable assignment (including different values)
-      # Note: var_name is alphanumeric so no escaping needed
-      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
-    fi
-  fi
-
-  # Add entry at the beginning (it will be added even if similar entry exists with different value)
+  # Prepend entry
   echo "$entry
 $(cat $HOME/.zshrc)" >"$HOME/.zshrc"
 done
+
+# =============================================================================
+# Enable Powerlevel10k instant prompt (must be at very top of .zshrc)
+# =============================================================================
+INSTANT_PROMPT_CODE='# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi'
+
+# Remove any existing instant prompt block and add fresh one at top
+sed -i '/# Enable Powerlevel10k instant prompt/,/^fi$/d' "$HOME/.zshrc"
+echo "$INSTANT_PROMPT_CODE
+$(cat $HOME/.zshrc)" > "$HOME/.zshrc"
 
 ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
 mkdir -p "$ZSH_CUSTOM"
@@ -97,8 +103,8 @@ plugins=(
   "https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions"
   "https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH_CUSTOM/plugins/fast-syntax-highlighting"
   "https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf"
-  "https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab"
   "https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-completions"
+  "https://github.com/marlonrichert/zsh-autocomplete $ZSH_CUSTOM/plugins/zsh-autocomplete"
   "https://github.com/scaryrawr/p10k-ext $ZSH_CUSTOM/plugins/p10k-ext"
   "https://github.com/scaryrawr/copilot.zsh $ZSH_CUSTOM/plugins/copilot"
 )
@@ -117,138 +123,19 @@ done
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
 
-sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zsh-autosuggestions zsh-completions zoxide fzf-tab eza tmux)/' "$HOME/.zshrc"
-
-# =============================================================================
-# Ensure p10k instant prompt is at the VERY TOP of .zshrc
-# This must come before ANY output or command substitution
-# =============================================================================
-# Note: read returns 1 when EOF is reached with -d '', so we use || true
-read -r -d '' instant_prompt_block << 'EOF' || true
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-# END p10k instant prompt
-EOF
-
-# Remove any existing instant prompt block (using END marker for safety)
-sed -i '/# Enable Powerlevel10k instant prompt/,/# END p10k instant prompt/d' "$HOME/.zshrc"
-# Also clean up old-style blocks without END marker (first occurrence only)
-sed -i '0,/# Enable Powerlevel10k instant prompt/{/# Enable Powerlevel10k instant prompt/,/^fi$/d}' "$HOME/.zshrc"
-
-# Prepend instant prompt block at the very top (using temp file for safety)
-tmp_zshrc="$(mktemp)"
-{
-  echo "${instant_prompt_block}"
-  [ -f "$HOME/.zshrc" ] && cat "$HOME/.zshrc"
-} > "$tmp_zshrc"
-mv "$tmp_zshrc" "$HOME/.zshrc"
+sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zsh-autosuggestions zsh-completions zoxide zsh-autocomplete eza tmux)/' "$HOME/.zshrc"
 
 # Just append to zshrc if it's not in it.
 append_entries=(
-  'alias vi=nvim'
-  'alias vim=nvim'
+  '(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"'
+  '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
+  '(( $+commands[nvim] )) && alias vi=nvim'
+  '(( $+commands[nvim] )) && alias vim=nvim'
   'alias l="ls -lah"'
 )
 
-# p10k config sourcing - handle separately to avoid duplicates
-sed -i "/# To customize prompt, run.*p10k configure/d" "$HOME/.zshrc"
-sed -i "/source.*\.p10k\.zsh/d" "$HOME/.zshrc"
-echo '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.' >> "$HOME/.zshrc"
-echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> "$HOME/.zshrc"
-
-# Lazy-load fnm - only initialize when node/npm/npx/yarn/pnpm/fnm is first called
-# This saves ~50-100ms on shell startup when you don't immediately need node
-# Note: read returns 1 when EOF is reached with -d '', so we use || true
-read -r -d '' fnm_lazy_load << 'EOF' || true
-# Lazy-load fnm (deferred initialization for faster shell startup)
-if (( $+commands[fnm] )); then
-  _fnm_lazy_load() {
-    unfunction node npm npx yarn pnpm fnm 2>/dev/null
-    eval "$(fnm env --use-on-cd --shell zsh)"
-    "$@"
-  }
-  node() { _fnm_lazy_load node "$@" }
-  npm() { _fnm_lazy_load npm "$@" }
-  npx() { _fnm_lazy_load npx "$@" }
-  yarn() { _fnm_lazy_load yarn "$@" }
-  pnpm() { _fnm_lazy_load pnpm "$@" }
-  fnm() { _fnm_lazy_load fnm "$@" }
-fi
-# END fnm lazy-load
-EOF
-
-# Remove old fnm initialization
-sed -i '/command -v fnm.*eval.*fnm env/d' "$HOME/.zshrc"
-# Remove old lazy-load block if exists (using END marker for safety)
-sed -i '/# Lazy-load fnm/,/# END fnm lazy-load/d' "$HOME/.zshrc"
-
 for entry in "${append_entries[@]}"; do
-  # Extract variable name if this is a variable assignment or alias
-  var_name=""
-  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="${BASH_REMATCH[2]}"
-  elif [[ "$entry" =~ ^alias[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="alias ${BASH_REMATCH[1]}"
-  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)\(\) ]]; then
-    # Function definition
-    var_name="${BASH_REMATCH[1]}()"
-  fi
-
-  # Remove old entries if this is a variable assignment, alias, or function
-  if [[ -n "$var_name" ]]; then
-    if [[ "$var_name" =~ ^alias ]]; then
-      alias_name="${var_name#alias }"
-      # Note: alias_name is alphanumeric so no escaping needed
-      sed -i "/^alias[[:space:]]\+${alias_name}=/d" "$HOME/.zshrc"
-    elif [[ "$var_name" =~ \(\)$ ]]; then
-      func_name="${var_name%()*}"
-      # Note: func_name is alphanumeric so no escaping needed
-      # Use awk to properly remove function with brace counting
-      awk -v func_name="${func_name}" '
-        BEGIN { in_func=0; brace_count=0 }
-        {
-          if (in_func == 0 && $0 ~ "^" func_name "\\(\\)[[:space:]]*{") {
-            in_func=1
-            # Count braces on the function declaration line itself
-            brace_count = gsub(/{/, "{", $0)
-            brace_count -= gsub(/}/, "}", $0)
-            # If braces balance on same line, function is done
-            if (brace_count == 0) {
-              in_func=0
-            }
-            next
-          }
-          if (in_func) {
-            brace_count += gsub(/{/, "{")
-            brace_count -= gsub(/}/, "}")
-            if (brace_count == 0) {
-              in_func=0
-            }
-            next
-          }
-          print
-        }
-      ' "$HOME/.zshrc" >"$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
-    else
-      # Note: var_name is alphanumeric so no escaping needed
-      sed -i "/^export[[:space:]]\+${var_name}=/d; /^${var_name}=/d" "$HOME/.zshrc"
-    fi
-  fi
-
-  # Add entry at the end (it will be added even if similar entry exists with different value)
-  echo "$entry" >>"$HOME/.zshrc"
+  grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >> "$HOME/.zshrc"
 done
-
-# Append fnm lazy-load at the end
-echo "$fnm_lazy_load" >> "$HOME/.zshrc"
-
-# Disable omz auto-update checks (speeds up startup)
-if ! grep -q "zstyle ':omz:update' mode disabled" "$HOME/.zshrc"; then
-  echo "zstyle ':omz:update' mode disabled" >> "$HOME/.zshrc"
-fi
 
 #sudo chsh -s $(which zsh) $(whoami)
