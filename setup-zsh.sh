@@ -43,6 +43,7 @@ sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
 sed -i 's/^source \$ZSH\/oh-my-zsh.sh/# source \$ZSH\/oh-my-zsh.sh/' "$HOME/.zshrc"
 sed -i 's/^plugins=/# plugins=/' "$HOME/.zshrc"
 sed -i 's/^ZSH_THEME=/# ZSH_THEME=/' "$HOME/.zshrc"
+
 # =============================================================================
 # Prepend entries to .zshrc (these go after instant prompt, before oh-my-zsh)
 # =============================================================================
@@ -132,6 +133,7 @@ append_entries=(
   '(( $+commands[nvim] )) && alias vi=nvim'
   '(( $+commands[nvim] )) && alias vim=nvim'
   'alias l="ls -lah"'
+  '[[ $- == *i* ]] && stty -ixon < /dev/tty'
 )
 
 for entry in "${append_entries[@]}"; do
