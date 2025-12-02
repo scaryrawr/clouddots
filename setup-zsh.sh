@@ -43,6 +43,8 @@ sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
 sed -i 's/^source \$ZSH\/oh-my-zsh.sh/# source \$ZSH\/oh-my-zsh.sh/' "$HOME/.zshrc"
 sed -i 's/^plugins=/# plugins=/' "$HOME/.zshrc"
 sed -i 's/^ZSH_THEME=/# ZSH_THEME=/' "$HOME/.zshrc"
+sed -i 's/^export ZSH=/# export ZSH=/' "$HOME/.zshrc"
+
 # =============================================================================
 # Prepend entries to .zshrc (these go after instant prompt, before oh-my-zsh)
 # =============================================================================
@@ -53,8 +55,6 @@ prepend_entries=(
   '[[ ! -d "$HOME/.antidote" ]] && git clone --depth=1 https://github.com/mattmc3/antidote.git "$HOME/.antidote"'
   "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'"
   "zstyle ':omz:plugins:eza' 'icons' yes"
-  "zstyle ':omz:plugins:eza' 'git-status' yes"
-  "zstyle ':omz:plugins:eza' 'hyperlink' yes"
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
   'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
   'ZSH_TMUX_AUTONAME_SESSION=true'
@@ -132,6 +132,7 @@ append_entries=(
   '(( $+commands[nvim] )) && alias vi=nvim'
   '(( $+commands[nvim] )) && alias vim=nvim'
   'alias l="ls -lah"'
+  '[[ $- == *i* ]] && stty -ixon < /dev/tty'
 )
 
 for entry in "${append_entries[@]}"; do
