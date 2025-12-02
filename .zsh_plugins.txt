@@ -3,7 +3,7 @@ romkatv/powerlevel10k
 scaryrawr/p10k-ext
 
 # Tools
-romkatv/zsh-bench kind:path
+romkatv/zsh-bench kind:defer
 
 # Completions
 zsh-users/zsh-completions kind:fpath path:src
