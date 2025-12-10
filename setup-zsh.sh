@@ -138,5 +138,3 @@ append_entries=(
 for entry in "${append_entries[@]}"; do
   grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >> "$HOME/.zshrc"
 done
-
-#sudo chsh -s $(which zsh) $(whoami)
