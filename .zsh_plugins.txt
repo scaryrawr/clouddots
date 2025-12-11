@@ -21,6 +21,7 @@ ohmyzsh/ohmyzsh path:plugins/golang kind:defer
 ohmyzsh/ohmyzsh path:plugins/cp kind:defer
 ohmyzsh/ohmyzsh path:plugins/eza kind:defer
 ohmyzsh/ohmyzsh path:plugins/rust kind:defer
+ohmyzsh/ohmyzsh path:plugins/tmux
 ohmyzsh/ohmyzsh path:plugins/yarn kind:defer
 ohmyzsh/ohmyzsh path:plugins/zoxide kind:defer
 
