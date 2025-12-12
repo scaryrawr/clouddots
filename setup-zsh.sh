@@ -12,6 +12,7 @@ zshenv_entries=(
   'export PATH="$HOME/.local/bin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=${commands[zsh]:-/bin/zsh}'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
+  '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
   'export EDITOR=code'
 )
 
@@ -138,5 +139,3 @@ append_entries=(
 for entry in "${append_entries[@]}"; do
   grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >> "$HOME/.zshrc"
 done
-
-#sudo chsh -s $(which zsh) $(whoami)

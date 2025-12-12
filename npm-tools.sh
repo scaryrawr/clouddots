@@ -10,5 +10,4 @@ if [[ "$NODE_PATH" == "/usr/bin/node" ]]; then
 fi
 
 # Install language servers and tools via npm
-npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @github/copilot @typescript/native-preview
-npm upgrade -g
+npm install -g @anthropic-ai/claude-code typescript typescript-language-server vscode-langservers-extracted pyright @github/copilot @typescript/native-preview

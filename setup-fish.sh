@@ -32,6 +32,10 @@ cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF
 status is-interactive && command -q fnm && fnm env --use-on-cd --shell fish | source
 EOF
 
+cat >"$HOME/.config/fish/conf.d/browser.fish" <<EOF
+test -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" && set -gx BROWSER "$HOME/browser-opener.sh"
+EOF
+
 echo 'test -f $HOME/.cargo/env.fish && source $HOME/.cargo/env.fish' >"$HOME/.config/fish/conf.d/cargo.fish"
 
 echo 'set -gx SHELL (which fish)' >"$HOME/.config/fish/conf.d/shell.fish"
@@ -43,5 +47,3 @@ fish --command="command -q fzf && fisher install scaryrawr/fzf.fish scaryrawr/mo
 fish --command="command -q eza && fisher install scaryrawr/fish-eza </dev/null"
 fish --command="command -q tmux && fisher install scaryrawr/tmux.fish </dev/null && set -Ux TMUX_POWERLINE_BUBBLE_SEPARATORS true && set -Ux TMUX_SSHAUTO_START true"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
-
-sudo chsh -s $(which fish) $(whoami)

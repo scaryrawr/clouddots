@@ -8,24 +8,22 @@ if [ ! -f "$SETTINGS_JSON" ]; then
 fi
 
 jq '. + {
-  "chat.tools.autoApprove": true,
   "chat.agent.maxRequests": 9001,
-  "chat.editing.alwaysSaveWithGeneratedChanges": true,
+  "chat.edits2.enabled": true,
+  "chat.math.enabled": true,
+  "chat.mcp.autoStart": "newAndOutdated",
+  "chat.tools.terminal.enableAutoApprove": true,
+  "chat.useClaudeSkills": true,
+  "chat.useNestedAgentsMdFiles": true,
+  "github.copilot.chat.agent.autoFix": true,
+  "github.copilot.chat.agent.thinkingTool": true,
   "github.copilot.chat.codesearch.enabled": true,
   "github.copilot.chat.editor.temporalContext.enabled": true,
-  "github.copilot.chat.edits.temporalContext.enabled": true,
-  "github.copilot.nextEditSuggestions.enabled": true,
   "github.copilot.chat.generateTests.codeLens": true,
-  "github.copilot.chat.languageContext.typescript.enabled": true,
-  "github.copilot.chat.search.semanticTextResults": true,
-  "github.copilot.chat.completionContext.typescript.mode": "on",
-  "github.copilot.chat.languageContext.fix.typescript.enabled": true,
-  "github.copilot.chat.languageContext.inline.typescript.enabled": true,
-  "github.copilot.nextEditSuggestions.fixes": true,
-  "github.copilot.chat.agent.thinkingTool": true,
-  "chat.edits2.enabled": true,
   "inlineChat.enableV2": true,
-  "chat.agent.maxRequests": 9001,
+  "inlineChat.lineEmptyHint": true,
+  "inlineChat.lineNaturalLanguageHint": true,
+  "search.searchView.semanticSearchBehavior": "always"
 }' "$SETTINGS_JSON" >tmp.json
 mv tmp.json "$SETTINGS_JSON"
 

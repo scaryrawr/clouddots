@@ -30,8 +30,6 @@ for bin in "${!bin_to_pkg[@]}"; do
 done
 
 if command -v apt &>/dev/null; then
-  sudo apt update -y
-
   for i in "${!packages[@]}"; do
     if [[ "${packages[i]}" == "fzf" ]]; then
       # Remove fzf from packages since we'll install it from binary
@@ -44,12 +42,11 @@ if command -v apt &>/dev/null; then
   sudo add-apt-repository ppa:fish-shell/release-4 -y
   sudo add-apt-repository ppa:git-core/ppa -y
   sudo add-apt-repository ppa:maveonair/helix-editor -y
-  sudo sudo add-apt-repository ppa:neovim-ppa/unstable -y
+  sudo add-apt-repository ppa:neovim-ppa/unstable -y
 
   sudo apt update -y
-  sudo apt upgrade -y
 
-  # Install and upgrade packages
+  # Install packages
   if [ ${#packages[@]} -ne 0 ]; then
     sudo apt install "${packages[@]}" -y
   fi
