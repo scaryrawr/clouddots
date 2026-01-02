@@ -25,8 +25,8 @@ if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then
   eval "$(fnm env --shell bash)"
 
   # Install latest LTS node and set as default
-  fnm install 22
-  fnm default 22
+  fnm install 24
+  fnm default 24
 fi
 
 # Install global npm tools
