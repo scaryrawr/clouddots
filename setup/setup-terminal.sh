@@ -7,10 +7,9 @@ if [[ $- == *e* ]]; then
   bash_flags=(-e)
 fi
 
-scripts=(
-  "$script_dir/terminal/setup-tmux.sh"
-  "$script_dir/terminal/setup-git.sh"
-)
+shopt -s nullglob
+scripts=("$script_dir/terminal"/setup-*.sh)
+shopt -u nullglob
 
 for script in "${scripts[@]}"; do
   bash "${bash_flags[@]}" "$script"
