@@ -2,10 +2,10 @@
 
 # Enable strict mode in CI or when explicitly requested
 if [ "$STRICT_MODE" = "true" ] || [ "$CI" = "true" ]; then
-    set -e
-    BASH_FLAGS="-e"
+  set -e
+  BASH_FLAGS="-e"
 else
-    BASH_FLAGS=""
+  BASH_FLAGS=""
 fi
 
 script_dir=$(dirname "$(readlink -f "$0")")
@@ -40,6 +40,7 @@ bash $BASH_FLAGS "$script_dir/setup-helix.sh"
 bash $BASH_FLAGS "$script_dir/setup-tmux.sh"
 bash $BASH_FLAGS "$script_dir/setup-skills.sh"
 bash $BASH_FLAGS "$script_dir/setup-vscode.sh"
+bash $BASH_FLAGS "$script_dir/setup-codex.sh"
 
 if [ "$CODESPACES" = "true" ] || [ -n "$DEVPOD" ]; then
   bash $BASH_FLAGS "$script_dir/setup-git.sh"
