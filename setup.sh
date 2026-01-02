@@ -38,7 +38,7 @@ bash $BASH_FLAGS "$script_dir/setup-fish.sh"
 bash $BASH_FLAGS "$script_dir/setup-neovim.sh"
 bash $BASH_FLAGS "$script_dir/setup-helix.sh"
 bash $BASH_FLAGS "$script_dir/setup-tmux.sh"
-bash $BASH_FLAGS "$script_dir/setup-skills.sh"
+bash $BASH_FLAGS "$script_dir/setup-claude.sh"
 bash $BASH_FLAGS "$script_dir/setup-vscode.sh"
 bash $BASH_FLAGS "$script_dir/setup-codex.sh"
 

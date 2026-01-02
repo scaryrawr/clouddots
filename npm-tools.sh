@@ -10,5 +10,4 @@ if [[ "$NODE_PATH" == "/usr/bin/node" ]]; then
 fi
 
 # Install language servers and tools via npm
-curl -fsSL https://gh.io/copilot-install | bash
 npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @github/copilot@prerelease @typescript/native-preview @openai/codex

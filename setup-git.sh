@@ -43,5 +43,5 @@ cat >"$HOME/.config/lazygit/config.yml" <<'EOF'
 git:
   paging:
     colorArg: always
-    pager: delta --dark --paging=never
+    pager: delta --paging=never
 EOF
