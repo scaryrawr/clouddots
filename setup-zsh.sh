@@ -26,7 +26,7 @@ for entry in "${zshenv_entries[@]}"; do
     sed -i "/^export[[:space:]]\+${var_name}=/d" "$HOME/.zshenv"
   fi
   # Append the entry
-  echo "$entry" >> "$HOME/.zshenv"
+  echo "$entry" >>"$HOME/.zshenv"
 done
 
 # =============================================================================
@@ -60,6 +60,17 @@ prepend_entries=(
   'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
+  "bindkey '^[[C' forward-char"
+  "bindkey '^[f' forward-word"
+  "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'"
+  "zstyle ':autocomplete:*' insert-unambiguous yes"
+  "zstyle ':autocomplete:*' widget-style menu-select"
+  "zstyle ':autocomplete:*' fzf-completion yes"
+  "zstyle ':completion:*' group-name ''"
+  "zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'"
+  "zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'"
+  "zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'"
+  "zstyle ':completion:*' list-colors \${(s.:.)LS_COLORS}"
 )
 
 for entry in "${prepend_entries[@]}"; do
@@ -72,7 +83,7 @@ for entry in "${prepend_entries[@]}"; do
     sed -i "/^${BASH_REMATCH[1]}=/d" "$HOME/.zshrc"
   else
     # For other entries, use grep -F for literal string matching (no regex issues)
-    grep -Fxv "$entry" "$HOME/.zshrc" > "$HOME/.zshrc.tmp" || true
+    grep -Fxv "$entry" "$HOME/.zshrc" >"$HOME/.zshrc.tmp" || true
     mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
   fi
   # Prepend entry
@@ -93,7 +104,7 @@ fi'
 # Remove any existing instant prompt block and add fresh one at top
 sed -i '/# Enable Powerlevel10k instant prompt/,/^fi$/d' "$HOME/.zshrc"
 echo "$INSTANT_PROMPT_CODE
-$(cat $HOME/.zshrc)" > "$HOME/.zshrc"
+$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
 
 ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
 mkdir -p "$ZSH_CUSTOM"
@@ -137,5 +148,5 @@ append_entries=(
 )
 
 for entry in "${append_entries[@]}"; do
-  grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >> "$HOME/.zshrc"
+  grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >>"$HOME/.zshrc"
 done
