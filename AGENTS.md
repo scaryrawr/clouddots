@@ -16,7 +16,7 @@
 - **Comments**: Use `#` for comments, document complex logic and script purposes
 
 ## Project Structure
-- Scripts are organized by function (system-deps.sh, setup-*.sh)
+- Scripts are organized by function (setup/core/system-deps.sh, setup/**)
 - Binary releases installed to `~/.local/bin`
 - Configuration files go to appropriate XDG directories (`~/.config/`)
 - All scripts should be executable and self-contained

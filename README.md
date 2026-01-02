@@ -7,32 +7,39 @@
 Scripts are organized by function for clarity and maintainability:
 
 - **setup.sh**: Main orchestrator. Runs all other scripts in the correct order.
-- **system-deps.sh**: Installs system-level dependencies (apt/dnf) and binary releases from GitHub.
-- **npm-tools.sh**: Installs global npm tools (language servers, etc).
-- **setup-bash.sh**: Configures bash environment and PATH.
-- **setup-zsh.sh**: Configures zsh with antidote plugin manager, powerlevel10k, and oh-my-zsh plugins.
-- **setup-fish.sh**: Configures fish shell with Fisher, tide prompt, and various plugins.
-- **setup-tmux.sh**: Installs tmux plugins and configures tmux.
-- **setup-vscode.sh**: Modifies VSCode settings for Copilot and chat features.
-- **setup-neovim.sh**: Clones or updates neovim configuration from lazyvim.
-- **setup-helix.sh**: Clones or updates helix editor configuration.
-- **setup-git.sh**: Sets up git config, aliases, and delta integration (run only in Codespaces/DevPod).
+- **setup/**: Setup scripts and helpers.
+  - **setup/core/**: Bootstrap + package managers.
+    - **setup/core/system-deps.sh**: Installs system-level dependencies (apt/dnf) and binary releases from GitHub.
+    - **setup/core/npm-tools.sh**: Installs global npm tools (language servers, etc).
+  - **setup/shells/**: Shell-specific config.
+    - **setup/shells/setup-bash.sh**
+    - **setup/shells/setup-zsh.sh**
+    - **setup/shells/setup-fish.sh**
+  - **setup/editors/**: Editor config.
+    - **setup/editors/setup-neovim.sh**
+    - **setup/editors/setup-helix.sh**
+    - **setup/editors/setup-vscode.sh**
+  - **setup/terminal/**: Terminal tools config.
+    - **setup/terminal/setup-tmux.sh**
+    - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod)
+  - **setup/ai/**: AI tooling config.
+    - **setup/ai/setup-claude.sh**
+    - **setup/ai/setup-codex.sh**
+  - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**: Category runners.
 - **p10k.zsh**: Powerlevel10k theme config file.
 - **.zsh_plugins.txt**: Antidote plugin list for zsh.
 
 ### Order of Execution
 
-1. system-deps.sh
+1. setup/core/system-deps.sh
 2. fnm install (inline in setup.sh)
-3. npm-tools.sh
-4. setup-bash.sh
-5. setup-zsh.sh
-6. setup-fish.sh
-7. setup-neovim.sh
-8. setup-helix.sh
-9. setup-tmux.sh
-10. setup-vscode.sh
-11. setup-git.sh (conditionally in Codespaces/DevPod)
+3. setup/core/npm-tools.sh
+4. setup/shells/setup-bash.sh
+5. setup/shells/setup-zsh.sh
+6. setup/shells/setup-fish.sh
+7. setup/setup-editors.sh
+8. setup/setup-terminal.sh
+9. setup/setup-ai.sh
 
 ## What it does in Codespaces & Devcontainers
 

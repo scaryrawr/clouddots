@@ -10,7 +10,7 @@ fi
 
 script_dir=$(dirname "$(readlink -f "$0")")
 
-bash $BASH_FLAGS "$script_dir/system-deps.sh"
+bash $BASH_FLAGS "$script_dir/setup/core/system-deps.sh"
 
 # Check for node and npm before installing fnm
 if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then
@@ -25,23 +25,17 @@ if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then
   eval "$(fnm env --shell bash)"
 
   # Install latest LTS node and set as default
-  fnm install 22
-  fnm default 22
+  fnm install 24
+  fnm default 24
 fi
 
 # Install global npm tools
-bash $BASH_FLAGS "$script_dir/npm-tools.sh"
+bash $BASH_FLAGS "$script_dir/setup/core/npm-tools.sh"
 
-bash $BASH_FLAGS "$script_dir/setup-bash.sh"
-bash $BASH_FLAGS "$script_dir/setup-zsh.sh"
-bash $BASH_FLAGS "$script_dir/setup-fish.sh"
-bash $BASH_FLAGS "$script_dir/setup-neovim.sh"
-bash $BASH_FLAGS "$script_dir/setup-helix.sh"
-bash $BASH_FLAGS "$script_dir/setup-tmux.sh"
-bash $BASH_FLAGS "$script_dir/setup-claude.sh"
-bash $BASH_FLAGS "$script_dir/setup-vscode.sh"
-bash $BASH_FLAGS "$script_dir/setup-codex.sh"
+bash $BASH_FLAGS "$script_dir/setup/shells/setup-bash.sh"
+bash $BASH_FLAGS "$script_dir/setup/shells/setup-zsh.sh"
+bash $BASH_FLAGS "$script_dir/setup/shells/setup-fish.sh"
 
-if [ "$CODESPACES" = "true" ] || [ -n "$DEVPOD" ]; then
-  bash $BASH_FLAGS "$script_dir/setup-git.sh"
-fi
+bash $BASH_FLAGS "$script_dir/setup/setup-editors.sh"
+bash $BASH_FLAGS "$script_dir/setup/setup-terminal.sh"
+bash $BASH_FLAGS "$script_dir/setup/setup-ai.sh"

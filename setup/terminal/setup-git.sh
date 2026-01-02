@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ "${CODESPACES}" != "true" && -z "${DEVPOD}" ]]; then
+  exit 0
+fi
+
 # code works as the command even when using code-insiders.
 CODE='code -w'
 git config --global alias.co checkout
