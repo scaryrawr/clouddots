@@ -3,6 +3,8 @@
 mkdir -p "$HOME/.config/fish/conf.d"
 mkdir -p "$HOME/.config/fish/functions"
 
+fish --command='fish_add_path /home/linuxbrew/.linuxbrew/bin'
+fish --command='fish_add_path /home/linuxbrew/.linuxbrew/sbin'
 fish --command='fish_add_path $HOME/.local/bin'
 fish --command='fish_add_path $HOME/.npm-global/bin'
 fish --command='fish_add_path $HOME/.cargo/bin'
@@ -12,6 +14,10 @@ fish --command='fish_add_path $HOME/.local/share/fnm'
 # Initialize fnm for fish only if fnm is installed
 cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF
 status is-interactive && command -q fnm && fnm env --use-on-cd --shell fish | source
+EOF
+
+cat >"$HOME/.config/fish/conf.d/brew.fish" <<'EOF'
+test -x /home/linuxbrew/.linuxbrew/bin/brew; and eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 EOF
 
 cat >"$HOME/.config/fish/conf.d/browser.fish" <<EOF

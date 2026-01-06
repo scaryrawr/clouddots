@@ -14,6 +14,7 @@ getantidote/use-omz
 ohmyzsh/ohmyzsh path:plugins/encode64 kind:defer
 ohmyzsh/ohmyzsh path:plugins/docker kind:defer
 ohmyzsh/ohmyzsh path:plugins/docker-compose kind:defer
+ohmyzsh/ohmyzsh path:plugins/brew kind:defer
 ohmyzsh/ohmyzsh path:plugins/fnm kind:defer
 ohmyzsh/ohmyzsh path:plugins/gh kind:defer
 ohmyzsh/ohmyzsh path:plugins/bun kind:defer

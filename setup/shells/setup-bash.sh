@@ -2,7 +2,7 @@
 
 # Just prepend to bashrc if it's not in it.
 prepend_entries=(
-  'export PATH="$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+  'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
   'export SHELL=$(which bash)'
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
 )
@@ -28,6 +28,7 @@ done
 
 # Just append to bashrc if it's not in it.
 append_entries=(
+  '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
 )
 
@@ -81,6 +82,6 @@ for entry in "${append_entries[@]}"; do
     fi
   fi
   
-  # Add entry at the end (it will be added even if similar entry exists with different value)
-  echo "$entry" >>"$HOME/.bashrc"
+  # Add entry at the end if not already present
+  grep -Fxq "$entry" "$HOME/.bashrc" || echo "$entry" >>"$HOME/.bashrc"
 done

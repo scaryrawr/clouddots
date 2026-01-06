@@ -11,6 +11,7 @@ fi
 script_dir=$(dirname "$(readlink -f "$0")")
 
 bash $BASH_FLAGS "$script_dir/setup/core/system-deps.sh"
+bash $BASH_FLAGS "$script_dir/setup/core/homebrew.sh"
 
 # Check for node and npm before installing fnm
 if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then

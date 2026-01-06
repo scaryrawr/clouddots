@@ -11,14 +11,7 @@ export DEBIAN_FRONTEND="noninteractive"
 declare -A bin_to_pkg=(
   [fish]=fish
   [zsh]=zsh
-  [rg]=ripgrep
-  [hx]=helix
-  [fzf]=fzf
   [file]=file
-  [chafa]=chafa
-  [bat]=bat
-  [fd]=fd-find
-  [tmux]=tmux
   [nvim]=neovim
 )
 
@@ -30,18 +23,10 @@ for bin in "${!bin_to_pkg[@]}"; do
 done
 
 if command -v apt &>/dev/null; then
-  for i in "${!packages[@]}"; do
-    if [[ "${packages[i]}" == "fzf" ]]; then
-      # Remove fzf from packages since we'll install it from binary
-      unset packages[i]
-    fi
-  done
-
   # Enable apt-add-repository
   sudo apt install software-properties-common -y
   sudo add-apt-repository ppa:fish-shell/release-4 -y
   sudo add-apt-repository ppa:git-core/ppa -y
-  sudo add-apt-repository ppa:maveonair/helix-editor -y
   sudo add-apt-repository ppa:neovim-ppa/unstable -y
 
   sudo apt update -y
@@ -152,27 +137,7 @@ install_binary_release() {
 }
 
 # Install tools from binary releases
-install_binary_release "fzf" "junegunn/fzf" "fzf.*linux.*${arch_pattern}.*\\.tar\\.gz$"
-install_binary_release "eza" "eza-community/eza" "eza.*${arch_pattern}.*linux.*\\.tar\\.gz$"
-install_binary_release "delta" "dandavison/delta" "delta.*-${arch_pattern}.*linux.*\\.tar\\.gz$"
 install_binary_release "lazygit" "jesseduffield/lazygit" "lazygit.*[lL]inux.*${arch_pattern}.*\\.tar\\.gz$"
 install_binary_release "magus" "scaryrawr/magus" "magus-linux-${arch_pattern}\\.tar\\.gz$"
 
-curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-curl -fsSL https://gh.io/copilot-install | bash
 curl -fsSL https://claude.ai/install.sh | bash
-
-# Handle bat/batcat symlink for apt installations
-if ! command -v bat &>/dev/null && command -v batcat &>/dev/null; then
-  echo "Creating bat symlink to batcat..."
-  mkdir -p "$HOME/.local/bin"
-  ln -sf /usr/bin/batcat "$HOME/.local/bin/bat"
-  echo "Created bat symlink successfully"
-fi
-
-if ! command -v fd &>/dev/null && command -v fdfind &>/dev/null; then
-  echo "Creating fd symlink to fdfind..."
-  mkdir -p "$HOME/.local/bin"
-  ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd"
-  echo "Created fd symlink successfully"
-fi
