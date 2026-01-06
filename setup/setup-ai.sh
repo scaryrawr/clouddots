@@ -7,10 +7,9 @@ if [[ $- == *e* ]]; then
   bash_flags=(-e)
 fi
 
-scripts=(
-  "$script_dir/ai/setup-claude.sh"
-  "$script_dir/ai/setup-codex.sh"
-)
+shopt -s nullglob
+scripts=("$script_dir/ai"/setup-*.sh)
+shopt -u nullglob
 
 for script in "${scripts[@]}"; do
   bash "${bash_flags[@]}" "$script"

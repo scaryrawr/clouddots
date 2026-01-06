@@ -7,11 +7,9 @@ if [[ $- == *e* ]]; then
   bash_flags=(-e)
 fi
 
-scripts=(
-  "$script_dir/editors/setup-neovim.sh"
-  "$script_dir/editors/setup-helix.sh"
-  "$script_dir/editors/setup-vscode.sh"
-)
+shopt -s nullglob
+scripts=("$script_dir/editors"/setup-*.sh)
+shopt -u nullglob
 
 for script in "${scripts[@]}"; do
   bash "${bash_flags[@]}" "$script"

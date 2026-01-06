@@ -40,6 +40,7 @@ if command -v delta &>/dev/null; then
   git config --global delta.navigate true
   git config --global delta.side-by-side true
   git config --global delta.true-color always
+  git config --global delta.syntax-theme ansi
 fi
 
 mkdir -p $HOME/.config/lazygit
@@ -47,5 +48,5 @@ cat >"$HOME/.config/lazygit/config.yml" <<'EOF'
 git:
   paging:
     colorArg: always
-    pager: delta --paging=never
+    pager: delta --syntax-theme ansi --paging=never
 EOF
