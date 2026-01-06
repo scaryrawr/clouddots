@@ -10,4 +10,4 @@ if [[ "$NODE_PATH" == "/usr/bin/node" ]]; then
 fi
 
 # Install language servers and tools via npm
-npm install -g @typescript/native-preview
+npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @typescript/native-preview
