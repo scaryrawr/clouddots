@@ -43,13 +43,9 @@ Scripts are organized by function for clarity and maintainability:
 
 ## What it does in Codespaces & Devcontainers
 
-- **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, ripgrep, helix, fzf, file, chafa, bat, fd-find, tmux, neovim).
+- **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file).
+- **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, and more.
 - **Binary releases from GitHub** (to ~/.local/bin):
-  - [fzf](https://github.com/junegunn/fzf)
-  - [eza](https://github.com/eza-community/eza)
-  - [delta](https://github.com/dandavison/delta)
-  - [zoxide](https://github.com/ajeetdsouza/zoxide)
-  - [lazygit](https://github.com/jesseduffield/lazygit)
   - [magus](https://github.com/scaryrawr/magus)
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
