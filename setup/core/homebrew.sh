@@ -15,12 +15,8 @@ brew install \
   git-delta \
   tmux \
   scaryrawr/formulae/sl \
-  typescript \
-  typescript-language-server \
-  vscode-langservers-extracted \
   marksman \
   helix \
-  pyright \
   copilot-cli@prerelease \
   neovim \
   lazygit
