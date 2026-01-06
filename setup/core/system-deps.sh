@@ -12,7 +12,6 @@ declare -A bin_to_pkg=(
   [fish]=fish
   [zsh]=zsh
   [file]=file
-  [nvim]=neovim
 )
 
 packages=()
@@ -27,7 +26,6 @@ if command -v apt &>/dev/null; then
   sudo apt install software-properties-common -y
   sudo add-apt-repository ppa:fish-shell/release-4 -y
   sudo add-apt-repository ppa:git-core/ppa -y
-  sudo add-apt-repository ppa:neovim-ppa/unstable -y
 
   sudo apt update -y
 
@@ -137,7 +135,6 @@ install_binary_release() {
 }
 
 # Install tools from binary releases
-install_binary_release "lazygit" "jesseduffield/lazygit" "lazygit.*[lL]inux.*${arch_pattern}.*\\.tar\\.gz$"
 install_binary_release "magus" "scaryrawr/magus" "magus-linux-${arch_pattern}\\.tar\\.gz$"
 
 curl -fsSL https://claude.ai/install.sh | bash
