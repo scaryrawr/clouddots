@@ -27,6 +27,9 @@ cat >"$HOME/.tmux.conf" <<EOF
 set -g mouse on
 set -g escape-time 10
 set -g focus-events on
+set -g bell-action any
+set -g monitor-activity on
+set -g bell-on-alert on
 set -ga terminal-features ',*:RGB'
 set -g default-terminal "tmux-256color"
 set -ga update-environment ' CODESPACE_VSCODE_FOLDER VSCODE_GIT_ASKPASS_NODE VSCODE_GIT_ASKPASS_EXTRA_ARGS VSCODE_GIT_ASKPASS_MAIN VSCODE_GIT_IPC_HANDLE VSCODE_IPC_HOOK_CLI VSCODE_INJECTION VSCODE_NONCE'
