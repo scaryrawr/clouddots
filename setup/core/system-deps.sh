@@ -135,6 +135,5 @@ install_binary_release() {
 }
 
 # Install tools from binary releases
-install_binary_release "magus" "scaryrawr/magus" "magus-linux-${arch_pattern}\\.tar\\.gz$"
 
 curl -fsSL https://claude.ai/install.sh | bash
