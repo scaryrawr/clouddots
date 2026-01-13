@@ -24,7 +24,6 @@ Scripts are organized by function for clarity and maintainability:
     - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod)
   - **setup/ai/**: AI tooling config.
     - **setup/ai/setup-claude.sh**
-    - **setup/ai/setup-codex.sh**
   - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**: Category runners.
 - **p10k.zsh**: Powerlevel10k theme config file.
 - **.zsh_plugins.txt**: Antidote plugin list for zsh.
