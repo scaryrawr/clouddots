@@ -134,6 +134,5 @@ install_binary_release() {
   echo "$tool installed successfully"
 }
 
-# Install tools from binary releases
-
+# Install Claude Code CLI
 curl -fsSL https://claude.ai/install.sh | bash
