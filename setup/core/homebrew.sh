@@ -14,7 +14,6 @@ brew install \
   fd \
   git-delta \
   tmux \
-  scaryrawr/formulae/codex \
   scaryrawr/formulae/sl \
   marksman \
   helix \
