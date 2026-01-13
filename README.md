@@ -44,8 +44,6 @@ Scripts are organized by function for clarity and maintainability:
 
 - **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file).
 - **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, and more.
-- **Binary releases from GitHub** (to ~/.local/bin):
-  - [magus](https://github.com/scaryrawr/magus)
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)

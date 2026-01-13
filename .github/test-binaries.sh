@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# Test script to validate that binaries installed via install_binary_release work correctly
+# Test script to validate that binaries installed via Homebrew work correctly
 
 echo "Testing installed binaries..."
 
@@ -10,7 +10,7 @@ if [ -f "$HOME/.profile" ]; then
   source "$HOME/.profile"
 fi
 
-# Array of binaries installed via install_binary_release and their test commands
+# Array of binaries installed via Homebrew and their test commands
 declare -A binary_tests=(
   [bat]="bat --version"
   [fd]="fd --version"
