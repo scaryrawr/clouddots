@@ -9,7 +9,7 @@ cp "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
 # Setup .zshenv for environment variables (loaded before .zshrc, faster startup)
 # =============================================================================
 zshenv_entries=(
-  'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/bin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"'
+  'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/bin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'
   'export SHELL=${commands[zsh]:-/bin/zsh}'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'

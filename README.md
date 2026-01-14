@@ -9,7 +9,8 @@ Scripts are organized by function for clarity and maintainability:
 - **setup.sh**: Main orchestrator. Runs all other scripts in the correct order.
 - **setup/**: Setup scripts and helpers.
   - **setup/core/**: Bootstrap + package managers.
-    - **setup/core/system-deps.sh**: Installs system-level dependencies (apt/dnf) and binary releases from GitHub.
+    - **setup/core/system-deps.sh**: Installs system-level dependencies (apt/dnf), Claude Code CLI, and Bun.
+    - **setup/core/homebrew.sh**: Installs Homebrew and development tools.
     - **setup/core/npm-tools.sh**: Installs global npm tools (language servers, etc).
   - **setup/shells/**: Shell-specific config.
     - **setup/shells/setup-bash.sh**
@@ -22,8 +23,10 @@ Scripts are organized by function for clarity and maintainability:
   - **setup/terminal/**: Terminal tools config.
     - **setup/terminal/setup-tmux.sh**
     - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod)
+    - **setup/terminal/setup-bat.sh**: Configures bat theme.
   - **setup/ai/**: AI tooling config.
     - **setup/ai/setup-claude.sh**
+    - **setup/ai/setup-copilot.sh**: Installs construct via Bun.
   - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**: Category runners.
 - **p10k.zsh**: Powerlevel10k theme config file.
 - **.zsh_plugins.txt**: Antidote plugin list for zsh.
@@ -31,19 +34,20 @@ Scripts are organized by function for clarity and maintainability:
 ### Order of Execution
 
 1. setup/core/system-deps.sh
-2. fnm install (inline in setup.sh)
-3. setup/core/npm-tools.sh
-4. setup/shells/setup-bash.sh
-5. setup/shells/setup-zsh.sh
-6. setup/shells/setup-fish.sh
-7. setup/setup-editors.sh
-8. setup/setup-terminal.sh
-9. setup/setup-ai.sh
+2. setup/core/homebrew.sh
+3. fnm install (inline in setup.sh)
+4. setup/core/npm-tools.sh
+5. setup/shells/setup-bash.sh
+6. setup/shells/setup-zsh.sh
+7. setup/shells/setup-fish.sh
+8. setup/setup-editors.sh
+9. setup/setup-terminal.sh
+10. setup/setup-ai.sh
 
 ## What it does in Codespaces & Devcontainers
 
-- **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file).
-- **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, and more.
+- **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file), Claude Code CLI, and Bun.
+- **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, and sl.
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -59,5 +63,6 @@ Scripts are organized by function for clarity and maintainability:
   - [zoxide.fish](https://github.com/scaryrawr/zoxide.fish)
   - [tmux.fish](https://github.com/scaryrawr/tmux.fish)
   - [copilot.fish](https://github.com/scaryrawr/copilot.fish)
-- **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @github/copilot, @typescript/native-preview
+- **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @typescript/native-preview
+- **AI tools**: Claude Code CLI (installed via system-deps.sh), copilot-cli (via Homebrew), construct (via Bun)
 

@@ -48,3 +48,7 @@ fi
 
 # Install Claude Code CLI
 curl -fsSL https://claude.ai/install.sh | bash
+curl -fsSL https://bun.sh/install | bash
+
+# Make Bun available in the current shell session
+export PATH="$HOME/.bun/bin:$PATH"

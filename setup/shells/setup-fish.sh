@@ -10,6 +10,7 @@ fish --command='fish_add_path $HOME/.npm-global/bin'
 fish --command='fish_add_path $HOME/.cargo/bin'
 fish --command='fish_add_path $HOME/go/bin'
 fish --command='fish_add_path $HOME/.local/share/fnm'
+fish --command='fish_add_path $HOME/.bun/bin'
 
 # Initialize fnm for fish only if fnm is installed
 cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF
