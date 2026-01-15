@@ -30,6 +30,7 @@ done
 append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
+  'az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
 )
 
 for entry in "${append_entries[@]}"; do
@@ -85,3 +86,58 @@ for entry in "${append_entries[@]}"; do
   # Add entry at the end if not already present
   grep -Fxq "$entry" "$HOME/.bashrc" || echo "$entry" >>"$HOME/.bashrc"
 done
+
+# =============================================================================
+# Setup BASH_ENV for non-interactive shells
+# =============================================================================
+# Check if BASH_ENV is set to the desired value, if not set it to ~/.bashenv
+bashenv_file="$HOME/.bashenv"
+if ! grep -q "^export BASH_ENV=\"$bashenv_file\"$" "$HOME/.bashrc"; then
+  # Remove any existing BASH_ENV export first
+  sed -i "/^export BASH_ENV=/d" "$HOME/.bashrc"
+  echo "export BASH_ENV=\"$bashenv_file\"" >> "$HOME/.bashrc"
+fi
+
+# Create bashenv file if it doesn't exist
+touch "$bashenv_file"
+
+# Add az function to BASH_ENV file
+az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
+if ! grep -Fxq "$az_function" "$bashenv_file"; then
+  # Remove any existing az function (both single-line and multi-line)
+  awk '
+    BEGIN { in_func=0; brace_count=0 }
+    {
+      # Match function definition: az() { ... (double backslash needed for awk regex)
+      # Also handles optional leading whitespace
+      if (in_func == 0 && $0 ~ "^[[:space:]]*az\\(\\)[[:space:]]*{") {
+        # Count braces on this line
+        line = $0
+        open_braces = gsub(/{/, "{", line)
+        close_braces = gsub(/}/, "}", line)
+        if (open_braces == close_braces) {
+          # Single-line function, skip it
+          next
+        } else {
+          # Multi-line function starts
+          in_func=1
+          brace_count = open_braces - close_braces
+          next
+        }
+      }
+      if (in_func) {
+        line = $0
+        brace_count += gsub(/{/, "{", line)
+        brace_count -= gsub(/}/, "}", line)
+        if (brace_count == 0) {
+          in_func=0
+        }
+        next
+      }
+      print
+    }
+  ' "$bashenv_file" > "$bashenv_file.tmp" && mv "$bashenv_file.tmp" "$bashenv_file"
+  
+  # Add the az function
+  echo "$az_function" >> "$bashenv_file"
+fi
