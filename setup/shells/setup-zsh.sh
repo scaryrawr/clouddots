@@ -36,6 +36,7 @@ if ! grep -Fxq "$az_function" "$HOME/.zshenv"; then
   awk '
     BEGIN { in_func=0; brace_count=0 }
     {
+      # Match function definition: az() { ... (double backslash needed for awk regex)
       if (in_func == 0 && $0 ~ "^az\\(\\)[[:space:]]*{") {
         # Count braces on this line
         line = $0
