@@ -90,9 +90,11 @@ done
 # =============================================================================
 # Setup BASH_ENV for non-interactive shells
 # =============================================================================
-# Check if BASH_ENV is set, if not set it to ~/.bashenv
+# Check if BASH_ENV is set to the desired value, if not set it to ~/.bashenv
 bashenv_file="$HOME/.bashenv"
-if ! grep -q "^export BASH_ENV=" "$HOME/.bashrc"; then
+if ! grep -q "^export BASH_ENV=\"$bashenv_file\"$" "$HOME/.bashrc"; then
+  # Remove any existing BASH_ENV export first
+  sed -i "/^export BASH_ENV=/d" "$HOME/.bashrc"
   echo "export BASH_ENV=\"$bashenv_file\"" >> "$HOME/.bashrc"
 fi
 
@@ -107,7 +109,8 @@ if ! grep -Fxq "$az_function" "$bashenv_file"; then
     BEGIN { in_func=0; brace_count=0 }
     {
       # Match function definition: az() { ... (double backslash needed for awk regex)
-      if (in_func == 0 && $0 ~ "^az\\(\\)[[:space:]]*{") {
+      # Also handles optional leading whitespace
+      if (in_func == 0 && $0 ~ "^[[:space:]]*az\\(\\)[[:space:]]*{") {
         # Count braces on this line
         line = $0
         open_braces = gsub(/{/, "{", line)
