@@ -47,7 +47,7 @@ Scripts are organized by function for clarity and maintainability:
 ## What it does in Codespaces & Devcontainers
 
 - **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file), Claude Code CLI, and Bun.
-- **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, and sl.
+- **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, opencode, and sl.
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
