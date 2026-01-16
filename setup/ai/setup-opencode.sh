@@ -6,6 +6,8 @@ cat >"$HOME/.config/opencode/opencode.jsonc" <<'EOF'
   "enabled_providers": ["github-copilot"],
   "share": "disabled",
   "theme": "system",
+  "model": "github-copilot/gpt-5.2-codex",
+  "small_model": "github-copilot/gpt-5-mini",
   "lsp": {
     "typescript": {
       "disabled": true
