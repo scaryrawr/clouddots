@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+mkdir -p "$HOME/.config/opencode"
 cat >"$HOME/.config/opencode/opencode.jsonc" <<'EOF'
 {
   "$schema": "https://opencode.ai/config.json",
