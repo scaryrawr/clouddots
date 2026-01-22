@@ -14,6 +14,7 @@ zshenv_entries=(
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
   'export EDITOR=code'
+  'export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"'
 )
 
 touch "$HOME/.zshenv"
