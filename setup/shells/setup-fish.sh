@@ -21,7 +21,7 @@ cat >"$HOME/.config/fish/conf.d/brew.fish" <<'EOF'
 test -x /home/linuxbrew/.linuxbrew/bin/brew; and eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 EOF
 
-cat >"$HOME/.config/fish/conf.d/browser.fish" <<EOF
+cat >"$HOME/.config/fish/conf.d/browser.fish" <<'EOF'
 test -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" && set -gx BROWSER "$HOME/browser-opener.sh"
 EOF
 
