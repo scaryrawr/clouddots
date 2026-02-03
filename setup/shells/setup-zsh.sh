@@ -15,6 +15,7 @@ zshenv_entries=(
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
   'export EDITOR=code'
   'export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"'
+  'WORDCHARS=${WORDCHARS/\//}'
 )
 
 touch "$HOME/.zshenv"
@@ -65,10 +66,10 @@ if ! grep -Fxq "$az_function" "$HOME/.zshenv"; then
       }
       print
     }
-  ' "$HOME/.zshenv" > "$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
-  
+  ' "$HOME/.zshenv" >"$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
+
   # Add the az function
-  echo "$az_function" >> "$HOME/.zshenv"
+  echo "$az_function" >>"$HOME/.zshenv"
 fi
 
 # =============================================================================
