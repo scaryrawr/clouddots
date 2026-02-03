@@ -21,11 +21,15 @@ zshenv_entries=(
 touch "$HOME/.zshenv"
 
 for entry in "${zshenv_entries[@]}"; do
-  # Extract variable name from export
+  # Extract variable name from export or plain assignment
   if [[ "$entry" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
     var_name="${BASH_REMATCH[1]}"
-    # Remove any existing assignment for this variable
+    # Remove any existing export assignment for this variable
     sed -i "/^export[[:space:]]\+${var_name}=/d" "$HOME/.zshenv"
+  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="${BASH_REMATCH[1]}"
+    # Remove any existing plain assignment for this variable
+    sed -i "/^${var_name}=/d" "$HOME/.zshenv"
   fi
   # Append the entry
   echo "$entry" >>"$HOME/.zshenv"
