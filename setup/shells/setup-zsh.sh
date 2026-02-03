@@ -15,16 +15,21 @@ zshenv_entries=(
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
   'export EDITOR=code'
   'export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"'
+  'WORDCHARS=${WORDCHARS/\//}'
 )
 
 touch "$HOME/.zshenv"
 
 for entry in "${zshenv_entries[@]}"; do
-  # Extract variable name from export
+  # Extract variable name from export or plain assignment
   if [[ "$entry" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
     var_name="${BASH_REMATCH[1]}"
-    # Remove any existing assignment for this variable
+    # Remove any existing export assignment for this variable
     sed -i "/^export[[:space:]]\+${var_name}=/d" "$HOME/.zshenv"
+  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+    var_name="${BASH_REMATCH[1]}"
+    # Remove any existing plain assignment for this variable
+    sed -i "/^${var_name}=/d" "$HOME/.zshenv"
   fi
   # Append the entry
   echo "$entry" >>"$HOME/.zshenv"
@@ -65,10 +70,10 @@ if ! grep -Fxq "$az_function" "$HOME/.zshenv"; then
       }
       print
     }
-  ' "$HOME/.zshenv" > "$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
-  
+  ' "$HOME/.zshenv" >"$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
+
   # Add the az function
-  echo "$az_function" >> "$HOME/.zshenv"
+  echo "$az_function" >>"$HOME/.zshenv"
 fi
 
 # =============================================================================
