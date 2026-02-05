@@ -3,6 +3,7 @@
 mkdir -p "$HOME/.tmux/plugins"
 plugins=(
   "https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm"
+  "https://github.com/sainnhe/tmux-fzf $HOME/.tmux/plugins/tmux-fzf"
   "https://github.com/erikw/tmux-powerline $HOME/.tmux/plugins/tmux-powerline"
 )
 
