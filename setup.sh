@@ -14,11 +14,11 @@ bash $BASH_FLAGS "$script_dir/setup/core/system-deps.sh"
 bash $BASH_FLAGS "$script_dir/setup/core/homebrew.sh"
 
 # Ensure homebrew is on PATH for subsequent scripts
-if [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-elif [[ -f /opt/homebrew/bin/brew ]]; then
+elif [[ -x /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -f /usr/local/bin/brew ]]; then
+elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
