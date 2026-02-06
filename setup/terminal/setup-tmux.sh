@@ -32,6 +32,9 @@ set -g bell-action any
 set -g monitor-activity on
 set -ga terminal-features ',*:RGB'
 set -g default-terminal "tmux-256color"
+set -g set-titles on
+set -g set-titles-string '#W'
+set -g allow-rename on
 set -ga update-environment ' CODESPACE_VSCODE_FOLDER VSCODE_GIT_ASKPASS_NODE VSCODE_GIT_ASKPASS_EXTRA_ARGS VSCODE_GIT_ASKPASS_MAIN VSCODE_GIT_IPC_HANDLE VSCODE_IPC_HOOK_CLI VSCODE_INJECTION VSCODE_NONCE'
 
 set -g @plugin 'tmux-plugins/tpm'
