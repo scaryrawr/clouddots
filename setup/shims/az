@@ -1,33 +1,4 @@
 #!/usr/bin/env bash
-
-# Find the real az, skipping this shim to avoid recursive calls
-REAL_AZ=""
-for p in $(type -aP az); do
-  if [ "$p" != "${BASH_SOURCE[0]}" ] && [ "$p" != "$(readlink -f "${BASH_SOURCE[0]}")" ]; then
-    REAL_AZ="$p"
-    break
-  fi
-done
-
-if [ -z "$REAL_AZ" ]; then
-  echo "Error: could not find real az CLI" >&2
-  exit 1
-fi
-
-# Rebuild PATH without the shim directory to prevent recursive calls
-shim_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-IFS=':' read -r -a path_parts <<< "$PATH"
-new_path=()
-for p in "${path_parts[@]}"; do
-  [[ -n "$p" && "$p" != "$shim_dir" ]] && new_path+=("$p")
-done
-PATH=$(IFS=':'; printf '%s' "${new_path[*]}")
-export PATH
-
-# Check if we have auth helper, if not, just call az directly
-AUTH_HELPER="$HOME/ado-auth-helper"
-if command -v "$AUTH_HELPER" &> /dev/null; then
-  AZURE_DEVOPS_EXT_PAT=$($AUTH_HELPER get-access-token) "$REAL_AZ" "$@"
-else
-  exec "$REAL_AZ" "$@"
-fi
+# shellcheck disable=SC2034
+AUTH_ENV_VAR="AZURE_DEVOPS_EXT_PAT"
+source "$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)/_shim_helper.sh" "$@"
