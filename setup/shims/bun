@@ -1,23 +1,4 @@
 #!/usr/bin/env bash
-
-# Find the real bun, skipping this shim to avoid recursive calls
-REAL_BUN=""
-for p in $(type -aP bun); do
-  if [ "$p" != "${BASH_SOURCE[0]}" ] && [ "$p" != "$(readlink -f "${BASH_SOURCE[0]}")" ]; then
-    REAL_BUN="$p"
-    break
-  fi
-done
-
-if [ -z "$REAL_BUN" ]; then
-  echo "Error: could not find real bun CLI" >&2
-  exit 1
-fi
-
-# Check if we have auth helper, if not, just call bun directly
-AUTH_HELPER="$HOME/ado-auth-helper"
-if command -v "$AUTH_HELPER" &> /dev/null; then
-  ARTIFACTS_ACCESSTOKEN=$($AUTH_HELPER get-access-token) "$REAL_BUN" "$@"
-else
-  exec "$REAL_BUN" "$@"
-fi
+# shellcheck disable=SC2034
+AUTH_ENV_VAR="ARTIFACTS_ACCESSTOKEN"
+source "$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)/_shim_helper.sh" "$@"

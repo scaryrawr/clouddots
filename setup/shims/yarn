@@ -1,23 +1,4 @@
 #!/usr/bin/env bash
-
-# Find the real yarn, skipping this shim to avoid recursive calls
-REAL_YARN=""
-for p in $(type -aP yarn); do
-  if [ "$p" != "${BASH_SOURCE[0]}" ] && [ "$p" != "$(readlink -f "${BASH_SOURCE[0]}")" ]; then
-    REAL_YARN="$p"
-    break
-  fi
-done
-
-if [ -z "$REAL_YARN" ]; then
-  echo "Error: could not find real yarn CLI" >&2
-  exit 1
-fi
-
-# Check if we have auth helper, if not, just call yarn directly
-AUTH_HELPER="$HOME/ado-auth-helper"
-if command -v "$AUTH_HELPER" &> /dev/null; then
-  ARTIFACTS_ACCESSTOKEN=$($AUTH_HELPER get-access-token) "$REAL_YARN" "$@"
-else
-  exec "$REAL_YARN" "$@"
-fi
+# shellcheck disable=SC2034
+AUTH_ENV_VAR="ARTIFACTS_ACCESSTOKEN"
+source "$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)/_shim_helper.sh" "$@"
