@@ -13,4 +13,4 @@ When creating or modifying shims:
 3. **Error handling**: Exit with an error if the real binary cannot be found
 4. **Fallback behavior**: If the shim's enhancement (e.g., auth helper) is unavailable, fall back to calling the real binary directly with `exec`
 5. **Pass all arguments**: Always forward `"$@"` to the real binary
-6. **Prevent recursion**: Before calling the real binary, remove the shim's directory from `PATH` with `export PATH="${PATH/$shim_dir:}"` and `export PATH="${PATH/:$shim_dir}"`. This prevents other wrappers from finding our shim when they search PATH.
+6. **Prevent recursion**: Before calling the real binary, rebuild `PATH` by splitting on `:` and filtering out entries matching `$shim_dir` (and any empty entries) to avoid introducing `::` elements. This prevents other wrappers from finding our shim when they search PATH.

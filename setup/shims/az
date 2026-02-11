@@ -14,11 +14,14 @@ if [ -z "$REAL_AZ" ]; then
   exit 1
 fi
 
-# Remove our shim directory from PATH to prevent recursive calls
+# Rebuild PATH without the shim directory to prevent recursive calls
 shim_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PATH=":${PATH}:"
-PATH="${PATH//:$shim_dir:/:}"
-PATH="${PATH#:}"; PATH="${PATH%:}"
+IFS=':' read -r -a path_parts <<< "$PATH"
+new_path=()
+for p in "${path_parts[@]}"; do
+  [[ -n "$p" && "$p" != "$shim_dir" ]] && new_path+=("$p")
+done
+PATH=$(IFS=':'; echo "${new_path[*]}")
 export PATH
 
 # Check if we have auth helper, if not, just call az directly
