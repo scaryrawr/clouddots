@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Find the real bunx, skipping this shim to avoid recursive calls
+REAL_BUNX=""
+for p in $(type -aP bunx); do
+  if [ "$p" != "${BASH_SOURCE[0]}" ] && [ "$p" != "$(readlink -f "${BASH_SOURCE[0]}")" ]; then
+    REAL_BUNX="$p"
+    break
+  fi
+done
+
+if [ -z "$REAL_BUNX" ]; then
+  echo "Error: could not find real bunx CLI" >&2
+  exit 1
+fi
+
+# Check if we have auth helper, if not, just call bunx directly
+AUTH_HELPER="$HOME/ado-auth-helper"
+if command -v "$AUTH_HELPER" &> /dev/null; then
+  ARTIFACTS_ACCESSTOKEN=$($AUTH_HELPER get-access-token) "$REAL_BUNX" "$@"
+else
+  exec "$REAL_BUNX" "$@"
+fi

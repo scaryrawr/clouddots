@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Find the real npx, skipping this shim to avoid recursive calls
+REAL_NPX=""
+for p in $(type -aP npx); do
+  if [ "$p" != "${BASH_SOURCE[0]}" ] && [ "$p" != "$(readlink -f "${BASH_SOURCE[0]}")" ]; then
+    REAL_NPX="$p"
+    break
+  fi
+done
+
+if [ -z "$REAL_NPX" ]; then
+  echo "Error: could not find real npx CLI" >&2
+  exit 1
+fi
+
+# Check if we have auth helper, if not, just call npx directly
+AUTH_HELPER="$HOME/ado-auth-helper"
+if command -v "$AUTH_HELPER" &> /dev/null; then
+  ARTIFACTS_ACCESSTOKEN=$($AUTH_HELPER get-access-token) "$REAL_NPX" "$@"
+else
+  exec "$REAL_NPX" "$@"
+fi

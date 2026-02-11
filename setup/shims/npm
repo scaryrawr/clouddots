@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Find the real npm, skipping this shim to avoid recursive calls
+REAL_NPM=""
+for p in $(type -aP npm); do
+  if [ "$p" != "${BASH_SOURCE[0]}" ] && [ "$p" != "$(readlink -f "${BASH_SOURCE[0]}")" ]; then
+    REAL_NPM="$p"
+    break
+  fi
+done
+
+if [ -z "$REAL_NPM" ]; then
+  echo "Error: could not find real npm CLI" >&2
+  exit 1
+fi
+
+# Check if we have auth helper, if not, just call npm directly
+AUTH_HELPER="$HOME/ado-auth-helper"
+if command -v "$AUTH_HELPER" &> /dev/null; then
+  ARTIFACTS_ACCESSTOKEN=$($AUTH_HELPER get-access-token) "$REAL_NPM" "$@"
+else
+  exec "$REAL_NPM" "$@"
+fi

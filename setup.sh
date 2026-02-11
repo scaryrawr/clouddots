@@ -23,7 +23,7 @@ elif [[ -x /usr/local/bin/brew ]]; then
 fi
 
 # Check for node and npm before installing fnm
-if ! command -v node &>/dev/null && ! command -v npm &>/dev/null; then
+if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
   # Install fnm if not present
   if ! command -v fnm &>/dev/null; then
     curl -fsSL https://fnm.vercel.app/install | bash
@@ -49,3 +49,4 @@ bash $BASH_FLAGS "$script_dir/setup/shells/setup-fish.sh"
 bash $BASH_FLAGS "$script_dir/setup/setup-editors.sh"
 bash $BASH_FLAGS "$script_dir/setup/setup-terminal.sh"
 bash $BASH_FLAGS "$script_dir/setup/setup-ai.sh"
+bash $BASH_FLAGS "$script_dir/setup/setup-shims.sh"

@@ -1,0 +1,12 @@
+# Copilot coding agent setup steps
+# Pre-installs dependencies so the agent can validate changes in its environment.
+# See: https://docs.github.com/en/copilot/customizing-copilot/customizing-the-development-environment-for-copilot-coding-agent
+
+setup:
+  - name: Install ShellCheck
+    run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+  - name: Install shfmt
+    run: |
+      curl -sS https://webi.sh/shfmt | sh
+      echo "$HOME/.local/bin" >> "$GITHUB_PATH"
