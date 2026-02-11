@@ -14,6 +14,13 @@ if [ -z "$REAL_PNPM" ]; then
   exit 1
 fi
 
+# Remove our shim directory from PATH to prevent recursive calls
+shim_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PATH=":${PATH}:"
+PATH="${PATH//:$shim_dir:/:}"
+PATH="${PATH#:}"; PATH="${PATH%:}"
+export PATH
+
 # Check if we have auth helper, if not, just call pnpm directly
 AUTH_HELPER="$HOME/ado-auth-helper"
 if command -v "$AUTH_HELPER" &> /dev/null; then
