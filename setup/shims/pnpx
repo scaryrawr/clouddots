@@ -21,7 +21,7 @@ new_path=()
 for p in "${path_parts[@]}"; do
   [[ -n "$p" && "$p" != "$shim_dir" ]] && new_path+=("$p")
 done
-PATH=$(IFS=':'; echo "${new_path[*]}")
+PATH=$(IFS=':'; printf '%s' "${new_path[*]}")
 export PATH
 
 # Check if we have auth helper, if not, just call pnpx directly
