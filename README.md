@@ -27,7 +27,8 @@ Scripts are organized by function for clarity and maintainability:
   - **setup/ai/**: AI tooling config.
     - **setup/ai/setup-claude.sh**
     - **setup/ai/setup-copilot.sh**: Installs construct via Bun.
-  - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**: Category runners.
+  - **setup/shims/**: Command wrapper scripts symlinked to `~/.local/bin/`. Intercept commands (az, bun, bunx, npm, npx, pnpm, pnpx, yarn) to add authentication or environment setup before calling the real binary.
+  - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**, **setup/setup-shims.sh**: Category runners.
 - **p10k.zsh**: Powerlevel10k theme config file.
 - **.zsh_plugins.txt**: Antidote plugin list for zsh.
 
@@ -43,6 +44,7 @@ Scripts are organized by function for clarity and maintainability:
 8. setup/setup-editors.sh
 9. setup/setup-terminal.sh
 10. setup/setup-ai.sh
+11. setup/setup-shims.sh
 
 ## What it does in Codespaces & Devcontainers
 
@@ -65,4 +67,5 @@ Scripts are organized by function for clarity and maintainability:
   - [copilot.fish](https://github.com/scaryrawr/copilot.fish)
 - **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @typescript/native-preview
 - **AI tools**: Claude Code CLI (installed via system-deps.sh), copilot-cli (via Homebrew), construct (via Bun)
+- **Shims**: Wrapper scripts for az, bun, bunx, npm, npx, pnpm, pnpx, and yarn that add authentication/environment setup before calling the real binary.
 
