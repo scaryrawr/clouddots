@@ -22,4 +22,3 @@ fi
 # Use 'yes' to automatically answer prompts, with timeout to prevent hanging
 # The || true ensures setup continues even if this fails
 timeout 30 bash -c 'yes | wt config shell install' 2>&1 || true
-echo "Worktrunk shell integration setup completed"
