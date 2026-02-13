@@ -26,5 +26,4 @@ brew install \
   helix \
   copilot-cli@prerelease \
   neovim \
-  lazygit \
-  anomalyco/tap/opencode
+  lazygit
