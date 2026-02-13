@@ -34,7 +34,7 @@ echo 'set -q BASH_ENV; or set -gx BASH_ENV "$HOME/.bashenv"' >"$HOME/.config/fis
 fish --command="curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher jorgebucaran/replay.fish scaryrawr/claude-code.fish scaryrawr/copilot.fish scaryrawr/tide scaryrawr/codespace-nvm.fish scaryrawr/nvim.fish </dev/null"
 fish --command="tide configure --auto --style=Rainbow --prompt_colors='16 colors' --show_time='24-hour format' --rainbow_prompt_separators=Round --powerline_prompt_heads=Round --powerline_prompt_tails=Fade --powerline_prompt_style='Two lines, character and frame' --prompt_connection=Disconnected --powerline_right_prompt_frame=No --prompt_spacing=Compact --icons='Many icons' --transient=Yes"
 fish --command="command -q zoxide && fisher install scaryrawr/zoxide.fish </dev/null"
-fish --command="command -q fzf && fisher install scaryrawr/fzf.fish scaryrawr/monorepo.fish </dev/null && set -Ux fzf_fd_opts --hidden && set -Ux fzf_diff_highlighter delta --paging=never"
+fish --command="command -q fzf && fisher install scaryrawr/fzf.fish scaryrawr/monorepo.fish </dev/null && set -Ux fzf_fd_opts --hidden && command -q delta && set -Ux fzf_diff_highlighter delta --paging=never"
 fish --command="command -q eza && fisher install scaryrawr/fish-eza </dev/null"
 fish --command="command -q tmux && fisher install scaryrawr/tmux.fish </dev/null && set -Ux TMUX_POWERLINE_BUBBLE_SEPARATORS true && set -Ux TMUX_SSHAUTO_START true"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
