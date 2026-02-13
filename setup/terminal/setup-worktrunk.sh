@@ -32,6 +32,9 @@ set -e
 
 if [ $exit_code -eq 0 ]; then
   echo "Worktrunk shell integration installed"
+elif [ $exit_code -eq 124 ]; then
+  echo "Worktrunk shell integration setup timed out after ${INSTALL_TIMEOUT} seconds"
+  echo "You may need to manually run: wt config shell install"
 else
   echo "Worktrunk shell integration setup failed (exit code: $exit_code)"
   echo "You may need to manually run: wt config shell install"
