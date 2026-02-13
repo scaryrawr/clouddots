@@ -12,6 +12,7 @@ fi
 
 # Run worktrunk's shell integration installer
 # This will add the necessary hooks to ~/.bashrc, ~/.zshrc, and fish config
-wt config shell install --yes 2>/dev/null || true
+# Use 'yes' to automatically accept the installation prompt
+yes | wt config shell install 2>/dev/null || true
 
 echo "Worktrunk shell integration configured"
