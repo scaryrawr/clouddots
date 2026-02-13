@@ -27,4 +27,4 @@ brew install \
   copilot-cli@prerelease \
   neovim \
   lazygit \
-  worktrunk \
+  worktrunk
