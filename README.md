@@ -9,7 +9,7 @@ Scripts are organized by function for clarity and maintainability:
 - **setup.sh**: Main orchestrator. Runs all other scripts in the correct order.
 - **setup/**: Setup scripts and helpers.
   - **setup/core/**: Bootstrap + package managers.
-    - **setup/core/system-deps.sh**: Installs system-level dependencies (apt/dnf), Claude Code CLI, and Bun.
+    - **setup/core/system-deps.sh**: Installs system-level dependencies (apt/dnf) and Bun.
     - **setup/core/homebrew.sh**: Installs Homebrew and development tools.
     - **setup/core/npm-tools.sh**: Installs global npm tools (language servers, etc).
   - **setup/shells/**: Shell-specific config.
@@ -25,7 +25,6 @@ Scripts are organized by function for clarity and maintainability:
     - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod)
     - **setup/terminal/setup-bat.sh**: Configures bat theme.
   - **setup/ai/**: AI tooling config.
-    - **setup/ai/setup-claude.sh**
     - **setup/ai/setup-copilot.sh**: Installs construct via Bun.
   - **setup/shims/**: Command wrapper scripts symlinked to `~/.local/bin/`. Intercept commands (az, bun, bunx, npm, npx, pnpm, pnpx, yarn) to add authentication or environment setup before calling the real binary.
   - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**, **setup/setup-shims.sh**: Category runners.
@@ -48,8 +47,8 @@ Scripts are organized by function for clarity and maintainability:
 
 ## What it does in Codespaces & Devcontainers
 
-- **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file), Claude Code CLI, and Bun.
-- **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, opencode, and sl.
+- **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file) and Bun.
+- **Homebrew**: Installs development tools including fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, and sl.
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -66,6 +65,6 @@ Scripts are organized by function for clarity and maintainability:
   - [tmux.fish](https://github.com/scaryrawr/tmux.fish)
   - [copilot.fish](https://github.com/scaryrawr/copilot.fish)
 - **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @typescript/native-preview
-- **AI tools**: Claude Code CLI (installed via system-deps.sh), copilot-cli (via Homebrew), construct (via Bun)
+- **AI tools**: copilot-cli (via Homebrew), construct (via Bun)
 - **Shims**: Wrapper scripts for az, bun, bunx, npm, npx, pnpm, pnpx, and yarn that add authentication/environment setup before calling the real binary.
 
