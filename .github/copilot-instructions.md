@@ -4,7 +4,7 @@
 
 Cloud Dots is a dotfiles repo for GitHub Codespaces and VS Code Devcontainers. The entry point is `setup.sh`, which orchestrates all other scripts in a fixed order:
 
-1. `setup/core/system-deps.sh` — apt/dnf packages, Claude Code CLI, Bun
+1. `setup/core/system-deps.sh` — apt/dnf packages, Bun
 2. `setup/core/homebrew.sh` — Homebrew + CLI tools
 3. fnm + Node.js (inline in setup.sh)
 4. `setup/core/npm-tools.sh` — global npm packages
@@ -41,7 +41,7 @@ Set `STRICT_MODE=true` or `CI=true` to enable `set -e` in the top-level orchestr
 - `setup/shells/` — Shell configs (bash, zsh, fish)
 - `setup/editors/` — Editor setup (Neovim, Helix, VS Code)
 - `setup/terminal/` — Terminal tools (tmux, git, bat)
-- `setup/ai/` — AI tooling (Claude, Copilot, OpenCode)
+- `setup/ai/` — AI tooling (Copilot)
 - `setup/shims/` — Command wrapper scripts symlinked to `~/.local/bin/`
 - `setup/setup-*.sh` — Category runners that auto-discover scripts in subdirectories
 - `.devcontainer/` — Devcontainer definitions for testing
