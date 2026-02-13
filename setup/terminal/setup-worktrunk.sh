@@ -13,9 +13,10 @@ if ! command -v wt &>/dev/null; then
   exit 0
 fi
 
-# Check if shell integration is already installed by looking for wt function/hook
-if grep -q "# wt shell integration" "$HOME/.bashrc" 2>/dev/null || \
-   grep -q "# wt shell integration" "$HOME/.zshrc" 2>/dev/null || \
+# Check if shell integration is already installed
+# Look for wt function/hooks in shell configs or config files
+if grep -qE "(function wt|wt\s*\(\))" "$HOME/.bashrc" 2>/dev/null || \
+   grep -qE "(function wt|wt\s*\(\))" "$HOME/.zshrc" 2>/dev/null || \
    [ -f "$HOME/.config/fish/functions/wt.fish" ]; then
   echo "Worktrunk shell integration already configured"
   exit 0
@@ -25,7 +26,7 @@ fi
 # Use 'yes' to automatically answer prompts, with timeout to prevent hanging
 # Continue setup even if this fails (some shells may already have integration)
 set +e
-output=$(timeout "$INSTALL_TIMEOUT" bash -c 'yes | wt config shell install' 2>&1)
+output=$(timeout "$INSTALL_TIMEOUT" yes | wt config shell install 2>&1)
 exit_code=$?
 set -e
 
