@@ -10,9 +10,19 @@ if ! command -v wt &>/dev/null; then
   exit 0
 fi
 
-# Run worktrunk's shell integration installer
-# This will add the necessary hooks to ~/.bashrc, ~/.zshrc, and fish config
-# Use 'yes' to automatically accept the installation prompt
-yes | wt config shell install 2>/dev/null || true
+# Check if shell integration is already installed by looking for wt function/hook
+if grep -q "# wt shell integration" "$HOME/.bashrc" 2>/dev/null || \
+   grep -q "# wt shell integration" "$HOME/.zshrc" 2>/dev/null || \
+   [ -f "$HOME/.config/fish/functions/wt.fish" ]; then
+  echo "Worktrunk shell integration already configured"
+  exit 0
+fi
 
-echo "Worktrunk shell integration configured"
+# Run worktrunk's shell integration installer non-interactively
+# Use 'yes' to automatically answer prompts, with timeout to prevent hanging
+# The || true ensures setup continues even if this fails
+if timeout 30 bash -c 'yes | wt config shell install' 2>&1 || true; then
+  echo "Worktrunk shell integration configured"
+else
+  echo "Warning: worktrunk shell integration setup encountered an issue, but continuing"
+fi
