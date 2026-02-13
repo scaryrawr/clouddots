@@ -5,8 +5,11 @@ set -e
 # This configures worktrunk (wt) to work with bash, zsh, and fish shells
 # The integration enables features like auto-cd and shell completions
 
+# Timeout for shell integration installation (prevents hanging on interactive prompts)
+INSTALL_TIMEOUT=30
+
 if ! command -v wt &>/dev/null; then
-  echo "worktrunk (wt) not found, skipping shell integration"
+  echo "worktrunk not found, skipping shell integration"
   exit 0
 fi
 
@@ -22,7 +25,7 @@ fi
 # Use 'yes' to automatically answer prompts, with timeout to prevent hanging
 # Continue setup even if this fails (some shells may already have integration)
 set +e
-output=$(timeout 30 bash -c 'yes | wt config shell install' 2>&1)
+output=$(timeout "$INSTALL_TIMEOUT" bash -c 'yes | wt config shell install' 2>&1)
 exit_code=$?
 set -e
 
