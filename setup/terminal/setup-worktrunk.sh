@@ -22,9 +22,17 @@ fi
 # Use 'yes' to automatically answer prompts, with timeout to prevent hanging
 # Continue setup even if this fails (some shells may already have integration)
 set +e
-if timeout 30 bash -c 'yes | wt config shell install' 2>&1; then
+output=$(timeout 30 bash -c 'yes | wt config shell install' 2>&1)
+exit_code=$?
+set -e
+
+if [ $exit_code -eq 0 ]; then
   echo "Worktrunk shell integration installed"
 else
-  echo "Worktrunk shell integration setup attempted (may need manual configuration)"
+  echo "Worktrunk shell integration setup failed (exit code: $exit_code)"
+  echo "You may need to manually run: wt config shell install"
+  # Show output only on failure for debugging
+  if [ -n "$output" ]; then
+    echo "Output: $output"
+  fi
 fi
-set -e
