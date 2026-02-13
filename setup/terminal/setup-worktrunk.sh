@@ -21,8 +21,5 @@ fi
 # Run worktrunk's shell integration installer non-interactively
 # Use 'yes' to automatically answer prompts, with timeout to prevent hanging
 # The || true ensures setup continues even if this fails
-if timeout 30 bash -c 'yes | wt config shell install' 2>&1 || true; then
-  echo "Worktrunk shell integration configured"
-else
-  echo "Warning: worktrunk shell integration setup encountered an issue, but continuing"
-fi
+timeout 30 bash -c 'yes | wt config shell install' 2>&1 || true
+echo "Worktrunk shell integration configured"
