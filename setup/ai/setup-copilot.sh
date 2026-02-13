@@ -71,10 +71,7 @@ cat >"$HOME/.copilot/lsp-config.json" <<'EOF'
 }
 EOF
 
-copilot plugin marketplace add github/copilot-plugins
 copilot plugin marketplace add scaryrawr/scarypilot
 
-copilot plugin install workiq@copilot-plugins
 copilot plugin install copilot@scarypilot
 copilot plugin install azure-devops@scarypilot
-copilot plugin install chrome-devtools@scarypilot
