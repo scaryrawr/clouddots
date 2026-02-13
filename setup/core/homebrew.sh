@@ -26,4 +26,5 @@ brew install \
   helix \
   copilot-cli@prerelease \
   neovim \
-  lazygit
+  lazygit \
+  worktrunk \
