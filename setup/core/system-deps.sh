@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # System dependencies installer
 # This script can be run multiple times safely (idempotent)
@@ -12,6 +13,7 @@ declare -A bin_to_pkg=(
   [fish]=fish
   [zsh]=zsh
   [file]=file
+  [jq]=jq
 )
 
 packages=()

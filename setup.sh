@@ -11,6 +11,10 @@ fi
 script_dir=$(dirname "$(readlink -f "$0")")
 
 bash $BASH_FLAGS "$script_dir/setup/core/system-deps.sh"
+
+# Ensure bun is on PATH for subsequent scripts
+export PATH="$HOME/.bun/bin:$PATH"
+
 bash $BASH_FLAGS "$script_dir/setup/core/homebrew.sh"
 
 # Ensure homebrew is on PATH for subsequent scripts
@@ -39,8 +43,16 @@ if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
   fnm default 24
 fi
 
+# Ensure fnm-managed node is on PATH for subsequent scripts
+if command -v fnm &>/dev/null; then
+  eval "$(fnm env --shell bash)"
+fi
+
 # Install global npm tools
 bash $BASH_FLAGS "$script_dir/setup/core/npm-tools.sh"
+
+# Ensure npm global bin is on PATH for subsequent scripts
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 bash $BASH_FLAGS "$script_dir/setup/shells/setup-bash.sh"
 bash $BASH_FLAGS "$script_dir/setup/shells/setup-zsh.sh"

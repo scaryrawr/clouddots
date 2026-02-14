@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 mkdir -p "$HOME/.tmux/plugins"
 plugins=(
@@ -12,8 +13,7 @@ for plugin in "${plugins[@]}"; do
   repo_url=$(echo "$plugin" | awk '{print $1}')
   clone_dir=$(echo "$plugin" | awk '{print $2}')
   if [ -d "$clone_dir" ] && [ "$(ls -A $clone_dir)" ]; then
-    pushd "$clone_dir" && git pull
-    popd
+    (cd "$clone_dir" && git pull)
   else
     git clone "$repo_url" "$clone_dir"
   fi
