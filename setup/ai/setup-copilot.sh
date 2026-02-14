@@ -71,7 +71,19 @@ cat >"$HOME/.copilot/lsp-config.json" <<'EOF'
 }
 EOF
 
-copilot plugin marketplace add scaryrawr/scarypilot
+marketplace_plugins=(
+  "scaryrawr/scarypilot"
+)
 
-copilot plugin install copilot@scarypilot
-copilot plugin install azure-devops@scarypilot
+install_plugins=(
+  "copilot@scarypilot"
+  "azure-devops@scarypilot"
+)
+
+for plugin in "${marketplace_plugins[@]}"; do
+  copilot plugin marketplace add "$plugin" || true
+done
+
+for plugin in "${install_plugins[@]}"; do
+  copilot plugin install "$plugin" || true
+done

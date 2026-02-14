@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Clone or update helix configuration
 if [ -d "$HOME/.config/helix" ] && [ "$(ls -A "$HOME/.config/helix")" ] && [ -d "$HOME/.config/helix/.git" ]; then

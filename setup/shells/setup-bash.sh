@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Just prepend to bashrc if it's not in it.
 prepend_entries=(

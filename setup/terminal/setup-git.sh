@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Get the directory where this script lives (for helper scripts)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
