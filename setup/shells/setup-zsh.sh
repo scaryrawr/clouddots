@@ -86,6 +86,7 @@ sed -i '/^export PATH=.*fnm.*npm-global.*cargo/d' "$HOME/.zshrc"
 sed -i '/^export SHELL=/d' "$HOME/.zshrc"
 sed -i '/^export NODE_OPTIONS=/d' "$HOME/.zshrc"
 sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
+sed -i '/stty -ixon < \/dev\/tty/d' "$HOME/.zshrc"
 
 # =============================================================================
 # Comment out OMZ
@@ -193,7 +194,7 @@ append_entries=(
   '(( $+commands[nvim] )) && alias vi=nvim'
   '(( $+commands[nvim] )) && alias vim=nvim'
   'alias l="ls -lah"'
-  '[[ $- == *i* ]] && stty -ixon < /dev/tty'
+  '[[ $- == *i* && -t 0 ]] && stty -ixon'
 )
 
 for entry in "${append_entries[@]}"; do
