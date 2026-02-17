@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+touch "$HOME/.bashrc"
+
 # Just prepend to bashrc if it's not in it.
 prepend_entries=(
   'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'

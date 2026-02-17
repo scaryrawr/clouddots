@@ -4,14 +4,20 @@ set -e
 mkdir -p "$HOME/.config/fish/conf.d"
 mkdir -p "$HOME/.config/fish/functions"
 
-fish --command='fish_add_path /home/linuxbrew/.linuxbrew/bin'
-fish --command='fish_add_path /home/linuxbrew/.linuxbrew/sbin'
-fish --command='fish_add_path $HOME/.local/bin'
-fish --command='fish_add_path $HOME/.npm-global/bin'
-fish --command='fish_add_path $HOME/.cargo/bin'
-fish --command='fish_add_path $HOME/go/bin'
-fish --command='fish_add_path $HOME/.local/share/fnm'
-fish --command='fish_add_path $HOME/.bun/bin'
+path_entries=(
+  "/home/linuxbrew/.linuxbrew/bin"
+  "/home/linuxbrew/.linuxbrew/sbin"
+  "$HOME/.local/bin"
+  "$HOME/.npm-global/bin"
+  "$HOME/.cargo/bin"
+  "$HOME/go/bin"
+  "$HOME/.local/share/fnm"
+  "$HOME/.bun/bin"
+)
+
+for path_entry in "${path_entries[@]}"; do
+  [[ -d "$path_entry" ]] && fish --command="contains -- \"$path_entry\" \$fish_user_paths; or fish_add_path \"$path_entry\""
+done
 
 # Initialize fnm for fish only if fnm is installed
 cat >"$HOME/.config/fish/conf.d/fnm.fish" <<EOF

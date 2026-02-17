@@ -24,6 +24,8 @@ for bin in "${!bin_to_pkg[@]}"; do
 done
 
 if command -v apt &>/dev/null; then
+  sudo apt update -y
+
   # Enable apt-add-repository
   sudo apt install software-properties-common -y
   sudo add-apt-repository ppa:fish-shell/release-4 -y
@@ -37,11 +39,13 @@ if command -v apt &>/dev/null; then
   fi
 
 elif command -v dnf &>/dev/null; then
+  sudo dnf update -y
+
   if [ ${#packages[@]} -ne 0 ]; then
-    sudo dnf update -y
     sudo dnf install --skip-unavailable "${packages[@]}" -y
-    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq gh
   fi
+
+  sudo dnf install -y git zsh gcc gcc-c++ which unzip jq gh
 
 else
   echo "Unknown package manager"
