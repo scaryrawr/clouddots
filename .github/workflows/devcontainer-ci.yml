@@ -1,0 +1,50 @@
+name: Devcontainer CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ubuntu-noble:
+    name: ubuntu-noble (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run setup and smoke checks
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/ubuntu-noble/devcontainer.json
+          push: never
+          env: |
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            STRICT_MODE=true
+          runCmd: bash .github/scripts/devcontainer-smoke.sh
+
+  ubuntu-apt-node:
+    name: ubuntu-apt-node (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run setup and smoke checks
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/ubuntu-apt-node/devcontainer.json
+          push: never
+          env: |
+            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            STRICT_MODE=true
+          runCmd: bash .github/scripts/devcontainer-smoke.sh
