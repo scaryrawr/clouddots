@@ -20,8 +20,12 @@ for plugin in "${plugins[@]}"; do
 done
 
 "$HOME/.tmux/plugins/tmux-powerline/generate_config.sh"
-mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerline/config.sh"
-sed -i 's/export TMUX_POWERLINE_THEME="default"/export TMUX_POWERLINE_THEME="base16"/' "$HOME/.config/tmux-powerline/config.sh"
+if [[ ! -f "$HOME/.config/tmux-powerline/config.sh" && -f "$HOME/.config/tmux-powerline/config.sh.default" ]]; then
+  mv "$HOME/.config/tmux-powerline/config.sh.default" "$HOME/.config/tmux-powerline/config.sh"
+fi
+if [[ -f "$HOME/.config/tmux-powerline/config.sh" ]]; then
+  sed -i 's/export TMUX_POWERLINE_THEME="default"/export TMUX_POWERLINE_THEME="base16"/' "$HOME/.config/tmux-powerline/config.sh"
+fi
 
 # Create or overwrite tmux configuration
 cat >"$HOME/.tmux.conf" <<EOF

@@ -20,6 +20,7 @@ zshenv_entries=(
 )
 
 touch "$HOME/.zshenv"
+touch "$HOME/.zshrc"
 
 for entry in "${zshenv_entries[@]}"; do
   # Extract variable name from export or plain assignment

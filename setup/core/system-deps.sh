@@ -37,11 +37,13 @@ if command -v apt &>/dev/null; then
   fi
 
 elif command -v dnf &>/dev/null; then
+  sudo dnf update -y
+
   if [ ${#packages[@]} -ne 0 ]; then
-    sudo dnf update -y
     sudo dnf install --skip-unavailable "${packages[@]}" -y
-    sudo dnf install -y git zsh gcc gcc-c++ which unzip jq gh
   fi
+
+  sudo dnf install -y git zsh gcc gcc-c++ which unzip jq gh
 
 else
   echo "Unknown package manager"

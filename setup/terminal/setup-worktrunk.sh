@@ -26,7 +26,7 @@ fi
 # Use 'yes' to automatically answer prompts, with timeout to prevent hanging
 # Continue setup even if this fails (some shells may already have integration)
 set +e
-output=$(timeout "$INSTALL_TIMEOUT" yes | wt config shell install 2>&1)
+output=$(timeout "$INSTALL_TIMEOUT" bash -c 'yes | wt config shell install' 2>&1)
 exit_code=$?
 set -e
 
