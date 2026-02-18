@@ -39,7 +39,8 @@ echo 'set -gx SHELL (which fish)' >"$HOME/.config/fish/conf.d/shell.fish"
 echo 'set -q BASH_ENV; or set -gx BASH_ENV "$HOME/.bashenv"' >"$HOME/.config/fish/conf.d/bashenv.fish"
 
 # Create gh-ado-codespaces notification configuration
-cat >"$HOME/.config/fish/conf.d/gh-ado-codespaces.fish" <<'EOF'
+# Named with 'a' prefix to load alphabetically before done.fish (d comes after a)
+cat >"$HOME/.config/fish/conf.d/ado-codespaces.fish" <<'EOF'
 # Configure gh-ado-codespaces notifications only in SSH+interactive sessions
 if status is-interactive && test -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY"
     # Configure done plugin to use gh-ado-codespaces notification service
