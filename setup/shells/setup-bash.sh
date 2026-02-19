@@ -34,6 +34,7 @@ append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
   'az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
+  '[ -f "$HOME/notification-sender.sh" ] && source "$HOME/notification-sender.sh"'
 )
 
 for entry in "${append_entries[@]}"; do
