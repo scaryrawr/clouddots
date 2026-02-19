@@ -48,7 +48,28 @@ set -g @plugin 'sainnhe/tmux-fzf'
 run '~/.tmux/plugins/tpm/tpm'
 EOF
 
-mkdir -p "$HOME/.config/tmux-powerline/themes"
+mkdir -p "$HOME/.config/tmux-powerline/themes" "$HOME/.config/tmux-powerline/segments"
+
+cat >"$HOME/.config/tmux-powerline/segments/codespace_name.sh" <<'EOF'
+# shellcheck shell=bash
+# Prints the Codespace name without the generated trailing suffix.
+
+run_segment() {
+	local codespace_name
+	local hostname_name
+
+	codespace_name=${CODESPACE_NAME:-}
+	if [ -n "$codespace_name" ]; then
+		echo "${codespace_name%-*}"
+		return 0
+	fi
+
+	if command -v hostname >/dev/null 2>&1; then
+		hostname_name=$(hostname)
+		echo "${hostname_name%%.*}"
+	fi
+}
+EOF
 
 cat >"$HOME/.config/tmux-powerline/themes/base16.sh" <<'EOF'
 # shellcheck shell=bash disable=SC2034
@@ -83,6 +104,7 @@ TMUX_POWERLINE_SEG_AIR_COLOR=$(air_color)
 
 TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR=${TMUX_POWERLINE_DEFAULT_LEFTSIDE_SEPARATOR:-$TMUX_POWERLINE_SEPARATOR_RIGHT_BOLD}
 TMUX_POWERLINE_DEFAULT_RIGHTSIDE_SEPARATOR=${TMUX_POWERLINE_DEFAULT_RIGHTSIDE_SEPARATOR:-$TMUX_POWERLINE_SEPARATOR_LEFT_BOLD}
+TMUX_POWERLINE_SEG_VCS_BRANCH_MAX_LEN=${TMUX_POWERLINE_SEG_VCS_BRANCH_MAX_LEN:-48}
 
 # See `man tmux` for additional formatting options for the status line.
 # The `format regular` and `format inverse` functions are provided as conveniences
@@ -177,7 +199,7 @@ fi
 if [ -z "$TMUX_POWERLINE_LEFT_STATUS_SEGMENTS" ]; then
 	TMUX_POWERLINE_LEFT_STATUS_SEGMENTS=(
 		"tmux_session_info blue black"
-		"hostname magenta black"
+		"codespace_name magenta black"
 		#"mode_indicator 165 0"
 		#"ifstat 30 255"
 		#"ifstat_sys 30 255"
@@ -210,7 +232,6 @@ if [ -z "$TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS" ]; then
 		#"xkb_layout 125 117"
 		"date_day cyan black"
 		"date cyan black ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}"
-		"time cyan black ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}"
 		#"utc_time 235 136 ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}"
 	)
 fi
