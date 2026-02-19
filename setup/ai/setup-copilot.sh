@@ -87,6 +87,7 @@ marketplace_plugins=(
 )
 
 install_plugins=(
+  "chrome-devtools@scarypilot"
   "copilot@scarypilot"
   "azure-devops@scarypilot"
 )
