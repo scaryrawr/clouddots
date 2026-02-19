@@ -2,6 +2,17 @@
 set -e
 
 mkdir -p "$HOME/.copilot"
+
+# Configure config.json with jq
+config_file="$HOME/.copilot/config.json"
+if [[ ! -f "$config_file" ]]; then
+  echo '{}' > "$config_file"
+fi
+
+# Use jq to merge the required settings, preserving existing values
+jq '. + {"alt_screen": true, "bash_env": true, "banner": "always"}' "$config_file" > "$config_file.tmp"
+mv "$config_file.tmp" "$config_file"
+
 cat >"$HOME/.copilot/lsp-config.json" <<'EOF'
 {
   "lspServers": {
