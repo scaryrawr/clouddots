@@ -24,7 +24,7 @@ jq '. + {
   "inlineChat.enableV2": true,
   "inlineChat.lineEmptyHint": true,
   "inlineChat.lineNaturalLanguageHint": true,
-  "search.searchView.semanticSearchBehavior": "always"
+  "search.searchView.semanticSearchBehavior": "always",
+  "github.copilot.chat.responsesApiReasoningEffort": "high"
 }' "$SETTINGS_JSON" >tmp.json
 mv tmp.json "$SETTINGS_JSON"
-
