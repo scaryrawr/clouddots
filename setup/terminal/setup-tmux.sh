@@ -40,6 +40,9 @@ set -g set-titles on
 set -g set-titles-string '🐚 #W'
 set -g allow-rename on
 set -ga update-environment ' CODESPACE_NAME CODESPACE_VSCODE_FOLDER VSCODE_GIT_ASKPASS_NODE VSCODE_GIT_ASKPASS_EXTRA_ARGS VSCODE_GIT_ASKPASS_MAIN VSCODE_GIT_IPC_HANDLE VSCODE_IPC_HOOK_CLI VSCODE_INJECTION VSCODE_NONCE'
+# Eagerly set CODESPACE_NAME in global env — update-environment only syncs on attach,
+# which can miss vars if the server started before they were exported.
+run-shell 'if [ -n "$CODESPACE_NAME" ]; then tmux set-environment -g CODESPACE_NAME "$CODESPACE_NAME"; fi'
 
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'erikw/tmux-powerline'
