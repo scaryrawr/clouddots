@@ -9,6 +9,7 @@ if [ ! -f "$SETTINGS_JSON" ]; then
 fi
 
 jq '. + {
+  "terminal.integrated.tabs.title": "${sequence}",
   "chat.agent.maxRequests": 9001,
   "chat.edits2.enabled": true,
   "chat.math.enabled": true,
