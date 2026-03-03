@@ -13,6 +13,7 @@ elif [[ -x /usr/local/bin/brew ]]; then
 fi
 
 brew install \
+  ast-grep \
   fzf \
   eza \
   zoxide \

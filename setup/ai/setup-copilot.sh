@@ -84,11 +84,13 @@ EOF
 
 marketplace_plugins=(
   "scaryrawr/scarypilot"
+  "ast-grep/agent-skill"
 )
 
 install_plugins=(
   "chrome-devtools@scarypilot"
   "copilot@scarypilot"
+  "ast-grep@ast-grep-marketplace"
 )
 
 # Only add azure-devops plugin if the repo origin is an Azure DevOps URL
