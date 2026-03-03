@@ -95,6 +95,7 @@ install_plugins=(
 origin_url="$(git remote get-url origin 2>/dev/null || true)"
 if [[ "$origin_url" == *"dev.azure.com/"* ]] || [[ "$origin_url" == *".visualstudio.com/"* ]] || [[ "$origin_url" == *"ssh.dev.azure.com:"* ]]; then
   install_plugins+=("azure-devops@scarypilot")
+  install_plugins+=("workiq@copilot-plugins")
 fi
 
 for plugin in "${marketplace_plugins[@]}"; do
