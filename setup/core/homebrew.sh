@@ -30,4 +30,5 @@ brew install \
   neovim \
   lazygit \
   worktrunk \
-  xclip
+  xclip \
+  anomalyco/tap/opencode
