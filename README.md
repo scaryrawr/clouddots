@@ -49,7 +49,7 @@ Scripts are organized by function for clarity and maintainability:
 ## What it does in Codespaces & Devcontainers
 
 - **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file), Claude Code CLI, and Bun.
-- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, worktrunk, and sl.
+- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, worktrunk, sl, xclip, and opencode.
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -68,4 +68,3 @@ Scripts are organized by function for clarity and maintainability:
 - **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @typescript/native-preview
 - **AI tools**: Claude Code CLI (installed via system-deps.sh), copilot-cli (via Homebrew), construct (via Bun)
 - **Shims**: Wrapper scripts for az, bun, bunx, npm, npx, pnpm, pnpx, and yarn that add authentication/environment setup before calling the real binary.
-
