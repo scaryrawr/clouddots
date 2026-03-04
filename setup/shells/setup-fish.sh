@@ -36,6 +36,8 @@ echo 'test -f $HOME/.cargo/env.fish && source $HOME/.cargo/env.fish' >"$HOME/.co
 
 echo 'set -gx SHELL (which fish)' >"$HOME/.config/fish/conf.d/shell.fish"
 
+echo 'set -gx EDITOR nvim' >"$HOME/.config/fish/conf.d/editor.fish"
+
 echo 'set -q BASH_ENV; or set -gx BASH_ENV "$HOME/.bashenv"' >"$HOME/.config/fish/conf.d/bashenv.fish"
 
 # Create gh-ado-codespaces notification configuration
