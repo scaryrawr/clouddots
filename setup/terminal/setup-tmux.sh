@@ -34,6 +34,7 @@ set -g escape-time 10
 set -g focus-events on
 set -g bell-action any
 set -g monitor-activity on
+set -g allow-passthrough on
 set -ga terminal-features ',*:RGB'
 set -g default-terminal "tmux-256color"
 set -g set-titles on
