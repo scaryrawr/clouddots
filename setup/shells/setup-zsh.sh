@@ -107,7 +107,7 @@ prepend_entries=(
   "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'"
   "zstyle ':omz:plugins:eza' 'icons' yes"
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  'ZSH_TMUX_AUTOSTART=$( [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && echo true || echo false )'
+  'ZSH_TMUX_AUTOSTART=false'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
   "bindkey '^[[C' forward-char"
