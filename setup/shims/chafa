@@ -22,16 +22,6 @@ if [ -z "$real_bin" ]; then
   exit 1
 fi
 
-# Rebuild PATH without the shim directory to prevent recursive calls
-shim_dir="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-IFS=':' read -r -a path_parts <<< "$PATH"
-new_path=()
-for p in "${path_parts[@]}"; do
-  [[ -n "$p" && "$p" != "$shim_dir" ]] && new_path+=("$p")
-done
-PATH=$(IFS=':'; printf '%s' "${new_path[*]}")
-export PATH
-
 # Inside tmux, default to symbols mode unless the user already chose a format
 if [ -n "${TMUX:-}" ]; then
   for arg in "$@"; do
