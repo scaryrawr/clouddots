@@ -10,7 +10,7 @@ cp "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
 # Setup .zshenv for environment variables (loaded before .zshrc, faster startup)
 # =============================================================================
 zshenv_entries=(
-  'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/bin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'
+  'export PATH="$HOME/.local/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'
   'export SHELL=${commands[zsh]:-/bin/zsh}'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
@@ -189,6 +189,7 @@ sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copil
 # Just append to zshrc if it's not in it.
 append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+  '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   '(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"'
   '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
   '(( $+commands[nvim] )) && alias vi=nvim'

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Chafa shim: forces symbols mode inside tmux. tmux 3.4+ advertises native
+# sixel support, but the outer terminal (e.g. VS Code / xterm.js) often can't
+# render it, producing gibberish. This shim defaults to --format=symbols
+# inside tmux unless the user explicitly specifies --format or -f.
+
+set -e
+
+cmd_name="$(basename "${BASH_SOURCE[0]}")"
+
+# Find the real binary, skipping this shim to avoid recursive calls
+real_bin=""
+for p in $(type -aP "$cmd_name"); do
+  if [ "$p" != "${BASH_SOURCE[0]}" ] && [ "$p" != "$(readlink -f "${BASH_SOURCE[0]}")" ]; then
+    real_bin="$p"
+    break
+  fi
+done
+
+if [ -z "$real_bin" ]; then
+  echo "Error: could not find real $cmd_name binary" >&2
+  exit 1
+fi
+
+# Inside tmux, default to symbols mode unless the user already chose a format
+if [ -n "${TMUX:-}" ]; then
+  for arg in "$@"; do
+    case "$arg" in
+      --format=*|--format|-f|-f*) exec "$real_bin" "$@" ;;
+    esac
+  done
+  exec "$real_bin" --format=symbols "$@"
+fi
+
+exec "$real_bin" "$@"
