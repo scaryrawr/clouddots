@@ -36,7 +36,7 @@ export PATH
 if [ -n "${TMUX:-}" ]; then
   for arg in "$@"; do
     case "$arg" in
-      --format=*|--format|-f) exec "$real_bin" "$@" ;;
+      --format=*|--format|-f|-f*) exec "$real_bin" "$@" ;;
     esac
   done
   exec "$real_bin" --format=symbols "$@"
