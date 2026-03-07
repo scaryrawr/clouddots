@@ -64,5 +64,5 @@ fish --command="tide configure --auto --style=Rainbow --prompt_colors='16 colors
 fish --command="command -q zoxide && fisher install scaryrawr/zoxide.fish </dev/null"
 fish --command="command -q fzf && fisher install scaryrawr/fzf.fish scaryrawr/monorepo.fish </dev/null && set -Ux fzf_fd_opts --hidden --exclude .git --exclude .hg --exclude .svn && command -q delta && set -Ux fzf_diff_highlighter delta --paging=never"
 fish --command="command -q eza && fisher install scaryrawr/fish-eza </dev/null"
-fish --command="command -q tmux && fisher install scaryrawr/tmux.fish </dev/null && set -Ux TMUX_POWERLINE_BUBBLE_SEPARATORS true && set -Ux TMUX_SSHAUTO_START false"
+fish --command="command -q tmux && fisher install scaryrawr/tmux.fish </dev/null && set -Ux TMUX_POWERLINE_BUBBLE_SEPARATORS true && set -Ux TMUX_SSHAUTO_START true"
 fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
