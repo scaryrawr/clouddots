@@ -146,8 +146,13 @@ prepend_entries=(
   'ZSH_TMUX_AUTOSTART=true'
   'ZSH_TMUX_AUTONAME_SESSION=true'
   'ZSH_TMUX_AUTOREFRESH=true'
+  "bindkey -M viins '^[^?' backward-kill-word # Alt+Backspace"
+  "bindkey -M viins '^[d' kill-word           # Alt+D"
+  "bindkey -M viins '^[[1;3D' backward-word   # Alt+Left"
+  "bindkey -M viins '^[[1;3C' forward-word    # Alt+Right"
+  "bindkey -M viins '^[b' backward-word       # Alt+B"
+  "bindkey -M viins '^[f' forward-word        # Alt+F"
   "bindkey '^[[C' forward-char"
-  "bindkey '^[f' forward-word"
   "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'"
   "zstyle ':autocomplete:*' insert-unambiguous yes"
   "zstyle ':autocomplete:*' widget-style menu-select"
