@@ -79,6 +79,42 @@ if ! grep -Fxq "$az_function" "$HOME/.zshenv"; then
 fi
 
 # =============================================================================
+# Codespace SSH environment loading (mirrors codespaces.fish)
+# =============================================================================
+cs_start="# >>> codespace-env >>>"
+cs_end="# <<< codespace-env <<<"
+
+# Remove existing block if present
+if grep -qF "$cs_start" "$HOME/.zshenv" 2>/dev/null; then
+  awk -v start="$cs_start" -v end="$cs_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$HOME/.zshenv" > "$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
+fi
+
+cat >> "$HOME/.zshenv" << 'CSEOF'
+# >>> codespace-env >>>
+if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]]; then
+  while IFS= read -r line; do
+    key="${line%%=*}"
+    value="${line#*=}"
+    decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
+    if [[ "$key" == "PATH" ]]; then
+      # Merge PATH — append entries not already present so shell-managed paths keep priority
+      IFS=: read -rA env_paths <<< "$decoded_value"
+      for p in "${env_paths[@]}"; do
+        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
+      done
+    else
+      export "$key=$decoded_value"
+    fi
+  done < /workspaces/.codespaces/shared/.env-secrets
+fi
+# <<< codespace-env <<<
+CSEOF
+
+# =============================================================================
 # Clean up old entries that are now in .zshenv
 # =============================================================================
 # Remove exports that are now in .zshenv

@@ -146,3 +146,41 @@ if ! grep -Fxq "$az_function" "$bashenv_file"; then
   # Add the az function
   echo "$az_function" >> "$bashenv_file"
 fi
+
+# =============================================================================
+# Codespace SSH environment loading (mirrors codespaces.fish)
+# =============================================================================
+cs_start="# >>> codespace-env >>>"
+cs_end="# <<< codespace-env <<<"
+
+for target_file in "$HOME/.bashrc" "$bashenv_file"; do
+  # Remove existing block if present
+  if grep -qF "$cs_start" "$target_file" 2>/dev/null; then
+    awk -v start="$cs_start" -v end="$cs_end" '
+      $0 == start { skip=1; next }
+      $0 == end { skip=0; next }
+      !skip
+    ' "$target_file" > "$target_file.tmp" && mv "$target_file.tmp" "$target_file"
+  fi
+
+  cat >> "$target_file" << 'CSEOF'
+# >>> codespace-env >>>
+if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]]; then
+  while IFS= read -r line; do
+    key="${line%%=*}"
+    value="${line#*=}"
+    decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
+    if [[ "$key" == "PATH" ]]; then
+      # Merge PATH — append entries not already present so shell-managed paths keep priority
+      IFS=: read -ra env_paths <<< "$decoded_value"
+      for p in "${env_paths[@]}"; do
+        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
+      done
+    else
+      export "$key=$decoded_value"
+    fi
+  done < /workspaces/.codespaces/shared/.env-secrets
+fi
+# <<< codespace-env <<<
+CSEOF
+done
