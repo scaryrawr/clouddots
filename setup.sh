@@ -13,13 +13,38 @@ script_dir=$(dirname "$(readlink -f "$0")")
 _setup_start=$SECONDS
 
 # Run scripts in parallel, capturing each script's output to a temp file.
-# Prints ✓/✗ per script as jobs complete; dumps captured output on failure.
+# Prints ✓/✗ as each script is awaited in launch order, forwards any [profile]
+# lines from successful scripts, and dumps captured output on failure.
 # Returns 1 if any script failed.
 # Usage: run_parallel "label" script1 script2 ...
 run_parallel() {
   local label="$1"; shift
   local pids=() names=() logs=() name log
   local start=$SECONDS
+  local failed=0
+
+  cleanup_parallel_group() {
+    local pid log_path
+
+    trap - EXIT INT TERM
+
+    for pid in "${pids[@]}"; do
+      if kill -0 "$pid" 2>/dev/null; then
+        kill "$pid" 2>/dev/null || true
+      fi
+    done
+
+    for pid in "${pids[@]}"; do
+      wait "$pid" 2>/dev/null || true
+    done
+
+    for log_path in "${logs[@]}"; do
+      [[ -n "$log_path" ]] && rm -f "$log_path"
+    done
+  }
+
+  trap 'cleanup_parallel_group' EXIT
+  trap 'cleanup_parallel_group; exit 130' INT TERM
 
   echo "[setup] Parallel group: $label"
 
@@ -35,18 +60,20 @@ run_parallel() {
     pids+=($!)
   done
 
-  local failed=0
   for i in "${!pids[@]}"; do
     if wait "${pids[$i]}"; then
       echo "[setup]   ✓ ${names[$i]}"
+      grep -a '^\[profile\]' "${logs[$i]}" || true
     else
       failed=1
       echo "[setup]   ✗ ${names[$i]} FAILED:"
       cat "${logs[$i]}"
     fi
     rm -f "${logs[$i]}"
+    logs[i]=""
   done
 
+  trap - EXIT INT TERM
   echo "[profile] $label: $((SECONDS - start))s"
   if [[ $failed -ne 0 ]]; then
     echo "[setup] ERROR: one or more scripts in '$label' failed"
@@ -109,16 +136,18 @@ echo "[profile] npm-tools: $((SECONDS - _stage))s"
 # Ensure npm global bin is on PATH for subsequent scripts
 export PATH="$HOME/.npm-global/bin:$PATH"
 
-# === Parallel: shells + editors + terminal + ai ===
-# All six groups are independent after core completes.
+# === Parallel: shells + editors + ai ===
+# Terminal setup runs after shells because Worktrunk updates shell rc files.
 echo "[setup] === Parallel Setup ==="
-run_parallel "shells-and-tools" \
+run_parallel "shells-editors-ai" \
   "$script_dir/setup/shells/setup-bash.sh" \
   "$script_dir/setup/shells/setup-zsh.sh" \
   "$script_dir/setup/shells/setup-fish.sh" \
   "$script_dir/setup/setup-editors.sh" \
-  "$script_dir/setup/setup-terminal.sh" \
   "$script_dir/setup/setup-ai.sh"
+
+# === Terminal tools (after shells to avoid rc file races) ===
+bash $BASH_FLAGS "$script_dir/setup/setup-terminal.sh"
 
 # === Shims (after everything) ===
 _stage=$SECONDS
