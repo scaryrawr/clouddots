@@ -22,8 +22,8 @@ brew install \
   bat \
   fd \
   git-delta \
-  ffmpeg-full \
-  imagemagick-full \
+  ffmpeg \
+  imagemagick \
   tmux \
   scaryrawr/formulae/sl \
   marksman \
