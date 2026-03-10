@@ -11,6 +11,33 @@ shopt -s nullglob
 scripts=("$script_dir/terminal"/setup-*.sh)
 shopt -u nullglob
 
+[[ ${#scripts[@]} -eq 0 ]] && exit 0
+
+pids=() names=() logs=()
+start=$SECONDS
+
 for script in "${scripts[@]}"; do
-  bash "${bash_flags[@]}" "$script"
+  name=$(basename "$script" .sh)
+  log=$(mktemp "${TMPDIR:-/tmp}/clouddots-${name}-XXXXXX.log")
+  names+=("$name")
+  logs+=("$log")
+  bash "${bash_flags[@]}" "$script" >"$log" 2>&1 &
+  pids+=($!)
 done
+
+failed=0
+for i in "${!pids[@]}"; do
+  if wait "${pids[$i]}"; then
+    echo "[setup]   ✓ ${names[$i]}"
+  else
+    failed=1
+    echo "[setup]   ✗ ${names[$i]} FAILED:"
+    cat "${logs[$i]}"
+  fi
+  rm -f "${logs[$i]}"
+done
+
+echo "[profile] terminal: $((SECONDS - start))s"
+if [[ $failed -ne 0 ]]; then
+  exit 1
+fi
