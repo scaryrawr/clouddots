@@ -10,8 +10,8 @@ if [[ ! -f "$config_file" ]]; then
 fi
 
 # Use jq to set default settings without overwriting existing user-defined values
-jq '.model //= "claude-opus-4.6"
-    | .reasoning_effort //= "high"
+jq '.model //= "gpt-5.4"
+    | .reasoning_effort //= "xhigh"
     | .alt_screen //= true
     | .experimental //= true
     | .mouse //= true
