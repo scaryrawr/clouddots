@@ -4,7 +4,7 @@
   "description": "Copilot CLI extension — notify over SSH when waiting for input",
   "type": "module",
   "devDependencies": {
-    "@github/copilot-sdk": "*",
-    "@types/node": "*"
+    "@github/copilot-sdk": "^0.1.32",
+    "@types/node": "^24.12.0"
   }
 }
