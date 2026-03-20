@@ -2,8 +2,8 @@
 
 /**
  * Copilot CLI extension that sends desktop notifications over SSH
- * when Copilot is waiting for user input (idle after work, or
- * permission requested).
+ * when Copilot is waiting for user input (idle after work,
+ * permission requested, or ask_user questions).
  *
  * Uses the gh-ado-codespaces notification-sender.sh when available.
  */
@@ -37,6 +37,17 @@ function sendNotification(title, message) {
   execFile(notificationSender, ["send", title, message], () => {});
 }
 
+/**
+ * Return the first non-empty line of a prompt for compact notifications.
+ * @param {string} text
+ */
+function getNotificationLine(text) {
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line.length > 0);
+}
+
 let turnStartTime = 0;
 
 const session = await joinSession({
@@ -60,4 +71,14 @@ session.on("session.idle", () => {
 // Always notify on permission requests — the user needs to act
 session.on("permission.requested", () => {
   sendNotification("Copilot CLI", "Permission needed to continue");
+});
+
+// Notify when the agent explicitly asks the user a question
+session.on("user_input.requested", (event) => {
+  const question = getNotificationLine(event.data.question);
+
+  sendNotification(
+    "Copilot CLI",
+    question ? `Question: ${question}` : "Question waiting for your input",
+  );
 });
