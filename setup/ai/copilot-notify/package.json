@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "name": "copilot-notify",
+  "description": "Copilot CLI extension — notify over SSH when waiting for input",
+  "type": "module",
+  "devDependencies": {
+    "@github/copilot-sdk": "*",
+    "@types/node": "*"
+  }
+}
