@@ -31,5 +31,4 @@ brew install \
   copilot-cli@prerelease \
   neovim \
   lazygit \
-  worktrunk \
-  anomalyco/tap/opencode
+  worktrunk
