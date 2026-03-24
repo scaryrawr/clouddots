@@ -14,7 +14,7 @@ zshenv_entries=(
   'export SHELL=${commands[zsh]:-/bin/zsh}'
   'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
-  'export EDITOR=code'
+  'export EDITOR=nvim'
   'export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"'
   'WORDCHARS=${WORDCHARS/\//}'
 )
