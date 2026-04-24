@@ -7,9 +7,6 @@ config_file="$HOME/.copilot/config.json"
 if [[ ! -f "$config_file" ]]; then
   cat >"$config_file" <<'EOF'
 {
-  "model": "claude-opus-4.6",
-  "reasoning_effort": "high",
-  "alt_screen": true,
   "experimental": true,
   "mouse": true,
   "bash_env": true,
