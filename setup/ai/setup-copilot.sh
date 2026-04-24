@@ -3,21 +3,20 @@ set -e
 
 mkdir -p "$HOME/.copilot"
 
-# Configure config.json with jq
 config_file="$HOME/.copilot/config.json"
 if [[ ! -f "$config_file" ]]; then
-  echo '{}' >"$config_file"
+  cat >"$config_file" <<'EOF'
+{
+  "model": "claude-opus-4.6",
+  "reasoning_effort": "high",
+  "alt_screen": true,
+  "experimental": true,
+  "mouse": true,
+  "bash_env": true,
+  "banner": "always"
+}
+EOF
 fi
-
-# Use jq to set default settings without overwriting existing user-defined values
-jq '.model //= "claude-opus-4.6"
-    | .reasoning_effort //= "high"
-    | .alt_screen //= true
-    | .experimental //= true
-    | .mouse //= true
-    | .bash_env //= true
-    | .banner //= "always"' "$config_file" >"$config_file.tmp"
-mv "$config_file.tmp" "$config_file"
 
 cat >"$HOME/.copilot/lsp-config.json" <<'EOF'
 {
