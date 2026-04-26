@@ -84,13 +84,6 @@ cat >"$HOME/.copilot/lsp-config.json" <<'EOF'
 }
 EOF
 
-# Deploy user-level copilot-notify extension
-script_dir="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-notify_src="$script_dir/copilot-notify/extension.mjs"
-notify_dest="$HOME/.copilot/extensions/copilot-notify"
-mkdir -p "$notify_dest"
-cp -f "$notify_src" "$notify_dest/extension.mjs"
-
 marketplace_plugins=(
   "scaryrawr/scarypilot"
   "ast-grep/agent-skill"

@@ -10,4 +10,4 @@ if node_path="$(command -v node 2>/dev/null)" && [[ "$node_path" == "/usr/bin/no
 fi
 
 # Install language servers and tools via npm
-npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @typescript/native-preview
+npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @typescript/native-preview @mariozechner/pi-coding-agent
