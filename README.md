@@ -27,6 +27,7 @@ Scripts are organized by function for clarity and maintainability:
   - **setup/ai/**: AI tooling config.
     - **setup/ai/setup-claude.sh**: Configures Claude Code plugins.
     - **setup/ai/setup-copilot.sh**: Configures Copilot CLI plugins.
+    - **setup/ai/setup-pi.sh**: Configures the Pi agent.
   - **setup/shims/**: Command wrapper scripts symlinked to `~/.local/bin/`. Intercept commands (az, bun, bunx, npm, npx, pnpm, pnpx, yarn) to add authentication or environment setup before calling the real binary.
   - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**, **setup/setup-shims.sh**: Category runners.
 - **p10k.zsh**: Powerlevel10k theme config file.
