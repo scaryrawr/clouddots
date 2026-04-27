@@ -30,6 +30,7 @@ fi
 # Create or overwrite tmux configuration
 cat >"$HOME/.tmux.conf" <<EOF
 set -g mouse on
+set -g extended-keys on
 set -g escape-time 10
 set -g focus-events on
 set -g bell-action any
