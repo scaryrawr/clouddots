@@ -31,6 +31,7 @@ fi
 cat >"$HOME/.tmux.conf" <<EOF
 set -g mouse on
 set -g extended-keys on
+set -g extended-keys-format csi-u
 set -g escape-time 10
 set -g focus-events on
 set -g bell-action any
