@@ -26,6 +26,7 @@ brew install \
   imagemagick \
   tmux \
   scaryrawr/formulae/sl \
+  modem-dev/tap/hunk \
   marksman \
   helix \
   copilot-cli@prerelease \
