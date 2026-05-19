@@ -133,5 +133,5 @@ for ext in "${extensions[@]}"; do
     continue
   fi
 
-  gh rpeo clone ext "$ext_dest" --depth=1 || true
+  gh repo clone "$ext" "$ext_dest" -- --depth=1 || true
 done
