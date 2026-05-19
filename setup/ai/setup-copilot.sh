@@ -126,10 +126,7 @@ for ext in "${extensions[@]}"; do
   ext_name="$(echo "$ext" | cut -d'/' -f2)"
   ext_dest="$HOME/.copilot/extensions/$ext_name"
   if [[ -d "$ext_dest" ]]; then
-    (
-      pushd "$ext_dest" && git pull
-      popd
-    )
+    (cd "$ext_dest" && git pull) || true
     continue
   fi
 
