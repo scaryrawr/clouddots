@@ -93,19 +93,16 @@ cp -f "$notify_src" "$notify_dest/extension.mjs"
 
 marketplace_plugins=(
   "scaryrawr/scarypilot"
-  "ast-grep/agent-skill"
 )
 
 install_plugins=(
   "copilot@scarypilot"
-  "ast-grep@ast-grep-marketplace"
 )
 
 # Only add azure-devops plugin if the repo origin is an Azure DevOps URL
 origin_url="$(git remote get-url origin 2>/dev/null || true)"
 if [[ "$origin_url" == *"dev.azure.com/"* ]] || [[ "$origin_url" == *".visualstudio.com/"* ]] || [[ "$origin_url" == *"ssh.dev.azure.com:"* ]]; then
   install_plugins+=("azure-devops@scarypilot")
-  install_plugins+=("workiq@copilot-plugins")
 fi
 
 for plugin in "${marketplace_plugins[@]}"; do
