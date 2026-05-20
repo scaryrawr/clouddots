@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "Skipping skill setup: gh is not installed."
