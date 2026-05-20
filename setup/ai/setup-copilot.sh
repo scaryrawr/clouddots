@@ -97,7 +97,6 @@ marketplace_plugins=(
 )
 
 install_plugins=(
-  "chrome-devtools@scarypilot"
   "copilot@scarypilot"
   "ast-grep@ast-grep-marketplace"
 )
