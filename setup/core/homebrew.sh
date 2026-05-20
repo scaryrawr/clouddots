@@ -26,6 +26,7 @@ brew install \
   imagemagick \
   tmux \
   scaryrawr/formulae/sl \
+  scaryrawr/formulae/olaunch \
   modem-dev/tap/hunk \
   marksman \
   helix \
