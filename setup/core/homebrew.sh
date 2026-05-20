@@ -31,6 +31,7 @@ brew install \
   marksman \
   helix \
   copilot-cli@prerelease \
+  codex \
   neovim \
   lazygit \
   worktrunk
