@@ -25,6 +25,7 @@ brew install \
   ffmpeg \
   imagemagick \
   tmux \
+  anomalyco/tap/opencode \
   scaryrawr/formulae/sl \
   scaryrawr/formulae/olaunch \
   modem-dev/tap/hunk \

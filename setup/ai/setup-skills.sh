@@ -11,5 +11,5 @@ if ! gh skill --help >/dev/null 2>&1; then
   exit 0
 fi
 
-gh skill install scaryrawr/agentic skill-creator --scope user --agent universal -f
-gh skill install scaryrawr/agentic image-gen --scope user --agent universal -f
+gh skill install scaryrawr/agentic skill-creator --scope user --agent github-copilot --agent claude-code --agent codex --agent pi --agent opencode -f
+gh skill install scaryrawr/agentic image-gen --scope user --agent github-copilot --agent claude-code --agent codex --agent pi --agent opencode -f
