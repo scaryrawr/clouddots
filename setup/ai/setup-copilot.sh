@@ -112,19 +112,3 @@ done
 for plugin in "${install_plugins[@]}"; do
   copilot plugin install "$plugin" || true
 done
-
-extensions=(
-  "scaryrawr/automode"
-)
-
-mkdir -p "$HOME/.copilot/extensions"
-for ext in "${extensions[@]}"; do
-  ext_name="$(echo "$ext" | cut -d'/' -f2)"
-  ext_dest="$HOME/.copilot/extensions/$ext_name"
-  if [[ -d "$ext_dest" ]]; then
-    (cd "$ext_dest" && git pull) || true
-    continue
-  fi
-
-  gh repo clone "$ext" "$ext_dest" -- --depth=1 || true
-done
