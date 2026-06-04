@@ -43,6 +43,8 @@ echo 'set -gx SHELL (which fish)' >"$HOME/.config/fish/conf.d/shell.fish"
 
 echo 'set -gx EDITOR nvim' >"$HOME/.config/fish/conf.d/editor.fish"
 
+fish --command='set -Ux COPILOT_HOOK_ALLOW_LOCALHOST 1'
+
 echo 'set -q BASH_ENV; or set -gx BASH_ENV "$HOME/.bashenv"' >"$HOME/.config/fish/conf.d/bashenv.fish"
 
 cat >"$HOME/.config/fish/conf.d/codespaces.fish" <<'EOF'

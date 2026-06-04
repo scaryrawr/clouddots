@@ -8,6 +8,7 @@ prepend_entries=(
   'export PATH="$HOME/.local/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'
   'export SHELL=$(which bash)'
   'export EDITOR=nvim'
+  'export COPILOT_HOOK_ALLOW_LOCALHOST=1'
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
 )
 
@@ -110,6 +111,10 @@ touch "$bashenv_file"
 # Keep EDITOR aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+EDITOR=/d; /^EDITOR=/d' "$bashenv_file"
 echo 'export EDITOR=nvim' >>"$bashenv_file"
+
+# Keep Copilot hook localhost access aligned for non-interactive bash shells too
+sed -i '/^export[[:space:]]\+COPILOT_HOOK_ALLOW_LOCALHOST=/d; /^COPILOT_HOOK_ALLOW_LOCALHOST=/d' "$bashenv_file"
+echo 'export COPILOT_HOOK_ALLOW_LOCALHOST=1' >>"$bashenv_file"
 
 # Add az function to BASH_ENV file
 az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
