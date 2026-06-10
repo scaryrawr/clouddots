@@ -97,6 +97,8 @@ marketplace_plugins=(
 
 install_plugins=(
   "copilot@scarypilot"
+  "chrome-devtools@scarypilot"
+  "digivolution@scarypilot"
 )
 
 # Only add azure-devops plugin if the repo origin is an Azure DevOps URL
