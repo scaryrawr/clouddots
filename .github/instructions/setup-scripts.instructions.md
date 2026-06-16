@@ -13,7 +13,7 @@ When creating or modifying setup scripts, follow these rules:
    - Use `[[ -f <path> ]]` or `[[ -d <path> ]]` to check for files/directories
    - Use `grep -qxF` before appending lines to config files
 4. **Clone-or-pull pattern**: For git-based plugins, clone if the directory is missing, `git pull` if it already exists
-5. **Config files**: Prefer checked-in static files copied into place for repo-owned config content. Keep heredocs only for dynamic/generated values or tiny script-local snippets. Preserve idempotency by using `cp -f` for repo-owned clobbering and copy-if-missing for user-seeded defaults.
+5. **Config files**: Prefer checked-in static files under `setup/config/<tool>/` copied into place for repo-owned config content. Resolve them via `config_dir="$script_dir/../config/<tool>"` and `cp -f` for clobbered configs, or copy-if-missing for user-seeded defaults. Always `mkdir -p` the destination first. Keep heredocs only for dynamic/generated values or tiny script-local snippets. See `.github/instructions/setup-config.instructions.md`.
 6. **Variables**: Use `lowercase_with_underscores` for variable names
 7. **Paths**: Use `$HOME` not `~`, and always quote paths
 8. **Install locations**: Binaries go to `~/.local/bin`, configs go to `~/.config/`
