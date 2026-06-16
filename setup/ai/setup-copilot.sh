@@ -15,6 +15,10 @@ if [[ ! -f "$config_file" ]]; then
 EOF
 fi
 
+cat >"$HOME/.copilot/copilot-instructions.md" <<'EOF'
+Always add documentation comments to functions, classes, and complex code blocks.
+EOF
+
 cat >"$HOME/.copilot/lsp-config.json" <<'EOF'
 {
   "lspServers": {
