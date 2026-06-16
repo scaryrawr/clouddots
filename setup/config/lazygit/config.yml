@@ -1,0 +1,10 @@
+git:
+  paging:
+    colorArg: always
+    pager: delta --syntax-theme ansi --paging=never
+os:
+  # Use smart editor wrapper for lazygit too
+  edit: '{{editor}} {{filename}}'
+  editAtLine: '{{editor}} {{filename}}'
+  editAtLineAndWait: 'git-editor {{filename}}'
+  editInTerminal: true

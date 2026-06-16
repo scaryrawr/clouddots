@@ -2,13 +2,14 @@
 set -e
 
 # Get the directory where this script lives (for helper scripts)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+config_dir="$script_dir/../config/lazygit"
 
 # Install helper scripts to ~/.local/bin
 mkdir -p "$HOME/.local/bin"
-cp "$SCRIPT_DIR/git-editor.sh" "$HOME/.local/bin/git-editor"
-cp "$SCRIPT_DIR/git-difftool.sh" "$HOME/.local/bin/git-difftool"
-cp "$SCRIPT_DIR/git-mergetool.sh" "$HOME/.local/bin/git-mergetool"
+cp "$script_dir/git-editor.sh" "$HOME/.local/bin/git-editor"
+cp "$script_dir/git-difftool.sh" "$HOME/.local/bin/git-difftool"
+cp "$script_dir/git-mergetool.sh" "$HOME/.local/bin/git-mergetool"
 chmod +x "$HOME/.local/bin/git-editor" "$HOME/.local/bin/git-difftool" "$HOME/.local/bin/git-mergetool"
 
 # Core git aliases and settings
@@ -57,15 +58,4 @@ fi
 
 # Configure lazygit with delta pager
 mkdir -p "$HOME/.config/lazygit"
-cat >"$HOME/.config/lazygit/config.yml" <<'EOF'
-git:
-  paging:
-    colorArg: always
-    pager: delta --syntax-theme ansi --paging=never
-os:
-  # Use smart editor wrapper for lazygit too
-  edit: '{{editor}} {{filename}}'
-  editAtLine: '{{editor}} {{filename}}'
-  editAtLineAndWait: 'git-editor {{filename}}'
-  editInTerminal: true
-EOF
+cp -f "$config_dir/config.yml" "$HOME/.config/lazygit/config.yml"
