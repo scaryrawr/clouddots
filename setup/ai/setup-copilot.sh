@@ -1,95 +1,20 @@
 #!/usr/bin/env bash
 set -e
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+config_dir="$script_dir/../config/copilot"
+
 mkdir -p "$HOME/.copilot"
 
 config_file="$HOME/.copilot/config.json"
 if [[ ! -f "$config_file" ]]; then
-  cat >"$config_file" <<'EOF'
-{
-  "experimental": true,
-  "mouse": true,
-  "bash_env": true,
-  "banner": "always"
-}
-EOF
+  cp -f "$config_dir/config.json" "$config_file"
 fi
 
-cat >"$HOME/.copilot/copilot-instructions.md" <<'EOF'
-Always add documentation comments to functions, classes, and complex code blocks.
-EOF
-
-cat >"$HOME/.copilot/lsp-config.json" <<'EOF'
-{
-  "lspServers": {
-    "typescript": {
-      "command": "npx",
-      "args": ["-y", "@typescript/native-preview", "--lsp", "--stdio"],
-      "fileExtensions": {
-        ".ts": "typescript",
-        ".tsx": "typescriptreact",
-        ".js": "javascript",
-        ".jsx": "javascriptreact",
-        ".mts": "typescript",
-        ".cts": "typescript",
-        ".mjs": "javascript",
-        ".cjs": "javascript"
-      }
-    },
-    "rust-analyzer": {
-      "command": "rust-analyzer",
-      "fileExtensions": {
-        ".rs": "rust"
-      }
-    },
-    "csharp": {
-      "command": "dotnet",
-      "args": [
-        "tool",
-        "run",
-        "roslyn-language-server",
-        "--stdio",
-        "--autoLoadProjects"
-      ],
-      "fileExtensions": {
-        ".cs": "csharp",
-        ".csx": "csharp"
-      }
-    },
-    "go": {
-      "command": "gopls",
-      "args": ["serve"],
-      "fileExtensions": {
-        ".go": "go"
-      }
-    },
-    "zig": {
-      "command": "zls",
-      "fileExtensions": {
-        ".zig": "zig",
-        ".zon": "zig"
-      }
-    },
-    "clangd": {
-      "command": "clangd",
-      "fileExtensions": {
-        ".c": "c",
-        ".h": "c",
-        ".cpp": "cpp",
-        ".hpp": "cpp",
-        ".cc": "cpp",
-        ".cxx": "cpp",
-        ".hxx": "cpp",
-        ".m": "objective-c",
-        ".mm": "objective-cpp"
-      }
-    }
-  }
-}
-EOF
+cp -f "$config_dir/copilot-instructions.md" "$HOME/.copilot/copilot-instructions.md"
+cp -f "$config_dir/lsp-config.json" "$HOME/.copilot/lsp-config.json"
 
 # Deploy user-level copilot-notify extension
-script_dir="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 notify_src="$script_dir/copilot-notify/extension.mjs"
 notify_dest="$HOME/.copilot/extensions/copilot-notify"
 mkdir -p "$notify_dest"

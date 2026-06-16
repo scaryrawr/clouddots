@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+set -e
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+config_dir="$script_dir/../config/playwright"
 
 # setup playwright skills globally
 (
@@ -7,11 +11,4 @@
 )
 
 mkdir -p "$HOME/.playwright"
-cat >"$HOME/.playwright/cli.config.json" <<'EOF'
-{
-  "browser": {
-    "browserName": "chromium",
-    "cdpEndpoint": "http://127.0.0.1:9222"
-  }
-}
-EOF
+cp -f "$config_dir/cli.config.json" "$HOME/.playwright/cli.config.json"
