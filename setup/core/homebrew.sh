@@ -35,4 +35,5 @@ brew install \
   codex \
   neovim \
   lazygit \
+  uv \
   worktrunk
