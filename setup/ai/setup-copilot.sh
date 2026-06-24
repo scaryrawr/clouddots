@@ -6,9 +6,15 @@ config_dir="$script_dir/../config/copilot"
 
 mkdir -p "$HOME/.copilot"
 
-config_file="$HOME/.copilot/config.json"
-if [[ ! -f "$config_file" ]]; then
-  cp -f "$config_dir/config.json" "$config_file"
+config_file="$HOME/.copilot/settings.json"
+dotfiles_settings="$config_dir/settings.json"
+if [[ -f "$config_file" ]]; then
+  # Merge dotfiles settings into the existing settings, letting dotfiles values win.
+  tmp_settings="$(mktemp)"
+  jq -s '.[0] * .[1]' "$config_file" "$dotfiles_settings" >"$tmp_settings"
+  mv "$tmp_settings" "$config_file"
+else
+  cp -f "$dotfiles_settings" "$config_file"
 fi
 
 cp -f "$config_dir/copilot-instructions.md" "$HOME/.copilot/copilot-instructions.md"
