@@ -1,0 +1,48 @@
+{
+  "banner": "always",
+  "experimental": true,
+  "mouse": true,
+  "bashEnv": true,
+  "allowedUrls": [
+    "http://localhost:1234",
+    "https://api.github.com",
+    "https://agentskills.io",
+    "https://docs.github.com",
+    "https://learn.microsoft.com",
+    "http://127.0.0.1:14892",
+    "http://127.0.0.1:43877"
+  ],
+  "theme": "auto",
+  "alt_screen": true,
+  "effortLevel": "high",
+  "contextTier": "long_context",
+  "colorMode": "default",
+  "subagents": {
+    "agents": {
+      "explore": {
+        "model": "gpt-5.4-mini",
+        "effortLevel": "medium"
+      },
+      "task": {
+        "model": "gpt-5.4-mini",
+        "effortLevel": "high"
+      },
+      "general-purpose": {
+        "model": "gpt-5.5",
+        "effortLevel": "high",
+        "contextTier": "long_context"
+      },
+      "code-review": {
+        "model": "complementary"
+      },
+      "research": {
+        "model": "gpt-5.5",
+        "effortLevel": "high",
+        "contextTier": "long_context"
+      },
+      "security-review": {
+        "model": "complementary"
+      }
+    }
+  }
+}
