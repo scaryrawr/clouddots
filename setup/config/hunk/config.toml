@@ -1,0 +1,4 @@
+theme = "catppuccin-mocha"
+mode = "auto"
+watch = true
+transparent_background = true
