@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-# Smart git difftool wrapper - uses VS Code when in VS Code terminal, otherwise delta/diff
+# Smart git difftool wrapper - uses VS Code when in VS Code terminal, otherwise hunk/delta/diff
 # Usage: git-difftool.sh <local> <remote>
 
 # Validate required arguments
@@ -23,6 +23,9 @@ fi
 if [[ -n "$VSCODE_INJECTION" || -n "$TERM_PROGRAM" && "$TERM_PROGRAM" == "vscode" ]]; then
   # In VS Code terminal - use code diff
   exec code --wait --diff "$LOCAL" "$REMOTE"
+elif command -v hunk &>/dev/null; then
+  # Native CLI - prefer hunk's interactive review viewer
+  exec hunk difftool "$LOCAL" "$REMOTE"
 elif command -v delta &>/dev/null; then
   exec delta "$LOCAL" "$REMOTE"
 else

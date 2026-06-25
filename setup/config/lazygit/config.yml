@@ -8,3 +8,16 @@ os:
   editAtLine: '{{editor}} {{filename}}'
   editAtLineAndWait: 'git-editor {{filename}}'
   editInTerminal: true
+customCommands:
+  # Open the working-tree changes in hunk's interactive review viewer
+  - key: '<c-h>'
+    context: 'global'
+    description: 'Review working tree changes in hunk'
+    command: 'hunk diff'
+    subprocess: true
+  # Review the selected commit in hunk
+  - key: 'H'
+    context: 'commits'
+    description: 'Review selected commit in hunk'
+    command: 'hunk show {{.SelectedLocalCommit.Hash}}'
+    subprocess: true
