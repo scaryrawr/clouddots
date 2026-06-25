@@ -42,10 +42,16 @@ git config --global difftool.smartdiff.cmd "$HOME/.local/bin/git-difftool \$LOCA
 git config --global merge.tool smartmerge
 git config --global mergetool.smartmerge.cmd "$HOME/.local/bin/git-mergetool \$REMOTE \$LOCAL \$BASE \$MERGED"
 
-# Configure delta if available (provides rich CLI diff experience)
+# Use hunk as the git pager when available (interactive review on a TTY,
+# transparent pass-through when piped). See https://github.com/modem-dev/hunk
+if command -v hunk &>/dev/null; then
+  git config --global core.pager "hunk pager"
+fi
+
+# Configure delta if available. Delta still powers the interactive add filter
+# (git add -p), where hunk's full-screen TUI cannot act as a streaming filter.
 if command -v delta &>/dev/null; then
   git config --global interactive.diffFilter 'delta --color-only'
-  git config --global core.pager delta
   git config --global delta.line-numbers true
   git config --global delta.navigate true
   git config --global delta.side-by-side true

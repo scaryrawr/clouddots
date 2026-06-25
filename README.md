@@ -22,7 +22,7 @@ Scripts are organized by function for clarity and maintainability:
     - **setup/editors/setup-vscode.sh**
   - **setup/terminal/**: Terminal tools config.
     - **setup/terminal/setup-tmux.sh**
-    - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod)
+    - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod): Wires [hunk](https://github.com/modem-dev/hunk) as the git pager and difftool; delta stays for `git add -p` and fzf previews.
     - **setup/terminal/setup-bat.sh**: Configures bat theme.
   - **setup/ai/**: AI tooling config.
     - **setup/ai/setup-claude.sh**: Configures Claude Code plugins.
@@ -50,7 +50,7 @@ Scripts are organized by function for clarity and maintainability:
 ## What it does in Codespaces & Devcontainers
 
 - **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file), Claude Code CLI, and Bun.
-- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, tmux, helix, neovim, lazygit, marksman, copilot-cli, worktrunk, sl, and xclip.
+- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, hunk, tmux, helix, neovim, lazygit, marksman, copilot-cli, worktrunk, sl, and xclip.
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)

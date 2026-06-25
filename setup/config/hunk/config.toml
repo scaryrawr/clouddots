@@ -1,4 +1,6 @@
 theme = "catppuccin-mocha"
 mode = "auto"
-watch = true
+# Keep watch opt-in (pass `hunk diff --watch` explicitly). A global watch = true
+# breaks `hunk pager` because stdin-backed diffs cannot be reopened to watch.
+watch = false
 transparent_background = true
