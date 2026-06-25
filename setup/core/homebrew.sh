@@ -37,3 +37,28 @@ brew install \
   lazygit \
   uv \
   worktrunk
+
+# Language toolchains and LSP servers/formatters expected by our LazyVim config
+# (https://github.com/scaryrawr/lazyvim). These are normally installed on demand
+# by Mason, which fails on some Codespaces; pre-install them so the enabled
+# language extras work out-of-the-box. Servers already provided elsewhere are
+# omitted: marksman (above), pyright/typescript/tsgo/json/eslint LSPs (npm-tools.sh),
+# python via uv.
+brew install \
+  go \
+  gopls \
+  gofumpt \
+  delve \
+  rust \
+  rust-analyzer \
+  zig \
+  zls \
+  llvm \
+  cmake \
+  cmake-language-server \
+  ruff \
+  taplo \
+  yaml-language-server \
+  oxlint \
+  prettier \
+  markdownlint-cli2
