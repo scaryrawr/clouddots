@@ -9,7 +9,10 @@ if [ ! -z "$SSH_CONNECTION" ]
       if test "$key" = PATH
           for p in (string split : $decodedValue)
               test -n "$p"; or continue
-              if string match -q -- "$HOME/.nvm/versions/node/*/bin" "$p"
+              set -l nvm_dir "$HOME/.nvm"
+              set -q NVM_DIR; and set nvm_dir "$NVM_DIR"
+              set -l escaped_nvm_dir (string escape --style=regex "$nvm_dir")
+              if string match -qr "^$escaped_nvm_dir/versions/node/[^/]+/bin\$" -- "$p"; or string match -qr '/versions/node/[^/]+/bin$' -- "$p"
                   set remaining_paths
                   for existing_path in $PATH
                       test "$existing_path" != "$p"; and set -a remaining_paths "$existing_path"

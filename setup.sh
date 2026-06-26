@@ -29,11 +29,16 @@ prepend_path_entry() {
 restore_preserved_nvm_node_paths() {
   local executable_path
   local bin_dir
+  local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
 
   for executable_path in "$original_node_path" "$original_npm_path"; do
     [[ -n "$executable_path" ]] || continue
     bin_dir="$(dirname "$executable_path")"
-    [[ "$bin_dir" == "$HOME/.nvm/versions/node/"*"/bin" ]] && prepend_path_entry "$bin_dir"
+    case "$bin_dir" in
+      "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
+        prepend_path_entry "$bin_dir"
+        ;;
+    esac
   done
 }
 

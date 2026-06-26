@@ -108,16 +108,34 @@ fi
 
 cat >> "$HOME/.bashrc" << 'NVMEOF'
 # >>> nvm-path-priority >>>
-for nvm_node_bin in "$HOME"/.nvm/versions/node/*/bin; do
-  [[ -d "$nvm_node_bin" && ":$PATH:" == *":$nvm_node_bin:"* ]] || continue
-  IFS=: read -ra current_paths <<< "$PATH"
-  new_path="$nvm_node_bin"
-  for existing_path in "${current_paths[@]}"; do
-    [[ -n "$existing_path" && "$existing_path" != "$nvm_node_bin" ]] && new_path="$new_path:$existing_path"
+IFS=: read -ra current_paths <<< "$PATH"
+nvm_node_bins=()
+remaining_paths=()
+nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+for existing_path in "${current_paths[@]}"; do
+  [[ -n "$existing_path" ]] || continue
+  case "$existing_path" in
+    "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
+      nvm_node_bins+=("$existing_path")
+      ;;
+    *)
+      remaining_paths+=("$existing_path")
+      ;;
+  esac
+done
+if ((${#nvm_node_bins[@]})); then
+  new_path=""
+  for existing_path in "${nvm_node_bins[@]}" "${remaining_paths[@]}"; do
+    [[ -n "$existing_path" ]] || continue
+    if [[ -z "$new_path" ]]; then
+      new_path="$existing_path"
+    else
+      new_path="$new_path:$existing_path"
+    fi
   done
   export PATH="$new_path"
-done
-unset nvm_node_bin current_paths new_path existing_path
+fi
+unset current_paths nvm_node_bins remaining_paths nvm_dir new_path existing_path
 # <<< nvm-path-priority <<<
 NVMEOF
 
@@ -145,16 +163,34 @@ fi
 
 cat >> "$bashenv_file" << 'NVMEOF'
 # >>> nvm-path-priority >>>
-for nvm_node_bin in "$HOME"/.nvm/versions/node/*/bin; do
-  [[ -d "$nvm_node_bin" && ":$PATH:" == *":$nvm_node_bin:"* ]] || continue
-  IFS=: read -ra current_paths <<< "$PATH"
-  new_path="$nvm_node_bin"
-  for existing_path in "${current_paths[@]}"; do
-    [[ -n "$existing_path" && "$existing_path" != "$nvm_node_bin" ]] && new_path="$new_path:$existing_path"
+IFS=: read -ra current_paths <<< "$PATH"
+nvm_node_bins=()
+remaining_paths=()
+nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+for existing_path in "${current_paths[@]}"; do
+  [[ -n "$existing_path" ]] || continue
+  case "$existing_path" in
+    "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
+      nvm_node_bins+=("$existing_path")
+      ;;
+    *)
+      remaining_paths+=("$existing_path")
+      ;;
+  esac
+done
+if ((${#nvm_node_bins[@]})); then
+  new_path=""
+  for existing_path in "${nvm_node_bins[@]}" "${remaining_paths[@]}"; do
+    [[ -n "$existing_path" ]] || continue
+    if [[ -z "$new_path" ]]; then
+      new_path="$existing_path"
+    else
+      new_path="$new_path:$existing_path"
+    fi
   done
   export PATH="$new_path"
-done
-unset nvm_node_bin current_paths new_path existing_path
+fi
+unset current_paths nvm_node_bins remaining_paths nvm_dir new_path existing_path
 # <<< nvm-path-priority <<<
 NVMEOF
 
@@ -236,16 +272,22 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
       IFS=: read -ra env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
         [[ -n "$p" ]] || continue
-        if [[ "$p" == "$HOME/.nvm/versions/node/"*"/bin" ]]; then
+        nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+        case "$p" in
+          "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
           IFS=: read -ra current_paths <<< "$PATH"
           new_path="$p"
           for existing_path in "${current_paths[@]}"; do
             [[ -n "$existing_path" && "$existing_path" != "$p" ]] && new_path="$new_path:$existing_path"
           done
           export PATH="$new_path"
-        elif [[ ":$PATH:" != *":$p:"* ]]; then
+            ;;
+          *)
+        if [[ ":$PATH:" != *":$p:"* ]]; then
           export PATH="$PATH:$p"
         fi
+            ;;
+        esac
       done
     else
       export "$key=$decoded_value"
