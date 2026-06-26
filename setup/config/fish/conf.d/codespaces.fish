@@ -10,7 +10,7 @@ if [ ! -z "$SSH_CONNECTION" ]
           for p in (string split : $decodedValue)
               test -n "$p"; and not contains -- $p $PATH; and set -gx PATH $PATH $p
           end
-          clouddots_prioritize_nvm_node_path
+functions -q clouddots_prioritize_nvm_node_path; and clouddots_prioritize_nvm_node_path
           continue
       end
       set -gx $key $decodedValue
