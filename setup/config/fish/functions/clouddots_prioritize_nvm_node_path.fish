@@ -10,7 +10,13 @@ function clouddots_prioritize_nvm_node_path
     set -l nvm_path_regex '/nvm/versions/node/[^/]+/bin$'
 
     for existing_path in $PATH
-        if string match -qr "$nvm_dir_regex" -- "$existing_path"; or string match -qr "$nvm_path_regex" -- "$existing_path"
+        set -l matches_configured_nvm_dir false
+        set -l matches_nvm_install_path false
+
+        string match -qr "$nvm_dir_regex" -- "$existing_path"; and set matches_configured_nvm_dir true
+        string match -qr "$nvm_path_regex" -- "$existing_path"; and set matches_nvm_install_path true
+
+        if test "$matches_configured_nvm_dir" = true; or test "$matches_nvm_install_path" = true
             set -a nvm_node_bins "$existing_path"
         else
             set -a remaining_paths "$existing_path"
