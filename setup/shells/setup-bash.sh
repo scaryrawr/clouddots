@@ -3,6 +3,7 @@ set -e
 
 script_dir=$(dirname "$(readlink -f "$0")")
 shell_config_dir="$HOME/.config/clouddots"
+nvm_priority_source='[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"'
 
 mkdir -p "$shell_config_dir"
 cp -f "$script_dir/../config/shells/nvm-path-priority.sh" "$shell_config_dir/nvm-path-priority.sh"
@@ -42,7 +43,7 @@ append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
-  '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"'
+  "$nvm_priority_source"
   'az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
   '[ -f "$HOME/notification-sender.sh" ] && source "$HOME/notification-sender.sh"'
 )
@@ -140,7 +141,7 @@ sed -i '/^export[[:space:]]\+EDITOR=/d; /^EDITOR=/d' "$bashenv_file"
 echo 'export EDITOR=nvim' >>"$bashenv_file"
 
 # Keep nvm-managed Node ahead of Homebrew in non-interactive bash shells too
-grep -Fxq '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"' "$bashenv_file" || echo '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"' >>"$bashenv_file"
+grep -Fxq "$nvm_priority_source" "$bashenv_file" || echo "$nvm_priority_source" >>"$bashenv_file"
 
 # Keep Copilot hook localhost access aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+COPILOT_HOOK_ALLOW_LOCALHOST=/d; /^COPILOT_HOOK_ALLOW_LOCALHOST=/d' "$bashenv_file"

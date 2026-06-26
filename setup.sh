@@ -20,7 +20,8 @@ prepend_path_entry() {
 
   IFS=: read -r -a path_parts <<< "$PATH"
   for existing_path in "${path_parts[@]}"; do
-    [[ -n "$existing_path" && "$existing_path" != "$path_entry" ]] && new_path="$new_path:$existing_path"
+    [[ -z "$existing_path" || "$existing_path" == "$path_entry" ]] && continue
+    new_path="$new_path:$existing_path"
   done
 
   export PATH="$new_path"

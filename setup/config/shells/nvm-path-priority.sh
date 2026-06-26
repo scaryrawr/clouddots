@@ -8,6 +8,7 @@ clouddots_prioritize_nvm_node_path() {
   local remaining_paths=""
 
   if [[ -n "${ZSH_VERSION:-}" ]]; then
+    # zsh does not split scalar expansions on IFS by default; use its PATH-tied array.
     path_entries=("${path[@]}")
   else
     IFS=: read -r -a path_entries <<< "${PATH:-}"
