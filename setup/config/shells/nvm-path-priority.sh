@@ -17,9 +17,9 @@ clouddots_prioritize_nvm_node_path() {
   for path_entry in "${path_entries[@]}"; do
     [[ -n "$path_entry" ]] || continue
     case "$path_entry" in
-      # Intentionally also match existing nvm-style PATH entries outside NVM_DIR,
+      # Also match existing nvm PATH entries outside NVM_DIR,
       # such as devcontainer feature installs under /usr/local/share/nvm.
-      "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
+      "$nvm_dir"/versions/node/*/bin|*/nvm/versions/node/*/bin)
         if [[ -z "$nvm_paths" ]]; then
           nvm_paths="$path_entry"
         else
