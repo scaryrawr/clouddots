@@ -109,8 +109,7 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
       # Merge PATH — append entries not already present so shell-managed paths keep priority.
       IFS=: read -rA env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
-        [[ -n "$p" ]] || continue
-        [[ ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
+        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
       done
       [[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"
     else

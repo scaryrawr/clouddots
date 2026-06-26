@@ -8,10 +8,7 @@ if [ ! -z "$SSH_CONNECTION" ]
       # Move Codespaces nvm node bins ahead of Homebrew so pre-installed nvm remains active.
       if test "$key" = PATH
           for p in (string split : $decodedValue)
-              test -n "$p"; or continue
-              if not contains -- $p $PATH
-                  set -gx PATH $PATH $p
-              end
+              test -n "$p"; and not contains -- $p $PATH; and set -gx PATH $PATH $p
           end
           clouddots_prioritize_nvm_node_path
           continue
