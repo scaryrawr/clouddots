@@ -2,6 +2,7 @@
 # Keep pre-existing nvm-managed Node paths ahead of Homebrew.
 clouddots_prioritize_nvm_node_path() {
   local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+  nvm_dir="${nvm_dir%/}"
   local path_entry
   local path_entries=()
   local nvm_paths=""
