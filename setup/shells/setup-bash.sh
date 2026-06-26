@@ -275,17 +275,17 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
         nvm_dir="${NVM_DIR:-$HOME/.nvm}"
         case "$p" in
           "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-          IFS=: read -ra current_paths <<< "$PATH"
-          new_path="$p"
-          for existing_path in "${current_paths[@]}"; do
-            [[ -n "$existing_path" && "$existing_path" != "$p" ]] && new_path="$new_path:$existing_path"
-          done
-          export PATH="$new_path"
+            IFS=: read -ra current_paths <<< "$PATH"
+            new_path="$p"
+            for existing_path in "${current_paths[@]}"; do
+              [[ -n "$existing_path" && "$existing_path" != "$p" ]] && new_path="$new_path:$existing_path"
+            done
+            export PATH="$new_path"
             ;;
           *)
-        if [[ ":$PATH:" != *":$p:"* ]]; then
-          export PATH="$PATH:$p"
-        fi
+            if [[ ":$PATH:" != *":$p:"* ]]; then
+              export PATH="$PATH:$p"
+            fi
             ;;
         esac
       done
