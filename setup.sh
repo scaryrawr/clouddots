@@ -31,6 +31,7 @@ restore_preserved_nvm_node_paths() {
   local executable_path
   local bin_dir
   local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+  nvm_dir="${nvm_dir%/}"
 
   for executable_path in "$original_node_path" "$original_npm_path"; do
     [[ -n "$executable_path" ]] || continue
