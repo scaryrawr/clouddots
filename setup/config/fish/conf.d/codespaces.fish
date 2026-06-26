@@ -5,9 +5,19 @@ if [ ! -z "$SSH_CONNECTION" ]
       set decodedValue (echo $value | base64 -d | string collect)
       # Merge PATH - append entries from .env-secrets that aren't already present
       # so shell-managed paths (brew.fish, fnm.fish, etc.) keep priority.
+      # Move Codespaces nvm node bins ahead of Homebrew so pre-installed nvm remains active.
       if test "$key" = PATH
           for p in (string split : $decodedValue)
-              test -n "$p"; and not contains -- $p $PATH; and set -gx PATH $PATH $p
+              test -n "$p"; or continue
+              if string match -q -- "$HOME/.nvm/versions/node/*/bin" "$p"
+                  set remaining_paths
+                  for existing_path in $PATH
+                      test "$existing_path" != "$p"; and set -a remaining_paths "$existing_path"
+                  end
+                  set -gx PATH "$p" $remaining_paths
+              else if not contains -- $p $PATH
+                  set -gx PATH $PATH $p
+              end
           end
           continue
       end

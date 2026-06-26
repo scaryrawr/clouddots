@@ -102,10 +102,21 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
     value="${line#*=}"
     decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
     if [[ "$key" == "PATH" ]]; then
-      # Merge PATH — append entries not already present so shell-managed paths keep priority
+      # Merge PATH — append entries not already present so shell-managed paths keep priority.
+      # Move Codespaces nvm node bins ahead of Homebrew so pre-installed nvm remains active.
       IFS=: read -rA env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
-        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
+        [[ -n "$p" ]] || continue
+        if [[ "$p" == "$HOME/.nvm/versions/node/"*"/bin" ]]; then
+          IFS=: read -rA current_paths <<< "$PATH"
+          new_path="$p"
+          for existing_path in "${current_paths[@]}"; do
+            [[ -n "$existing_path" && "$existing_path" != "$p" ]] && new_path="$new_path:$existing_path"
+          done
+          export PATH="$new_path"
+        elif [[ ":$PATH:" != *":$p:"* ]]; then
+          export PATH="$PATH:$p"
+        fi
       done
     else
       export "$key=$decoded_value"
