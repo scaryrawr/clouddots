@@ -5,10 +5,12 @@ if [ ! -z "$SSH_CONNECTION" ]
       set decodedValue (echo $value | base64 -d | string collect)
       # Merge PATH - append entries from .env-secrets that aren't already present
       # so shell-managed paths (brew.fish, fnm.fish, etc.) keep priority.
+      # Move Codespaces nvm node bins ahead of Homebrew so pre-installed nvm remains active.
       if test "$key" = PATH
           for p in (string split : $decodedValue)
               test -n "$p"; and not contains -- $p $PATH; and set -gx PATH $PATH $p
           end
+functions -q clouddots_prioritize_nvm_node_path; and clouddots_prioritize_nvm_node_path
           continue
       end
       set -gx $key $decodedValue

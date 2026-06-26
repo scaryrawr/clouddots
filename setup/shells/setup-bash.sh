@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
+script_dir=$(dirname "$(readlink -f "$0")")
+shell_config_dir="$HOME/.config/clouddots"
+nvm_priority_source='[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"'
+
+mkdir -p "$shell_config_dir"
+cp -f "$script_dir/../config/shells/nvm-path-priority.sh" "$shell_config_dir/nvm-path-priority.sh"
+
 touch "$HOME/.bashrc"
 
 # Just prepend to bashrc if it's not in it.
@@ -36,6 +43,7 @@ append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
+  "$nvm_priority_source"
   'az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
   '[ -f "$HOME/notification-sender.sh" ] && source "$HOME/notification-sender.sh"'
 )
@@ -94,6 +102,18 @@ for entry in "${append_entries[@]}"; do
   grep -Fxq "$entry" "$HOME/.bashrc" || echo "$entry" >>"$HOME/.bashrc"
 done
 
+# Remove inline nvm path priority blocks from previous versions
+nvm_path_start="# >>> nvm-path-priority >>>"
+nvm_path_end="# <<< nvm-path-priority <<<"
+
+if grep -qF "$nvm_path_start" "$HOME/.bashrc" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$HOME/.bashrc" > "$HOME/.bashrc.tmp" && mv "$HOME/.bashrc.tmp" "$HOME/.bashrc"
+fi
+
 # =============================================================================
 # Setup BASH_ENV for non-interactive shells
 # =============================================================================
@@ -108,9 +128,20 @@ fi
 # Create bashenv file if it doesn't exist
 touch "$bashenv_file"
 
+if grep -qF "$nvm_path_start" "$bashenv_file" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$bashenv_file" > "$bashenv_file.tmp" && mv "$bashenv_file.tmp" "$bashenv_file"
+fi
+
 # Keep EDITOR aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+EDITOR=/d; /^EDITOR=/d' "$bashenv_file"
 echo 'export EDITOR=nvim' >>"$bashenv_file"
+
+# Keep nvm-managed Node ahead of Homebrew in non-interactive bash shells too
+grep -Fxq "$nvm_priority_source" "$bashenv_file" || echo "$nvm_priority_source" >>"$bashenv_file"
 
 # Keep Copilot hook localhost access aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+COPILOT_HOOK_ALLOW_LOCALHOST=/d; /^COPILOT_HOOK_ALLOW_LOCALHOST=/d' "$bashenv_file"
@@ -181,11 +212,12 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
     value="${line#*=}"
     decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
     if [[ "$key" == "PATH" ]]; then
-      # Merge PATH — append entries not already present so shell-managed paths keep priority
+      # Merge PATH — append entries not already present so shell-managed paths keep priority.
       IFS=: read -ra env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
         [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
       done
+      [[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"
     else
       export "$key=$decoded_value"
     fi

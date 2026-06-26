@@ -2,6 +2,10 @@
 set -e
 
 script_dir=$(dirname "$(readlink -f "$0")")
+shell_config_dir="$HOME/.config/clouddots"
+
+mkdir -p "$shell_config_dir"
+cp -f "$script_dir/../config/shells/nvm-path-priority.sh" "$shell_config_dir/nvm-path-priority.sh"
 
 cp "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"
 cp "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
@@ -102,11 +106,12 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
     value="${line#*=}"
     decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
     if [[ "$key" == "PATH" ]]; then
-      # Merge PATH — append entries not already present so shell-managed paths keep priority
+      # Merge PATH — append entries not already present so shell-managed paths keep priority.
       IFS=: read -rA env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
         [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
       done
+      [[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"
     else
       export "$key=$decoded_value"
     fi
@@ -114,6 +119,18 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
 fi
 # <<< codespace-env <<<
 CSEOF
+
+# Remove inline nvm path priority blocks from previous versions
+nvm_path_start="# >>> nvm-path-priority >>>"
+nvm_path_end="# <<< nvm-path-priority <<<"
+
+if grep -qF "$nvm_path_start" "$HOME/.zshenv" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$HOME/.zshenv" > "$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
+fi
 
 # =============================================================================
 # Clean up old entries that are now in .zshenv
@@ -233,6 +250,7 @@ append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   '(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"'
+  '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"'
   '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
   '(( $+commands[nvim] )) && alias vi=nvim'
   '(( $+commands[nvim] )) && alias vim=nvim'
@@ -244,3 +262,11 @@ append_entries=(
 for entry in "${append_entries[@]}"; do
   grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >>"$HOME/.zshrc"
 done
+
+if grep -qF "$nvm_path_start" "$HOME/.zshrc" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+fi
