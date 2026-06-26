@@ -32,7 +32,6 @@ marketplace_plugins=(
 
 install_plugins=(
   "copilot@scarypilot"
-  "chrome-devtools@scarypilot"
   "digivolution@scarypilot"
 )
 
