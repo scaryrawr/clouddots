@@ -94,6 +94,33 @@ for entry in "${append_entries[@]}"; do
   grep -Fxq "$entry" "$HOME/.bashrc" || echo "$entry" >>"$HOME/.bashrc"
 done
 
+# Keep any pre-existing nvm-managed node ahead of Homebrew after shell startup
+nvm_path_start="# >>> nvm-path-priority >>>"
+nvm_path_end="# <<< nvm-path-priority <<<"
+
+if grep -qF "$nvm_path_start" "$HOME/.bashrc" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$HOME/.bashrc" > "$HOME/.bashrc.tmp" && mv "$HOME/.bashrc.tmp" "$HOME/.bashrc"
+fi
+
+cat >> "$HOME/.bashrc" << 'NVMEOF'
+# >>> nvm-path-priority >>>
+for nvm_node_bin in "$HOME"/.nvm/versions/node/*/bin; do
+  [[ -d "$nvm_node_bin" && ":$PATH:" == *":$nvm_node_bin:"* ]] || continue
+  IFS=: read -ra current_paths <<< "$PATH"
+  new_path="$nvm_node_bin"
+  for existing_path in "${current_paths[@]}"; do
+    [[ -n "$existing_path" && "$existing_path" != "$nvm_node_bin" ]] && new_path="$new_path:$existing_path"
+  done
+  export PATH="$new_path"
+done
+unset nvm_node_bin current_paths new_path existing_path
+# <<< nvm-path-priority <<<
+NVMEOF
+
 # =============================================================================
 # Setup BASH_ENV for non-interactive shells
 # =============================================================================
@@ -107,6 +134,29 @@ fi
 
 # Create bashenv file if it doesn't exist
 touch "$bashenv_file"
+
+if grep -qF "$nvm_path_start" "$bashenv_file" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$bashenv_file" > "$bashenv_file.tmp" && mv "$bashenv_file.tmp" "$bashenv_file"
+fi
+
+cat >> "$bashenv_file" << 'NVMEOF'
+# >>> nvm-path-priority >>>
+for nvm_node_bin in "$HOME"/.nvm/versions/node/*/bin; do
+  [[ -d "$nvm_node_bin" && ":$PATH:" == *":$nvm_node_bin:"* ]] || continue
+  IFS=: read -ra current_paths <<< "$PATH"
+  new_path="$nvm_node_bin"
+  for existing_path in "${current_paths[@]}"; do
+    [[ -n "$existing_path" && "$existing_path" != "$nvm_node_bin" ]] && new_path="$new_path:$existing_path"
+  done
+  export PATH="$new_path"
+done
+unset nvm_node_bin current_paths new_path existing_path
+# <<< nvm-path-priority <<<
+NVMEOF
 
 # Keep EDITOR aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+EDITOR=/d; /^EDITOR=/d' "$bashenv_file"

@@ -126,6 +126,33 @@ fi
 # <<< codespace-env <<<
 CSEOF
 
+# Keep any pre-existing nvm-managed node ahead of Homebrew after shell startup
+nvm_path_start="# >>> nvm-path-priority >>>"
+nvm_path_end="# <<< nvm-path-priority <<<"
+
+if grep -qF "$nvm_path_start" "$HOME/.zshenv" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$HOME/.zshenv" > "$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
+fi
+
+cat >> "$HOME/.zshenv" << 'NVMEOF'
+# >>> nvm-path-priority >>>
+for nvm_node_bin in "$HOME"/.nvm/versions/node/*/bin; do
+  [[ -d "$nvm_node_bin" && ":$PATH:" == *":$nvm_node_bin:"* ]] || continue
+  IFS=: read -rA current_paths <<< "$PATH"
+  new_path="$nvm_node_bin"
+  for existing_path in "${current_paths[@]}"; do
+    [[ -n "$existing_path" && "$existing_path" != "$nvm_node_bin" ]] && new_path="$new_path:$existing_path"
+  done
+  export PATH="$new_path"
+done
+unset nvm_node_bin current_paths new_path existing_path
+# <<< nvm-path-priority <<<
+NVMEOF
+
 # =============================================================================
 # Clean up old entries that are now in .zshenv
 # =============================================================================
@@ -255,3 +282,26 @@ append_entries=(
 for entry in "${append_entries[@]}"; do
   grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >>"$HOME/.zshrc"
 done
+
+if grep -qF "$nvm_path_start" "$HOME/.zshrc" 2>/dev/null; then
+  awk -v start="$nvm_path_start" -v end="$nvm_path_end" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+fi
+
+cat >> "$HOME/.zshrc" << 'NVMEOF'
+# >>> nvm-path-priority >>>
+for nvm_node_bin in "$HOME"/.nvm/versions/node/*/bin; do
+  [[ -d "$nvm_node_bin" && ":$PATH:" == *":$nvm_node_bin:"* ]] || continue
+  IFS=: read -rA current_paths <<< "$PATH"
+  new_path="$nvm_node_bin"
+  for existing_path in "${current_paths[@]}"; do
+    [[ -n "$existing_path" && "$existing_path" != "$nvm_node_bin" ]] && new_path="$new_path:$existing_path"
+  done
+  export PATH="$new_path"
+done
+unset nvm_node_bin current_paths new_path existing_path
+# <<< nvm-path-priority <<<
+NVMEOF
