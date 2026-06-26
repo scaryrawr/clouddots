@@ -3,4 +3,4 @@ test -x /home/linuxbrew/.linuxbrew/bin/brew; and eval (/home/linuxbrew/.linuxbre
 test -d "$HOME/.local/bin"; and fish_add_path --move "$HOME/.local/bin"
 
 # Keep any pre-existing nvm-managed node ahead of Homebrew
-clouddots_prioritize_nvm_node_path
+functions -q clouddots_prioritize_nvm_node_path; and clouddots_prioritize_nvm_node_path
