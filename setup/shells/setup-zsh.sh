@@ -2,6 +2,10 @@
 set -e
 
 script_dir=$(dirname "$(readlink -f "$0")")
+shell_config_dir="$HOME/.config/clouddots"
+
+mkdir -p "$shell_config_dir"
+cp -f "$script_dir/../config/shells/nvm-path-priority.sh" "$shell_config_dir/nvm-path-priority.sh"
 
 cp "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"
 cp "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
@@ -103,27 +107,12 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
     decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
     if [[ "$key" == "PATH" ]]; then
       # Merge PATH — append entries not already present so shell-managed paths keep priority.
-      # Move Codespaces nvm node bins ahead of Homebrew so pre-installed nvm remains active.
       IFS=: read -rA env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
         [[ -n "$p" ]] || continue
-        nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-        case "$p" in
-          "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-            IFS=: read -rA current_paths <<< "$PATH"
-            new_path="$p"
-            for existing_path in "${current_paths[@]}"; do
-              [[ -n "$existing_path" && "$existing_path" != "$p" ]] && new_path="$new_path:$existing_path"
-            done
-            export PATH="$new_path"
-            ;;
-          *)
-            if [[ ":$PATH:" != *":$p:"* ]]; then
-              export PATH="$PATH:$p"
-            fi
-            ;;
-        esac
+        [[ ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
       done
+      [[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"
     else
       export "$key=$decoded_value"
     fi
@@ -132,7 +121,7 @@ fi
 # <<< codespace-env <<<
 CSEOF
 
-# Keep any pre-existing nvm-managed node ahead of Homebrew after shell startup
+# Remove inline nvm path priority blocks from previous versions
 nvm_path_start="# >>> nvm-path-priority >>>"
 nvm_path_end="# <<< nvm-path-priority <<<"
 
@@ -143,39 +132,6 @@ if grep -qF "$nvm_path_start" "$HOME/.zshenv" 2>/dev/null; then
     !skip
   ' "$HOME/.zshenv" > "$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
 fi
-
-cat >> "$HOME/.zshenv" << 'NVMEOF'
-# >>> nvm-path-priority >>>
-IFS=: read -rA current_paths <<< "$PATH"
-nvm_node_bins=()
-remaining_paths=()
-nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-for existing_path in "${current_paths[@]}"; do
-  [[ -n "$existing_path" ]] || continue
-  case "$existing_path" in
-    "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-      nvm_node_bins+=("$existing_path")
-      ;;
-    *)
-      remaining_paths+=("$existing_path")
-      ;;
-  esac
-done
-if ((${#nvm_node_bins[@]})); then
-  new_path=""
-  for existing_path in "${nvm_node_bins[@]}" "${remaining_paths[@]}"; do
-    [[ -n "$existing_path" ]] || continue
-    if [[ -z "$new_path" ]]; then
-      new_path="$existing_path"
-    else
-      new_path="$new_path:$existing_path"
-    fi
-  done
-  export PATH="$new_path"
-fi
-unset current_paths nvm_node_bins remaining_paths nvm_dir new_path existing_path
-# <<< nvm-path-priority <<<
-NVMEOF
 
 # =============================================================================
 # Clean up old entries that are now in .zshenv
@@ -295,6 +251,7 @@ append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   '(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"'
+  '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"'
   '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
   '(( $+commands[nvim] )) && alias vi=nvim'
   '(( $+commands[nvim] )) && alias vim=nvim'
@@ -314,36 +271,3 @@ if grep -qF "$nvm_path_start" "$HOME/.zshrc" 2>/dev/null; then
     !skip
   ' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
 fi
-
-cat >> "$HOME/.zshrc" << 'NVMEOF'
-# >>> nvm-path-priority >>>
-IFS=: read -rA current_paths <<< "$PATH"
-nvm_node_bins=()
-remaining_paths=()
-nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-for existing_path in "${current_paths[@]}"; do
-  [[ -n "$existing_path" ]] || continue
-  case "$existing_path" in
-    "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-      nvm_node_bins+=("$existing_path")
-      ;;
-    *)
-      remaining_paths+=("$existing_path")
-      ;;
-  esac
-done
-if ((${#nvm_node_bins[@]})); then
-  new_path=""
-  for existing_path in "${nvm_node_bins[@]}" "${remaining_paths[@]}"; do
-    [[ -n "$existing_path" ]] || continue
-    if [[ -z "$new_path" ]]; then
-      new_path="$existing_path"
-    else
-      new_path="$new_path:$existing_path"
-    fi
-  done
-  export PATH="$new_path"
-fi
-unset current_paths nvm_node_bins remaining_paths nvm_dir new_path existing_path
-# <<< nvm-path-priority <<<
-NVMEOF

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+script_dir=$(dirname "$(readlink -f "$0")")
+shell_config_dir="$HOME/.config/clouddots"
+
+mkdir -p "$shell_config_dir"
+cp -f "$script_dir/../config/shells/nvm-path-priority.sh" "$shell_config_dir/nvm-path-priority.sh"
+
 touch "$HOME/.bashrc"
 
 # Just prepend to bashrc if it's not in it.
@@ -36,6 +42,7 @@ append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
+  '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"'
   'az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
   '[ -f "$HOME/notification-sender.sh" ] && source "$HOME/notification-sender.sh"'
 )
@@ -94,7 +101,7 @@ for entry in "${append_entries[@]}"; do
   grep -Fxq "$entry" "$HOME/.bashrc" || echo "$entry" >>"$HOME/.bashrc"
 done
 
-# Keep any pre-existing nvm-managed node ahead of Homebrew after shell startup
+# Remove inline nvm path priority blocks from previous versions
 nvm_path_start="# >>> nvm-path-priority >>>"
 nvm_path_end="# <<< nvm-path-priority <<<"
 
@@ -105,39 +112,6 @@ if grep -qF "$nvm_path_start" "$HOME/.bashrc" 2>/dev/null; then
     !skip
   ' "$HOME/.bashrc" > "$HOME/.bashrc.tmp" && mv "$HOME/.bashrc.tmp" "$HOME/.bashrc"
 fi
-
-cat >> "$HOME/.bashrc" << 'NVMEOF'
-# >>> nvm-path-priority >>>
-IFS=: read -ra current_paths <<< "$PATH"
-nvm_node_bins=()
-remaining_paths=()
-nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-for existing_path in "${current_paths[@]}"; do
-  [[ -n "$existing_path" ]] || continue
-  case "$existing_path" in
-    "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-      nvm_node_bins+=("$existing_path")
-      ;;
-    *)
-      remaining_paths+=("$existing_path")
-      ;;
-  esac
-done
-if ((${#nvm_node_bins[@]})); then
-  new_path=""
-  for existing_path in "${nvm_node_bins[@]}" "${remaining_paths[@]}"; do
-    [[ -n "$existing_path" ]] || continue
-    if [[ -z "$new_path" ]]; then
-      new_path="$existing_path"
-    else
-      new_path="$new_path:$existing_path"
-    fi
-  done
-  export PATH="$new_path"
-fi
-unset current_paths nvm_node_bins remaining_paths nvm_dir new_path existing_path
-# <<< nvm-path-priority <<<
-NVMEOF
 
 # =============================================================================
 # Setup BASH_ENV for non-interactive shells
@@ -161,42 +135,12 @@ if grep -qF "$nvm_path_start" "$bashenv_file" 2>/dev/null; then
   ' "$bashenv_file" > "$bashenv_file.tmp" && mv "$bashenv_file.tmp" "$bashenv_file"
 fi
 
-cat >> "$bashenv_file" << 'NVMEOF'
-# >>> nvm-path-priority >>>
-IFS=: read -ra current_paths <<< "$PATH"
-nvm_node_bins=()
-remaining_paths=()
-nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-for existing_path in "${current_paths[@]}"; do
-  [[ -n "$existing_path" ]] || continue
-  case "$existing_path" in
-    "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-      nvm_node_bins+=("$existing_path")
-      ;;
-    *)
-      remaining_paths+=("$existing_path")
-      ;;
-  esac
-done
-if ((${#nvm_node_bins[@]})); then
-  new_path=""
-  for existing_path in "${nvm_node_bins[@]}" "${remaining_paths[@]}"; do
-    [[ -n "$existing_path" ]] || continue
-    if [[ -z "$new_path" ]]; then
-      new_path="$existing_path"
-    else
-      new_path="$new_path:$existing_path"
-    fi
-  done
-  export PATH="$new_path"
-fi
-unset current_paths nvm_node_bins remaining_paths nvm_dir new_path existing_path
-# <<< nvm-path-priority <<<
-NVMEOF
-
 # Keep EDITOR aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+EDITOR=/d; /^EDITOR=/d' "$bashenv_file"
 echo 'export EDITOR=nvim' >>"$bashenv_file"
+
+# Keep nvm-managed Node ahead of Homebrew in non-interactive bash shells too
+grep -Fxq '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"' "$bashenv_file" || echo '[[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"' >>"$bashenv_file"
 
 # Keep Copilot hook localhost access aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+COPILOT_HOOK_ALLOW_LOCALHOST=/d; /^COPILOT_HOOK_ALLOW_LOCALHOST=/d' "$bashenv_file"
@@ -268,27 +212,12 @@ if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]];
     decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
     if [[ "$key" == "PATH" ]]; then
       # Merge PATH — append entries not already present so shell-managed paths keep priority.
-      # Move Codespaces nvm node bins ahead of Homebrew so pre-installed nvm remains active.
       IFS=: read -ra env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
         [[ -n "$p" ]] || continue
-        nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-        case "$p" in
-          "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-            IFS=: read -ra current_paths <<< "$PATH"
-            new_path="$p"
-            for existing_path in "${current_paths[@]}"; do
-              [[ -n "$existing_path" && "$existing_path" != "$p" ]] && new_path="$new_path:$existing_path"
-            done
-            export PATH="$new_path"
-            ;;
-          *)
-            if [[ ":$PATH:" != *":$p:"* ]]; then
-              export PATH="$PATH:$p"
-            fi
-            ;;
-        esac
+        [[ ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
       done
+      [[ -f "$HOME/.config/clouddots/nvm-path-priority.sh" ]] && source "$HOME/.config/clouddots/nvm-path-priority.sh"
     else
       export "$key=$decoded_value"
     fi
