@@ -27,7 +27,9 @@ done
 [[ -d "$HOME/.local/bin" ]] && fish --command="fish_add_path --move \"$HOME/.local/bin\""
 
 cp -f "$config_dir"/*.fish "$HOME/.config/fish/conf.d/"
-cp -f "$functions_dir"/*.fish "$HOME/.config/fish/functions/" 2>/dev/null || true
+if compgen -G "$functions_dir"/*.fish > /dev/null; then
+  cp -f "$functions_dir"/*.fish "$HOME/.config/fish/functions/"
+fi
 
 fish --command='set -Ux COPILOT_HOOK_ALLOW_LOCALHOST 1'
 
