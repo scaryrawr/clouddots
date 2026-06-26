@@ -5,6 +5,8 @@ function clouddots_prioritize_nvm_node_path
     set -q NVM_DIR; and set nvm_dir "$NVM_DIR"
     set -l escaped_nvm_dir (string escape --style=regex "$nvm_dir")
     set -l nvm_dir_regex "^$escaped_nvm_dir/versions/node/[^/]+/bin\$"
+    # Also match existing nvm-style PATH entries outside NVM_DIR, such as
+    # devcontainer feature installs under /usr/local/share/nvm.
     set -l nvm_path_regex '/versions/node/[^/]+/bin$'
 
     for existing_path in $PATH

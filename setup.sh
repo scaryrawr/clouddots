@@ -35,11 +35,9 @@ restore_preserved_nvm_node_paths() {
   for executable_path in "$original_node_path" "$original_npm_path"; do
     [[ -n "$executable_path" ]] || continue
     bin_dir="$(dirname "$executable_path")"
-    case "$bin_dir" in
-      "$nvm_dir"/versions/node/*/bin|*/versions/node/*/bin)
-        prepend_path_entry "$bin_dir"
-        ;;
-    esac
+    if [[ "$bin_dir" == "$nvm_dir"/versions/node/*/bin || "$bin_dir" == */versions/node/*/bin ]]; then
+      prepend_path_entry "$bin_dir"
+    fi
   done
 }
 
