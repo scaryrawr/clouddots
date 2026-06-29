@@ -43,7 +43,9 @@ brew install \
 # by Mason, which fails on some Codespaces; pre-install them so the enabled
 # language extras work out-of-the-box. Servers already provided elsewhere are
 # omitted: marksman (above), pyright/typescript/tsgo/json/eslint LSPs (npm-tools.sh),
-# python via uv.
+# python via uv, and node-based tools (prettier, yaml-language-server,
+# markdownlint-cli2) which are installed via npm in npm-tools.sh so Homebrew
+# never pulls in its own `node` (Codespaces ships a global node install).
 brew install \
   go \
   gopls \
@@ -58,7 +60,4 @@ brew install \
   cmake-language-server \
   ruff \
   taplo \
-  yaml-language-server \
-  oxlint \
-  prettier \
-  markdownlint-cli2
+  oxlint
