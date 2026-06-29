@@ -3,7 +3,6 @@ set -e
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 config_dir="$script_dir/../config/fish/conf.d"
-functions_dir="$script_dir/../config/fish/functions"
 
 mkdir -p "$HOME/.config/fish/conf.d"
 mkdir -p "$HOME/.config/fish/functions"
@@ -27,9 +26,6 @@ done
 [[ -d "$HOME/.local/bin" ]] && fish --command="fish_add_path --move \"$HOME/.local/bin\""
 
 cp -f "$config_dir"/*.fish "$HOME/.config/fish/conf.d/"
-if compgen -G "$functions_dir"/*.fish > /dev/null; then
-  cp -f "$functions_dir"/*.fish "$HOME/.config/fish/functions/"
-fi
 
 fish --command='set -Ux COPILOT_HOOK_ALLOW_LOCALHOST 1'
 
