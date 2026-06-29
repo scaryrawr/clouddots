@@ -9,5 +9,7 @@ if node_path="$(command -v node 2>/dev/null)" && [[ "$node_path" == "/usr/bin/no
   echo "Note: Make sure $HOME/.npm-global/bin is in your PATH"
 fi
 
-# Install language servers and tools via npm
-npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @typescript/native-preview @earendil-works/pi-coding-agent @playwright/cli@latest
+# Install language servers and tools via npm.
+# Node-based tools live here (not Homebrew) so brew never installs its own
+# `node`, which would conflict with the global node install in Codespaces.
+npm install -g typescript typescript-language-server vscode-langservers-extracted pyright @typescript/native-preview @earendil-works/pi-coding-agent @playwright/cli@latest prettier yaml-language-server markdownlint-cli2
