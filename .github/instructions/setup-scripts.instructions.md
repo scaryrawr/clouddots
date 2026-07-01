@@ -21,3 +21,4 @@ When creating or modifying setup scripts, follow these rules:
 10. **Arrays**: Use bash arrays with `"${array[@]}"` quoting
 11. **Execution order**: Scripts depend on tools installed by earlier stages. Do not assume tools from later stages are available.
 12. **New tools**: Add a new `setup-<name>.sh` file in the appropriate subdirectory (`editors/`, `terminal/`, `ai/`). The category runner will auto-discover it.
+13. **Indentation**: Indent with 2 spaces (never tabs), including line continuations such as the package list in a multi-line `brew install \` / `apt install \`. This is enforced by the root `.editorconfig`, which shfmt (via Neovim/conform) reads automatically — so format-on-save stays 2-space instead of reflowing to shfmt's default tabs. Do not pass an explicit `-i` flag to shfmt, as that overrides `.editorconfig`.
