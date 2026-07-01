@@ -20,3 +20,4 @@ indent_size = 2
 # Vendored tmux-powerline themes/segments keep their upstream tab indentation.
 [setup/config/tmux-powerline/**]
 indent_style = tab
+indent_size = tab
