@@ -1,0 +1,22 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# Shell scripts use 2-space indentation. shfmt (via Neovim/conform) and other
+# editors read this automatically, so formatting on save no longer reflows to
+# shfmt's default tabs.
+[*.sh]
+indent_style = space
+indent_size = 2
+
+# Shims are extensionless bash scripts.
+[setup/shims/*]
+indent_style = space
+indent_size = 2
+
+# Vendored tmux-powerline themes/segments keep their upstream tab indentation.
+[setup/config/tmux-powerline/**]
+indent_style = tab
