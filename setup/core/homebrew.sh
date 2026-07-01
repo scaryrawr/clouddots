@@ -12,7 +12,7 @@ elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-brew install \
+brew install -y \
   ast-grep \
   fzf \
   eza \
@@ -46,7 +46,7 @@ brew install \
 # python via uv, and node-based tools (prettier, yaml-language-server,
 # markdownlint-cli2) which are installed via npm in npm-tools.sh so Homebrew
 # never pulls in its own `node` (Codespaces ships a global node install).
-brew install \
+brew install -y \
   go \
   gopls \
   gofumpt \
