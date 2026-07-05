@@ -4,7 +4,7 @@
 
 Cloud Dots is a dotfiles repo for GitHub Codespaces and VS Code Devcontainers. The entry point is `setup.sh`, which orchestrates all other scripts in a fixed order:
 
-1. `setup/core/system-deps.sh` — apt/dnf packages, Claude Code CLI, Bun
+1. `setup/core/system-deps.sh` — apt/dnf packages, Bun
 2. `setup/core/homebrew.sh` — Homebrew + CLI tools
 3. fnm + Node.js (inline in setup.sh)
 4. `setup/core/npm-tools.sh` — global npm packages
@@ -44,7 +44,7 @@ Set `STRICT_MODE=true` or `CI=true` to enable `set -e` in the top-level orchestr
 - `setup/shells/` — Shell configs (bash, zsh, fish)
 - `setup/editors/` — Editor setup (Neovim, Helix, VS Code)
 - `setup/terminal/` — Terminal tools (tmux, git, bat)
-- `setup/ai/` — AI tooling (Claude, Copilot)
+- `setup/ai/` — AI tooling (Copilot)
 - `setup/shims/` — Command wrapper scripts symlinked to `~/.local/bin/`
 - `setup/setup-*.sh` — Category runners that auto-discover scripts in subdirectories
 - `.devcontainer/` — Devcontainer definitions for testing
@@ -63,4 +63,5 @@ Set `STRICT_MODE=true` or `CI=true` to enable `set -e` in the top-level orchestr
 - **Strict mode is opt-in**: Individual scripts use `set -e`, but setup.sh only enables it when `STRICT_MODE=true` or `CI=true`. Category runners propagate the flag by checking `[[ $- == *e* ]]`.
 - **Never let Homebrew install `node`**: Codespaces ships its own global node install, and `brew remove node` fails when a brew formula depends on it. Do NOT add Homebrew formulae that depend on `node` (e.g. `prettier`, `yaml-language-server`, `markdownlint-cli2`) to `homebrew.sh` — install node-based tools via `npm install -g` in `setup/core/npm-tools.sh` instead. Before adding any formula to `homebrew.sh`, verify it doesn't pull in node (check `dependencies` at `formulae.brew.sh/api/formula/<name>.json`, or `brew deps <name>`).
 - **LazyVim toolchains are pre-installed, not Mason-managed**: Our Neovim config (`scaryrawr/lazyvim`, cloned by `setup/editors/setup-neovim.sh`) enables many language extras that normally rely on Mason to fetch LSP servers/toolchains on demand. Mason fails on some Codespaces, so the corresponding toolchains and servers are pre-installed via `setup/core/homebrew.sh` (or npm-tools.sh / uv). When enabling a new language extra in the lazyvim config, add its toolchain + LSP server to `homebrew.sh` so it works out-of-the-box — unless the server is node-based, in which case add it to `npm-tools.sh` (see the node rule above).
+- **AI capabilities: plugins vs. skills (two distinct sources)**: `setup/ai/setup-copilot.sh` installs agent-specific *plugins* from `scaryrawr/scarypilot`. `setup/ai/setup-skills.sh` installs cross-agent *skills* from `scaryrawr/agentic` via `gh skill install ... --scope user --agent <agent>` for every agent in its `AGENTS` array. Add new portable AI capabilities as agentic skills in `setup-skills.sh`, not as plugins. Azure DevOps tooling (`ado-cli`, `ado-pr`, `ado-work-items`, `ado-make-pr`, `ado-review-pr`) lives as agentic skills gated on an Azure DevOps `git remote get-url origin` (`dev.azure.com/`, `.visualstudio.com/`, `ssh.dev.azure.com:`); it is not the former `azure-devops@scarypilot` plugin.
 - **Diff tooling (hunk + delta coexist deliberately)**: hunk is git's `core.pager` and the native `git-difftool` choice (interactive review TUI). delta is kept on purpose for streaming/non-TTY consumers where hunk only echoes raw diff: git `interactive.diffFilter` (`git add -p`), lazygit's inline pager, and fish's `fzf_diff_highlighter`. Do not remove delta to "consolidate" on hunk. See `setup/terminal/setup-git.sh`, `setup/terminal/git-difftool.sh`, `setup/config/lazygit/config.yml`.

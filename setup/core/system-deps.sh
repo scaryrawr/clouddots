@@ -52,8 +52,7 @@ else
   exit 1
 fi
 
-# Install Claude Code CLI
-curl -fsSL https://claude.ai/install.sh | bash
+# Install Bun
 curl -fsSL https://bun.sh/install | bash
 
 # Make Bun available in the current shell session
