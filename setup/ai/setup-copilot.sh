@@ -35,12 +35,6 @@ install_plugins=(
   "digivolution@scarypilot"
 )
 
-# Only add azure-devops plugin if the repo origin is an Azure DevOps URL
-origin_url="$(git remote get-url origin 2>/dev/null || true)"
-if [[ "$origin_url" == *"dev.azure.com/"* ]] || [[ "$origin_url" == *".visualstudio.com/"* ]] || [[ "$origin_url" == *"ssh.dev.azure.com:"* ]]; then
-  install_plugins+=("azure-devops@scarypilot")
-fi
-
 for plugin in "${marketplace_plugins[@]}"; do
   copilot plugin marketplace add "$plugin" || true
 done
