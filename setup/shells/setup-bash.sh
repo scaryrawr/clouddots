@@ -116,6 +116,10 @@ echo 'export EDITOR=nvim' >>"$bashenv_file"
 sed -i '/^export[[:space:]]\+COPILOT_HOOK_ALLOW_LOCALHOST=/d; /^COPILOT_HOOK_ALLOW_LOCALHOST=/d' "$bashenv_file"
 echo 'export COPILOT_HOOK_ALLOW_LOCALHOST=1' >>"$bashenv_file"
 
+# Ensure ~/.local/bin is on PATH for non-interactive bash shells too
+local_bin_line='[[ -d "$HOME/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="$HOME/.local/bin:$PATH"'
+grep -Fxq "$local_bin_line" "$bashenv_file" || echo "$local_bin_line" >>"$bashenv_file"
+
 # Add az function to BASH_ENV file
 az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
 if ! grep -Fxq "$az_function" "$bashenv_file"; then
