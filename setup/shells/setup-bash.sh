@@ -9,7 +9,7 @@ prepend_entries=(
   'export SHELL=$(which bash)'
   'export EDITOR=nvim'
   'export COPILOT_HOOK_ALLOW_LOCALHOST=1'
-  '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" ]] && export BROWSER="$HOME/browser-opener.sh"'
+  '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] && export BROWSER="$HOME/browser-opener.sh"'
 )
 
 for entry in "${prepend_entries[@]}"; do
