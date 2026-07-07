@@ -21,7 +21,8 @@ const isRemote = !!(
   process.env.SSH_CONNECTION ||
   process.env.SSH_CLIENT ||
   process.env.SSH_TTY ||
-  process.env.DEVPOD
+  process.env.DEVPOD ||
+  process.env.REMOTE_CONTAINERS
 );
 
 const MIN_DURATION_MS = 5_000;

@@ -1,1 +1,1 @@
-test -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD" && set -gx BROWSER "$HOME/browser-opener.sh"
+test -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" && set -gx BROWSER "$HOME/browser-opener.sh"
