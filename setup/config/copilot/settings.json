@@ -17,26 +17,34 @@
   "effortLevel": "high",
   "contextTier": "long_context",
   "colorMode": "default",
+  "model": "gpt-5.6-sol",
   "subagents": {
     "agents": {
       "explore": {
         "model": "gpt-5.6-luna",
-        "effortLevel": "medium"
+        "effortLevel": "medium",
+        "contextTier": "default"
       },
       "task": {
         "model": "gpt-5.6-luna",
-        "effortLevel": "high"
+        "effortLevel": "medium",
+        "contextTier": "default"
       },
-      "code-review": {
-        "model": "complementary"
+      "security-review": {
+        "model": "gpt-5.6-sol",
+        "effortLevel": "high",
+        "contextTier": "default"
       },
       "research": {
         "model": "gpt-5.6-terra",
         "effortLevel": "high",
         "contextTier": "long_context"
       },
-      "security-review": {
-        "model": "complementary"
+      "rubber-duck": {
+        "model": "claude-opus-4.8",
+        "effortLevel": "high",
+        "contextTier": "default",
+        "autoInvoke": true
       }
     }
   }
