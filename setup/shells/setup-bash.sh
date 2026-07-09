@@ -36,7 +36,6 @@ append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
-  'az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
   '[ -f "$HOME/notification-sender.sh" ] && source "$HOME/notification-sender.sh"'
 )
 
@@ -108,6 +107,13 @@ fi
 # Create bashenv file if it doesn't exist
 touch "$bashenv_file"
 
+# Remove the retired ADO auth function without touching the feature-provided az function.
+legacy_az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
+for target_file in "$HOME/.bashrc" "$bashenv_file"; do
+  grep -Fxv "$legacy_az_function" "$target_file" >"$target_file.tmp" || true
+  mv "$target_file.tmp" "$target_file"
+done
+
 # Keep EDITOR aligned for non-interactive bash shells too
 sed -i '/^export[[:space:]]\+EDITOR=/d; /^EDITOR=/d' "$bashenv_file"
 echo 'export EDITOR=nvim' >>"$bashenv_file"
@@ -119,47 +125,6 @@ echo 'export COPILOT_HOOK_ALLOW_LOCALHOST=1' >>"$bashenv_file"
 # Ensure ~/.local/bin is on PATH for non-interactive bash shells too
 local_bin_line='[[ -d "$HOME/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="$HOME/.local/bin:$PATH"'
 grep -Fxq "$local_bin_line" "$bashenv_file" || echo "$local_bin_line" >>"$bashenv_file"
-
-# Add az function to BASH_ENV file
-az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
-if ! grep -Fxq "$az_function" "$bashenv_file"; then
-  # Remove any existing az function (both single-line and multi-line)
-  awk '
-    BEGIN { in_func=0; brace_count=0 }
-    {
-      # Match function definition: az() { ... (double backslash needed for awk regex)
-      # Also handles optional leading whitespace
-      if (in_func == 0 && $0 ~ "^[[:space:]]*az\\(\\)[[:space:]]*{") {
-        # Count braces on this line
-        line = $0
-        open_braces = gsub(/{/, "{", line)
-        close_braces = gsub(/}/, "}", line)
-        if (open_braces == close_braces) {
-          # Single-line function, skip it
-          next
-        } else {
-          # Multi-line function starts
-          in_func=1
-          brace_count = open_braces - close_braces
-          next
-        }
-      }
-      if (in_func) {
-        line = $0
-        brace_count += gsub(/{/, "{", line)
-        brace_count -= gsub(/}/, "}", line)
-        if (brace_count == 0) {
-          in_func=0
-        }
-        next
-      }
-      print
-    }
-  ' "$bashenv_file" > "$bashenv_file.tmp" && mv "$bashenv_file.tmp" "$bashenv_file"
-  
-  # Add the az function
-  echo "$az_function" >> "$bashenv_file"
-fi
 
 # =============================================================================
 # Codespace SSH environment loading (mirrors codespaces.fish)

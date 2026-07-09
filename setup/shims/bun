@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# shellcheck disable=SC2034
-AUTH_ENV_VAR="ARTIFACTS_ACCESSTOKEN"
-source "$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)/_shim_helper.sh" "$@"

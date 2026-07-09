@@ -23,6 +23,11 @@ zshenv_entries=(
 touch "$HOME/.zshenv"
 touch "$HOME/.zshrc"
 
+# Remove the retired ADO auth function without touching the feature-provided az function.
+legacy_az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
+grep -Fxv "$legacy_az_function" "$HOME/.zshenv" >"$HOME/.zshenv.tmp" || true
+mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
+
 for entry in "${zshenv_entries[@]}"; do
   # Extract variable name from export or plain assignment
   if [[ "$entry" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
@@ -37,47 +42,6 @@ for entry in "${zshenv_entries[@]}"; do
   # Append the entry
   echo "$entry" >>"$HOME/.zshenv"
 done
-
-# Add az function to .zshenv if not already present
-az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
-if ! grep -Fxq "$az_function" "$HOME/.zshenv"; then
-  # Remove any existing az function (both single-line and multi-line)
-  awk '
-    BEGIN { in_func=0; brace_count=0 }
-    {
-      # Match function definition: az() { ... (double backslash needed for awk regex)
-      # Also handles optional leading whitespace
-      if (in_func == 0 && $0 ~ "^[[:space:]]*az\\(\\)[[:space:]]*{") {
-        # Count braces on this line
-        line = $0
-        open_braces = gsub(/{/, "{", line)
-        close_braces = gsub(/}/, "}", line)
-        if (open_braces == close_braces) {
-          # Single-line function, skip it
-          next
-        } else {
-          # Multi-line function starts
-          in_func=1
-          brace_count = open_braces - close_braces
-          next
-        }
-      }
-      if (in_func) {
-        line = $0
-        brace_count += gsub(/{/, "{", line)
-        brace_count -= gsub(/}/, "}", line)
-        if (brace_count == 0) {
-          in_func=0
-        }
-        next
-      }
-      print
-    }
-  ' "$HOME/.zshenv" >"$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
-
-  # Add the az function
-  echo "$az_function" >>"$HOME/.zshenv"
-fi
 
 # =============================================================================
 # Codespace SSH environment loading (mirrors codespaces.fish)

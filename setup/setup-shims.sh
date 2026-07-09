@@ -4,7 +4,16 @@ set -e
 mkdir -p "$HOME/.local/bin"
 
 script_dir=$(dirname "$(readlink -f "$0")")
-codespace_shim_dir="/usr/local/share/codespace-shims"
+
+# Remove retired repo-managed ADO authentication shims.
+deprecated_shims=(az bun bunx npm npx pnpm pnpx yarn)
+for shim_basename in "${deprecated_shims[@]}"; do
+  local_shim="$HOME/.local/bin/$shim_basename"
+  repo_shim="$script_dir/shims/$shim_basename"
+  if [[ -L "$local_shim" && "$(readlink "$local_shim")" == "$repo_shim" ]]; then
+    rm -f "$local_shim"
+  fi
+done
 
 for shim in "$script_dir"/shims/*; do
   shim_basename="$(basename "$shim")"
@@ -12,12 +21,6 @@ for shim in "$script_dir"/shims/*; do
   [[ "$shim_basename" == _* ]] && continue
 
   local_shim="$HOME/.local/bin/$shim_basename"
-  if [[ -x "$codespace_shim_dir/$shim_basename" ]]; then
-    # Avoid a resolver loop between our shim and the Codespaces feature shim.
-    [[ -L "$local_shim" ]] && rm -f "$local_shim"
-    continue
-  fi
-
   if [ -f "$shim" ] && [ -x "$shim" ]; then
     ln -sf "$shim" "$local_shim"
   fi
