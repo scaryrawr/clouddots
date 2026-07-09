@@ -6,6 +6,8 @@ applyTo: "setup/shims/*"
 
 Shims are wrapper scripts in `setup/shims/` that get symlinked into `~/.local/bin/` by `setup/setup-shims.sh`. They intercept commands to add authentication or environment setup before calling the real binary.
 
+When the Codespaces `artifacts-helper` feature already provides an executable with the same name under `/usr/local/share/codespace-shims/`, `setup-shims.sh` defers to that feature shim and removes a stale symlink from `~/.local/bin/`. Installing both creates a resolver loop because each shim finds the other as the next executable on `PATH`.
+
 ### Common helper
 
 All boilerplate (finding the real binary, rebuilding PATH, calling ado-auth-helper) lives in `setup/shims/_shim_helper.sh`. Individual shims only need to set `AUTH_ENV_VAR` and source the helper:
