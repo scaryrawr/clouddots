@@ -12,13 +12,13 @@ if ! gh skill --help >/dev/null 2>&1; then
 fi
 
 AGENTS=(github-copilot codex pi opencode)
-SKILLS=(skill-creator image-gen better-init)
+SKILLS=(skill-creator image-gen better-init blogify)
 
 # Only install Azure DevOps skills if the repo origin is an Azure DevOps URL.
 # These skills replace the former scaryrawr/scarypilot azure-devops plugin.
 origin_url="$(git remote get-url origin 2>/dev/null || true)"
 if [[ "$origin_url" == *"dev.azure.com/"* ]] || [[ "$origin_url" == *".visualstudio.com/"* ]] || [[ "$origin_url" == *"ssh.dev.azure.com:"* ]]; then
-  SKILLS+=(ado-cli ado-pr ado-work-items ado-make-pr ado-review-pr)
+  SKILLS+=(azure-devops)
 fi
 
 for skill in "${SKILLS[@]}"; do
