@@ -16,7 +16,7 @@ Cloud Dots is a dotfiles repo for GitHub Codespaces and VS Code Devcontainers. T
 
 Category runners (`setup-editors.sh`, `setup-terminal.sh`, `setup-ai.sh`) auto-discover and run all `setup-*.sh` files in their subdirectory via glob. New tools are added by creating a `setup-<name>.sh` file in the appropriate subdirectory.
 
-Shims in `setup/shims/` are wrapper scripts that get symlinked into `~/.local/bin/`. They intercept commands (e.g., `az`, `bun`, `npm`) to add authentication or environment setup before calling the real binary.
+Shims in `setup/shims/` are wrapper scripts that get symlinked into `~/.local/bin/`. The repo currently owns only the `chafa` compatibility wrapper. Do not add repo-managed ADO/package-manager auth shims; Codespaces handles supported tools through the `artifacts-helper` devcontainer feature.
 
 Repo-owned configuration is kept as static files in `setup/config/`, organized to mirror each tool's destination path. Installer scripts copy these into place (clobbering with `cp -f`) rather than generating them with heredocs. This makes config content reviewable, diffable, and editable directly instead of buried inside shell strings.
 
@@ -45,7 +45,7 @@ Set `STRICT_MODE=true` or `CI=true` to enable `set -e` in the top-level orchestr
 - `setup/editors/` — Editor setup (Neovim, Helix, VS Code)
 - `setup/terminal/` — Terminal tools (tmux, git, bat)
 - `setup/ai/` — AI tooling (Copilot)
-- `setup/shims/` — Command wrapper scripts symlinked to `~/.local/bin/`
+- `setup/shims/` — Command compatibility wrappers symlinked to `~/.local/bin/`
 - `setup/setup-*.sh` — Category runners that auto-discover scripts in subdirectories
 - `.devcontainer/` — Devcontainer definitions for testing
 
