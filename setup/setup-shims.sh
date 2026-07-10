@@ -21,7 +21,7 @@ for shim in "$script_dir"/shims/*; do
   [[ "$shim_basename" == _* ]] && continue
 
   local_shim="$HOME/.local/bin/$shim_basename"
-  if [ -f "$shim" ] && [ -x "$shim" ]; then
+  if [[ -f "$shim" && -x "$shim" ]]; then
     ln -sf "$shim" "$local_shim"
   fi
 done
