@@ -12,7 +12,7 @@ When creating or modifying setup scripts, follow these rules:
    - Use `command -v <tool>` to check if a binary is installed
    - Use `[[ -f <path> ]]` or `[[ -d <path> ]]` to check for files/directories
    - Use `grep -qxF` before appending lines to config files
-4. **Clone-or-pull pattern**: For git-based plugins, clone if the directory is missing, `git pull` if it already exists
+4. **Clone-or-update pattern**: For git-based plugins, clone if the directory is missing and `git pull` if it already exists. Repo-managed Copilot extensions under `$HOME/.copilot/extensions/` are disposable checkouts: fetch and hard-reset them to the remote default branch so rerunning setup always installs the latest version.
 5. **Config files**: Prefer checked-in static files under `setup/config/<tool>/` copied into place for repo-owned config content. Resolve them via `config_dir="$script_dir/../config/<tool>"` and `cp -f` for clobbered configs, or copy-if-missing for user-seeded defaults. Always `mkdir -p` the destination first. Keep heredocs only for dynamic/generated values or tiny script-local snippets. See `.github/instructions/setup-config.instructions.md`.
 6. **Variables**: Use `lowercase_with_underscores` for variable names
 7. **Paths**: Use `$HOME` not `~`, and always quote paths

@@ -42,3 +42,18 @@ done
 for plugin in "${install_plugins[@]}"; do
   copilot plugin install "$plugin" || true
 done
+
+extensions=(
+  "scaryrawr/copilot-cheap"
+)
+
+for extension in "${extensions[@]}"; do
+  extension_dir="$HOME/.copilot/extensions/$(basename "$extension")"
+  if [[ -d "$extension_dir/.git" ]]; then
+    git -C "$extension_dir" fetch --prune origin
+    remote_default_branch="$(git -C "$extension_dir" symbolic-ref --short refs/remotes/origin/HEAD)"
+    git -C "$extension_dir" reset --hard "$remote_default_branch"
+  else
+    gh repo clone "$extension" "$extension_dir"
+  fi
+done
