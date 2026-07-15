@@ -32,7 +32,6 @@ marketplace_plugins=(
 
 install_plugins=(
   "copilot@scarypilot"
-  "digivolution@scarypilot"
 )
 
 for plugin in "${marketplace_plugins[@]}"; do

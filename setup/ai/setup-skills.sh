@@ -12,7 +12,7 @@ if ! gh skill --help >/dev/null 2>&1; then
 fi
 
 AGENTS=(github-copilot codex pi opencode)
-SKILLS=(skill-creator image-gen better-init blogify)
+SKILLS=(skill-creator image-gen better-init blogify digivolve)
 
 # Only install Azure DevOps skills if the repo origin is an Azure DevOps URL.
 # These skills replace the former scaryrawr/scarypilot azure-devops plugin.
