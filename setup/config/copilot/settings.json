@@ -14,8 +14,7 @@
   ],
   "theme": "auto",
   "alt_screen": true,
-  "effortLevel": "high",
-  "contextTier": "long_context",
+  "effortLevel": "medium",
   "colorMode": "default",
   "model": "gpt-5.6-sol",
   "subagents": {
@@ -37,8 +36,7 @@
       },
       "research": {
         "model": "gpt-5.6-terra",
-        "effortLevel": "high",
-        "contextTier": "long_context"
+        "effortLevel": "medium"
       },
       "rubber-duck": {
         "model": "claude-opus-4.8",
