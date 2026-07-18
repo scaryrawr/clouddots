@@ -16,7 +16,7 @@
   "alt_screen": true,
   "effortLevel": "medium",
   "colorMode": "default",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-5.6-terra",
   "subagents": {
     "agents": {
       "explore": {
