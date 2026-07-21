@@ -44,6 +44,7 @@ done
 
 extensions=(
   "scaryrawr/copilot-cheap"
+  "scaryrawr/copilot-local-llm"
 )
 
 for extension in "${extensions[@]}"; do
