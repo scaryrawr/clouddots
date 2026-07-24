@@ -5,8 +5,8 @@ mkdir -p "$HOME/.local/bin"
 
 script_dir=$(dirname "$(readlink -f "$0")")
 
-# Remove retired repo-managed ADO authentication shims.
-deprecated_shims=(az bun bunx npm npx pnpm pnpx yarn)
+# Remove retired repo-managed compatibility and authentication shims.
+deprecated_shims=(az bun bunx chafa npm npx pnpm pnpx yarn)
 for shim_basename in "${deprecated_shims[@]}"; do
   local_shim="$HOME/.local/bin/$shim_basename"
   repo_shim="$script_dir/shims/$shim_basename"

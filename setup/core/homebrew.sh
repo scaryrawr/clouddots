@@ -24,7 +24,7 @@ brew install -y \
   git-delta \
   ffmpeg \
   imagemagick \
-  tmux \
+  herdr \
   scaryrawr/formulae/sl \
   modem-dev/tap/hunk \
   marksman \

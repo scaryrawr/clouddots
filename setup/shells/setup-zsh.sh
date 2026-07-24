@@ -12,7 +12,6 @@ cp "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
 zshenv_entries=(
   'export PATH="$HOME/.local/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'
   'export SHELL=${commands[zsh]:-/bin/zsh}'
-  'export TMUX_POWERLINE_BUBBLE_SEPARATORS=true'
   '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] && export BROWSER="$HOME/browser-opener.sh"'
   'export EDITOR=nvim'
   'export COPILOT_HOOK_ALLOW_LOCALHOST=1'
@@ -87,6 +86,8 @@ sed -i '/^export PATH=.*fnm.*npm-global.*cargo/d' "$HOME/.zshrc"
 sed -i '/^export SHELL=/d' "$HOME/.zshrc"
 sed -i '/^export NODE_OPTIONS=/d' "$HOME/.zshrc"
 sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
+sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshenv"
+sed -i '/^ZSH_TMUX_\(AUTOSTART\|AUTONAME_SESSION\|AUTOREFRESH\)=/d' "$HOME/.zshrc"
 sed -i '/stty -ixon < \/dev\/tty/d' "$HOME/.zshrc"
 
 # =============================================================================
@@ -108,9 +109,6 @@ prepend_entries=(
   "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'"
   "zstyle ':omz:plugins:eza' 'icons' yes"
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  'ZSH_TMUX_AUTOSTART=true'
-  'ZSH_TMUX_AUTONAME_SESSION=true'
-  'ZSH_TMUX_AUTOREFRESH=true'
   "bindkey -M viins '^[^?' backward-kill-word # Alt+Backspace"
   "bindkey -M viins '^[d' kill-word           # Alt+D"
   "bindkey -M viins '^[[1;3D' backward-word   # Alt+Left"
@@ -190,7 +188,7 @@ done
 
 sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
 
-sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zsh-autosuggestions zsh-completions zoxide zsh-autocomplete eza tmux)/' "$HOME/.zshrc"
+sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zsh-autosuggestions zsh-completions zoxide zsh-autocomplete eza)/' "$HOME/.zshrc"
 
 # Just append to zshrc if it's not in it.
 append_entries=(
