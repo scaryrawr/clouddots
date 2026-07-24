@@ -21,13 +21,13 @@ Scripts are organized by function for clarity and maintainability:
     - **setup/editors/setup-helix.sh**
     - **setup/editors/setup-vscode.sh**
   - **setup/terminal/**: Terminal tools config.
-    - **setup/terminal/setup-tmux.sh**
+    - **setup/terminal/setup-herdr.sh**
     - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod): Wires [hunk](https://github.com/modem-dev/hunk) as the git pager and difftool; delta stays for `git add -p` and fzf previews.
     - **setup/terminal/setup-bat.sh**: Configures bat theme.
   - **setup/ai/**: AI tooling config.
     - **setup/ai/setup-copilot.sh**: Configures Copilot CLI plugins.
     - **setup/ai/setup-pi.sh**: Configures the Pi agent.
-  - **setup/shims/**: Command wrapper scripts symlinked to `~/.local/bin/`. Currently contains the `chafa` wrapper used to avoid unsupported sixel output inside tmux.
+  - **setup/shims/**: Command wrapper scripts symlinked to `~/.local/bin/`.
   - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**, **setup/setup-shims.sh**: Category runners.
 - **p10k.zsh**: Powerlevel10k theme config file.
 - **.zsh_plugins.txt**: Antidote plugin list for zsh.
@@ -49,7 +49,7 @@ Scripts are organized by function for clarity and maintainability:
 ## What it does in Codespaces & Devcontainers
 
 - **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file), and Bun.
-- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, hunk, tmux, helix, neovim, lazygit, marksman, copilot-cli, worktrunk, sl, and xclip.
+- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, hunk, Herdr, helix, neovim, lazygit, marksman, copilot-cli, worktrunk, sl, and xclip.
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -63,8 +63,6 @@ Scripts are organized by function for clarity and maintainability:
   - [fzf.fish](https://github.com/scaryrawr/fzf.fish)
   - [fish-eza](https://github.com/scaryrawr/fish-eza) (with icons)
   - [zoxide.fish](https://github.com/scaryrawr/zoxide.fish)
-  - [tmux.fish](https://github.com/scaryrawr/tmux.fish)
   - [copilot.fish](https://github.com/scaryrawr/copilot.fish)
 - **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @typescript/native-preview
-- **AI tools**: copilot-cli (via Homebrew)
-- **Shims**: Wrapper scripts for az, bun, bunx, npm, npx, pnpm, pnpx, and yarn that add authentication/environment setup before calling the real binary.
+- **AI tools**: copilot-cli and Herdr (via Homebrew), with Herdr integrations for Pi and Copilot CLI.

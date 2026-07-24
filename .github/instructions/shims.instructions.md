@@ -4,7 +4,7 @@ applyTo: "setup/shims/*"
 
 ## Shim conventions
 
-Shims are compatibility wrappers in `setup/shims/` that get symlinked into `~/.local/bin/` by `setup/setup-shims.sh`. The repo currently owns only the `chafa` wrapper.
+Shims are compatibility wrappers in `setup/shims/` that get symlinked into `~/.local/bin/` by `setup/setup-shims.sh`.
 
 Do not add repo-managed ADO or package-manager authentication shims for `az`, `bun`, `bunx`, `npm`, `npx`, `yarn`, `pnpm`, or `pnpx`. Codespaces handles supported tools through the `artifacts-helper` devcontainer feature, and duplicate wrappers can create command-resolution loops.
 
