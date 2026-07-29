@@ -14,6 +14,7 @@ declare -A bin_to_pkg=(
   [zsh]=zsh
   [file]=file
   [jq]=jq
+  [nc]=ncat
 )
 
 packages=()
