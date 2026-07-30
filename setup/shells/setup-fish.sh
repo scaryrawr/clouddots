@@ -37,4 +37,4 @@ fish --command="command -q fzf && fisher install scaryrawr/fzf.fish scaryrawr/mo
 fish --command="command -q eza && fisher install scaryrawr/fish-eza </dev/null"
 fish --command="if fisher list | string match -qx 'scaryrawr/tmux.fish'; fisher remove scaryrawr/tmux.fish </dev/null; end; set -eU TMUX_POWERLINE_BUBBLE_SEPARATORS; set -eU TMUX_SSHAUTO_START; true"
 fish --command="set -Ux HERDR_AUTOSTART true"
-fish --command="set -Ux EZA_STANDARD_OPTIONS --icons"
+fish --command="set -Ux EZA_STANDARD_OPTIONS --icons=auto"
