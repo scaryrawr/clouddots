@@ -15,6 +15,7 @@ declare -A bin_to_pkg=(
   [file]=file
   [jq]=jq
   [nc]=ncat
+  [time]=time
 )
 
 packages=()
