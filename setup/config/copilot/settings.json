@@ -8,15 +8,19 @@
   "effortLevel": "medium",
   "colorMode": "default",
   "model": "gpt-5.6-sol",
+  "contextTier": "long_context",
   "subagents": {
     "agents": {
       "explore": {
-        "model": "gpt-5.6-luna",
-        "effortLevel": "medium",
-        "contextTier": "default"
+        "model": "mai-code-1-flash-picker",
+        "effortLevel": "medium"
       },
       "task": {
-        "model": "gpt-5.6-luna",
+        "model": "mai-code-1-flash-picker",
+        "effortLevel": "medium"
+      },
+      "research": {
+        "model": "gpt-5.6-terra",
         "effortLevel": "medium",
         "contextTier": "default"
       },
