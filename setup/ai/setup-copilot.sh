@@ -20,12 +20,6 @@ fi
 cp -f "$config_dir/copilot-instructions.md" "$HOME/.copilot/copilot-instructions.md"
 cp -f "$config_dir/lsp-config.json" "$HOME/.copilot/lsp-config.json"
 
-# Deploy user-level copilot-notify extension
-notify_src="$script_dir/copilot-notify/extension.mjs"
-notify_dest="$HOME/.copilot/extensions/copilot-notify"
-mkdir -p "$notify_dest"
-cp -f "$notify_src" "$notify_dest/extension.mjs"
-
 marketplace_plugins=(
   "scaryrawr/scarypilot"
 )
