@@ -40,7 +40,7 @@ Set `STRICT_MODE=true` or `CI=true` to enable `set -e` in the top-level orchestr
 
 - `setup.sh` — Main orchestrator entry point
 - `setup/core/` — Bootstrap: system packages, Homebrew, npm tools
-- `setup/config/` — Checked-in static config files, grouped by destination (`herdr/`, `fish/conf.d/`, `copilot/`, `bat/`, `lazygit/`, `playwright/`), copied into place by installers
+- `setup/config/` — Checked-in static config files, grouped by destination (`herdr/`, `fish/conf.d/`, `copilot/`, `bat/`, `lazygit/`), copied into place by installers
 - `setup/shells/` — Shell configs (bash, zsh, fish)
 - `setup/editors/` — Editor setup (Neovim, Helix, VS Code)
 - `setup/terminal/` — Terminal tools (Herdr, git, bat)
