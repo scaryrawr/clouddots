@@ -14,7 +14,6 @@ Files under `setup/config/` are checked-in source configs that setup scripts cop
    - `setup/config/bat/config` → `$HOME/.config/bat/config`
    - `setup/config/lazygit/config.yml` → `$HOME/.config/lazygit/config.yml`
    - `setup/config/copilot/*` → `$HOME/.copilot/`
-   - `setup/config/playwright/cli.config.json` → `$HOME/.playwright/cli.config.json`
 2. Keep content ready to deploy verbatim. Do not rely on shell interpolation during copy — what is in the file is exactly what gets installed.
 
 ### How installers consume these files
