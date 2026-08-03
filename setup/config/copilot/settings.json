@@ -4,7 +4,6 @@
   "mouse": true,
   "bashEnv": true,
   "theme": "auto",
-  "alt_screen": true,
   "effortLevel": "medium",
   "colorMode": "default",
   "model": "gpt-5.6-sol",
