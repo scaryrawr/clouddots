@@ -25,6 +25,6 @@ for agent in "${AGENTS[@]}"; do
   for skill in "${SKILLS[@]}"; do
     gh skill install scaryrawr/agentic "$skill" --scope user --agent "$agent" -f
   done
-
-  gh skill install herdrdev/herdr skills/herdr --scope user --agent "$agent" -f
+  # Herdr skill is maintained outside scaryrawr/agentic (see .github/copilot-instructions.md).
+  gh skill install herdrdev/herdr "skills/herdr" --scope user --agent "$agent" -f
 done
