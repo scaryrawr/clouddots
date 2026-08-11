@@ -21,8 +21,10 @@ if [[ "$origin_url" == *"dev.azure.com/"* ]] || [[ "$origin_url" == *".visualstu
   SKILLS+=(azure-devops)
 fi
 
-for skill in "${SKILLS[@]}"; do
-  for agent in "${AGENTS[@]}"; do
+for agent in "${AGENTS[@]}"; do
+  for skill in "${SKILLS[@]}"; do
     gh skill install scaryrawr/agentic "$skill" --scope user --agent "$agent" -f
   done
+
+  gh skill install herdrdev/herdr skills/herdr --scope user --agent "$agent" -f
 done
