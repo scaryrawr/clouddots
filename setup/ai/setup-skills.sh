@@ -12,19 +12,13 @@ if ! gh skill --help >/dev/null 2>&1; then
 fi
 
 AGENTS=(github-copilot codex pi opencode)
-SKILLS=(skill-creator image-gen better-init blogify)
-
-# Only install Azure DevOps skills if the repo origin is an Azure DevOps URL.
-# These skills replace the former scaryrawr/scarypilot azure-devops plugin.
-origin_url="$(git remote get-url origin 2>/dev/null || true)"
-if [[ "$origin_url" == *"dev.azure.com/"* ]] || [[ "$origin_url" == *".visualstudio.com/"* ]] || [[ "$origin_url" == *"ssh.dev.azure.com:"* ]]; then
-  SKILLS+=(azure-devops)
-fi
+SKILLS=(skill-creator image-gen better-init blogify azure-devops)
 
 for agent in "${AGENTS[@]}"; do
   for skill in "${SKILLS[@]}"; do
     gh skill install scaryrawr/agentic "$skill" --scope user --agent "$agent" -f
   done
+
   # Herdr skill is maintained outside scaryrawr/agentic (see .github/copilot-instructions.md).
   gh skill install herdrdev/herdr "skills/herdr" --scope user --agent "$agent" -f
 done
