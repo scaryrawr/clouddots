@@ -12,7 +12,7 @@ if ! gh skill --help >/dev/null 2>&1; then
 fi
 
 AGENTS=(github-copilot codex pi opencode)
-SKILLS=(skill-creator image-gen better-init blogify azure-devops)
+SKILLS=(skill-creator image-gen better-init code-review blogify azure-devops)
 
 for agent in "${AGENTS[@]}"; do
   for skill in "${SKILLS[@]}"; do
