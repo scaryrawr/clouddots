@@ -20,9 +20,10 @@
     }
   },
   "enabledPlugins": {
-    "copilot@scarypilot": true,
-    "pstack@scarypilot": true,
-    "digivolution@scarypilot": true
+    "copilot-autoresearch@scarypilot": true,
+    "copilot-local-llm@scarypilot": true,
+    "digivolution@scarypilot": true,
+    "pstack@scarypilot": true
   },
   "subagents": {
     "agents": {
