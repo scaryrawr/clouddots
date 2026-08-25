@@ -11,7 +11,8 @@ dotfiles_settings="$config_dir/settings.json"
 if [[ -f "$config_file" ]]; then
   # Merge dotfiles settings into the existing settings, letting dotfiles values win.
   tmp_settings="$(mktemp)"
-  jq -s '.[0] * .[1]' "$config_file" "$dotfiles_settings" >"$tmp_settings"
+  jq -s '.[0] * .[1] | del(.enabledPlugins["copilot@scarypilot"])' \
+    "$config_file" "$dotfiles_settings" >"$tmp_settings"
   mv "$tmp_settings" "$config_file"
 else
   cp -f "$dotfiles_settings" "$config_file"
@@ -20,17 +21,7 @@ fi
 cp -f "$config_dir/copilot-instructions.md" "$HOME/.copilot/copilot-instructions.md"
 cp -f "$config_dir/lsp-config.json" "$HOME/.copilot/lsp-config.json"
 
-extensions=(
-  "scaryrawr/copilot-local-llm"
-)
-
-for extension in "${extensions[@]}"; do
-  extension_dir="$HOME/.copilot/extensions/$(basename "$extension")"
-  if [[ -d "$extension_dir/.git" ]]; then
-    git -C "$extension_dir" fetch --prune origin
-    remote_default_branch="$(git -C "$extension_dir" symbolic-ref --short refs/remotes/origin/HEAD)"
-    git -C "$extension_dir" reset --hard "$remote_default_branch"
-  else
-    gh repo clone "$extension" "$extension_dir"
-  fi
-done
+legacy_extension_dir="$HOME/.copilot/extensions/copilot-local-llm"
+if [[ -d "$legacy_extension_dir" ]]; then
+  rm -rf -- "$legacy_extension_dir"
+fi

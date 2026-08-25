@@ -373,12 +373,10 @@ userTasks:
           [Environment]::GetEnvironmentVariable('Path', 'User')
         ) -join ';'
         Get-Command copilot -ErrorAction Stop | Out-Null
-        Get-Command git -ErrorAction Stop | Out-Null
         Get-Command gh -ErrorAction Stop | Out-Null
 
         $copilotDirectory = Join-Path $HOME '.copilot'
         $extensionsDirectory = Join-Path $copilotDirectory 'extensions'
-        New-Item -Path $extensionsDirectory -ItemType Directory -Force | Out-Null
 
         function Merge-CopilotSettings {
           param(
@@ -433,9 +431,10 @@ userTasks:
             }
           },
           "enabledPlugins": {
-            "copilot@scarypilot": true,
-            "pstack@scarypilot": true,
-            "digivolution@scarypilot": true
+            "copilot-autoresearch@scarypilot": true,
+            "copilot-local-llm@scarypilot": true,
+            "digivolution@scarypilot": true,
+            "pstack@scarypilot": true
           },
           "subagents": {
             "agents": {
@@ -469,6 +468,7 @@ userTasks:
           [pscustomobject]@{}
         }
         Merge-CopilotSettings -Target $settings -Source $desiredSettings
+        $settings.enabledPlugins.PSObject.Properties.Remove('copilot@scarypilot')
         $settings |
           ConvertTo-Json -Depth 20 |
           Set-Content -LiteralPath $settingsPath -Encoding utf8
@@ -545,37 +545,14 @@ userTasks:
           -LiteralPath (Join-Path $copilotDirectory 'lsp-config.json') `
           -Encoding utf8
 
-        @(
-          'scaryrawr/copilot-cheap'
-          'scaryrawr/copilot-local-llm'
-        ) | ForEach-Object {
-          $extensionName = Split-Path $_ -Leaf
-          $extensionPath = Join-Path $extensionsDirectory $extensionName
-
-          if (Test-Path -LiteralPath (Join-Path $extensionPath '.git')) {
-            git -C $extensionPath fetch --prune origin
-            if ($LASTEXITCODE -ne 0) {
-              throw "Failed to fetch Copilot extension $_ (git exited with code $LASTEXITCODE)."
-            }
-
-            git -C $extensionPath remote set-head origin --auto
-            if ($LASTEXITCODE -ne 0) {
-              throw "Failed to determine the default branch for Copilot extension $_."
-            }
-            $defaultBranch = git -C $extensionPath symbolic-ref --short refs/remotes/origin/HEAD
-            if ($LASTEXITCODE -ne 0) {
-              throw "Failed to resolve the default branch for Copilot extension $_."
-            }
-
-            git -C $extensionPath reset --hard $defaultBranch
-            if ($LASTEXITCODE -ne 0) {
-              throw "Failed to update Copilot extension $_ (git exited with code $LASTEXITCODE)."
-            }
-          } else {
-            git clone "https://github.com/$($_).git" $extensionPath
-            if ($LASTEXITCODE -ne 0) {
-              throw "Failed to clone Copilot extension $_ (git exited with code $LASTEXITCODE)."
-            }
+        @('copilot-cheap', 'copilot-local-llm') | ForEach-Object {
+          $legacyExtensionPath = Join-Path $extensionsDirectory $_
+          if (Test-Path -LiteralPath $legacyExtensionPath) {
+            Remove-Item `
+              -LiteralPath $legacyExtensionPath `
+              -Recurse `
+              -Force `
+              -ErrorAction Stop
           }
         }
 
