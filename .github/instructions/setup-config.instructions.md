@@ -12,7 +12,6 @@ Files under `setup/config/` are checked-in source configs that setup scripts cop
    - `setup/config/herdr/config.toml` → `$HOME/.config/herdr/config.toml`
    - `setup/config/fish/conf.d/*.fish` → `$HOME/.config/fish/conf.d/`
    - `setup/config/bat/config` → `$HOME/.config/bat/config`
-   - `setup/config/lazygit/config.yml` → `$HOME/.config/lazygit/config.yml`
    - `setup/config/copilot/*` → `$HOME/.copilot/`
 2. Keep content ready to deploy verbatim. Do not rely on shell interpolation during copy — what is in the file is exactly what gets installed.
 
@@ -29,7 +28,7 @@ cp -f "$config_dir/config" "$HOME/.config/<tool>/config"   # repo-owned: clobber
 ```
 
 1. **Repo-owned configs** (the repo is the source of truth): copy with `cp -f` so each run refreshes the destination. This is idempotent by overwriting.
-2. **User-seeded defaults** (files users are expected to edit afterward): copy only when the destination is missing, e.g. `[[ -f "$dest" ]] || cp "$src" "$dest"`. See `setup/ai/setup-pi.sh` (`AGENTS.md`).
+2. **User-seeded defaults** (files users are expected to edit afterward): copy only when the destination is missing, e.g. `[[ -f "$dest" ]] || cp "$src" "$dest"`.
 3. **Globbed copies** are fine when a whole directory is repo-owned, e.g. `cp -f "$config_dir"/*.fish "$HOME/.config/fish/conf.d/"`.
 4. Always `mkdir -p` the destination directory before copying.
 

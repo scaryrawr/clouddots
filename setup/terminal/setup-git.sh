@@ -3,7 +3,6 @@ set -e
 
 # Get the directory where this script lives (for helper scripts)
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-config_dir="$script_dir/../config/lazygit"
 
 # Install helper scripts to ~/.local/bin
 mkdir -p "$HOME/.local/bin"
@@ -61,7 +60,3 @@ if command -v delta &>/dev/null; then
   git config --global delta.hyperlinks true
   git config --global delta.hyperlinks-file-link-format 'file://{path}:{line}'
 fi
-
-# Configure lazygit with delta pager
-mkdir -p "$HOME/.config/lazygit"
-cp -f "$config_dir/config.yml" "$HOME/.config/lazygit/config.yml"

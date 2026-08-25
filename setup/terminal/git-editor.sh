@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smart git editor wrapper - uses VS Code when in VS Code terminal, otherwise nvim/helix
+# Smart git editor wrapper - uses VS Code when in VS Code terminal, otherwise nvim
 # Usage: git-editor.sh <file>
 
 if [[ -n "$VSCODE_INJECTION" || -n "$TERM_PROGRAM" && "$TERM_PROGRAM" == "vscode" ]]; then
@@ -7,8 +7,6 @@ if [[ -n "$VSCODE_INJECTION" || -n "$TERM_PROGRAM" && "$TERM_PROGRAM" == "vscode
   exec code --wait "$@"
 elif command -v nvim &>/dev/null; then
   exec nvim "$@"
-elif command -v hx &>/dev/null; then
-  exec hx "$@"
 elif command -v vim &>/dev/null; then
   exec vim "$@"
 else

@@ -39,10 +39,8 @@ brew install -y \
   scaryrawr/formulae/sl \
   modem-dev/tap/hunk \
   marksman \
-  helix \
   copilot-cli@prerelease \
   neovim \
-  lazygit \
   uv \
   worktrunk
 

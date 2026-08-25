@@ -21,7 +21,6 @@ Scripts are organized by function for clarity and maintainability:
     - **setup/shells/setup-fish.sh**
   - **setup/editors/**: Editor config.
     - **setup/editors/setup-neovim.sh**
-    - **setup/editors/setup-helix.sh**
     - **setup/editors/setup-vscode.sh**
   - **setup/terminal/**: Terminal tools config.
     - **setup/terminal/setup-herdr.sh**
@@ -29,7 +28,6 @@ Scripts are organized by function for clarity and maintainability:
     - **setup/terminal/setup-bat.sh**: Configures bat theme.
   - **setup/ai/**: AI tooling config.
     - **setup/ai/setup-copilot.sh**: Configures Copilot CLI plugins from the ScaryPilot marketplace.
-    - **setup/ai/setup-pi.sh**: Configures the Pi agent.
   - **setup/shims/**: Command wrapper scripts symlinked to `~/.local/bin/`.
   - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**, **setup/setup-shims.sh**: Category runners.
 - **p10k.zsh**: Powerlevel10k theme config file.
@@ -52,7 +50,7 @@ Scripts are organized by function for clarity and maintainability:
 ## What it does in Codespaces & Devcontainers
 
 - **Automatic system package management** (apt/dnf): Installs core CLI tools for cloud development (fish, zsh, file), and Bun.
-- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, hunk, Herdr, helix, neovim, lazygit, marksman, copilot-cli, worktrunk, sl, and xclip.
+- **Homebrew**: Installs development tools including ast-grep, fzf, eza, zoxide, ripgrep, chafa, bat, fd, git-delta, hunk, Herdr, neovim, marksman, copilot-cli, worktrunk, sl, and xclip.
 - **zsh** with [antidote](https://github.com/mattmc3/antidote) plugin manager:
   - [powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -68,4 +66,4 @@ Scripts are organized by function for clarity and maintainability:
   - [zoxide.fish](https://github.com/scaryrawr/zoxide.fish)
   - [copilot.fish](https://github.com/scaryrawr/copilot.fish)
 - **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @typescript/native-preview
-- **AI tools**: copilot-cli and Herdr (via Homebrew), with ScaryPilot plugins for Azure DevOps and local OMLX media workflows plus Herdr integrations for Pi and Copilot CLI.
+- **AI tools**: copilot-cli and Herdr (via Homebrew), with ScaryPilot plugins for Azure DevOps and local OMLX media workflows plus the Herdr integration for Copilot CLI.
