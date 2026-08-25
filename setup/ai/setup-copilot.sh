@@ -26,6 +26,7 @@ marketplace_plugins=(
 
 install_plugins=(
   "copilot@scarypilot"
+  "pstack@scarypilot"
   "digivolution@scarypilot"
 )
 
@@ -38,7 +39,6 @@ for plugin in "${install_plugins[@]}"; do
 done
 
 extensions=(
-  "scaryrawr/copilot-cheap"
   "scaryrawr/copilot-local-llm"
 )
 
