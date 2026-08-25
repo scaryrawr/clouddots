@@ -1,12 +1,15 @@
 # Cloud Dots
 
-**Cloud Dots** is a dotfiles repository specifically designed for use in [GitHub Codespaces](https://docs.github.com/en/codespaces/setting-your-user-preferences/personalizing-github-codespaces-for-your-account) and [VS Code Devcontainers](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories).
+**Cloud Dots** provides development environment customizations for [GitHub Codespaces](https://docs.github.com/en/codespaces/setting-your-user-preferences/personalizing-github-codespaces-for-your-account), [VS Code Devcontainers](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories), and [Microsoft Dev Box](https://devbox.microsoft.com).
+
+The root-level [workload.yaml](workload.yaml) is the self-contained Microsoft Dev Box customization definition uploaded to Dev Box. Repositories are cloned under the user-level `GithubLocation` environment variable when set and fall back to `$HOME\GitHub` otherwise.
 
 ## Script Organization
 
 Scripts are organized by function for clarity and maintainability:
 
 - **setup.sh**: Main orchestrator. Runs all other scripts in the correct order.
+- **workload.yaml**: Microsoft Dev Box customization workload.
 - **setup/**: Setup scripts and helpers.
   - **setup/core/**: Bootstrap + package managers.
     - **setup/core/system-deps.sh**: Installs system-level dependencies (apt/dnf) and Bun.

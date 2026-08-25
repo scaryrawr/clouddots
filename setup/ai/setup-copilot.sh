@@ -20,24 +20,6 @@ fi
 cp -f "$config_dir/copilot-instructions.md" "$HOME/.copilot/copilot-instructions.md"
 cp -f "$config_dir/lsp-config.json" "$HOME/.copilot/lsp-config.json"
 
-marketplace_plugins=(
-  "scaryrawr/scarypilot"
-)
-
-install_plugins=(
-  "copilot@scarypilot"
-  "pstack@scarypilot"
-  "digivolution@scarypilot"
-)
-
-for plugin in "${marketplace_plugins[@]}"; do
-  copilot plugin marketplace add "$plugin" || true
-done
-
-for plugin in "${install_plugins[@]}"; do
-  copilot plugin install "$plugin" || true
-done
-
 extensions=(
   "scaryrawr/copilot-local-llm"
 )
