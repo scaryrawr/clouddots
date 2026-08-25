@@ -11,21 +11,12 @@ if ! gh skill --help >/dev/null 2>&1; then
   exit 0
 fi
 
-AGENTS=(github-copilot codex pi opencode)
-SKILLS=(skill-creator image-gen better-init code-review blogify azure-devops)
-COPILOT_SKILLS=(skill-creator better-init code-review)
+copilot_skills=(skill-creator better-init code-review)
 
-for agent in "${AGENTS[@]}"; do
-  agent_skills=("${SKILLS[@]}")
-  if [[ "$agent" == "github-copilot" ]]; then
-    agent_skills=("${COPILOT_SKILLS[@]}")
-  fi
-
-  for skill in "${agent_skills[@]}"; do
-    gh skill install scaryrawr/agentic "$skill" --scope user --agent "$agent" -f
-  done
-
-  # Herdr skill is maintained outside scaryrawr/agentic (see .github/copilot-instructions.md).
-  gh skill install herdrdev/herdr "skills/herdr" --scope user --agent "$agent" -f
-  gh skill install --scope user --agent "$agent" cursor/plugins cursor-team-kit/skills/deslop -f
+for skill in "${copilot_skills[@]}"; do
+  gh skill install scaryrawr/agentic "$skill" --scope user --agent github-copilot -f
 done
+
+# Herdr skill is maintained outside scaryrawr/agentic (see .github/copilot-instructions.md).
+gh skill install herdrdev/herdr "skills/herdr" --scope user --agent github-copilot -f
+gh skill install --scope user --agent github-copilot cursor/plugins cursor-team-kit/skills/deslop -f

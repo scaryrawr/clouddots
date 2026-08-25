@@ -28,8 +28,6 @@ if [[ -n "$VSCODE_INJECTION" || -n "$TERM_PROGRAM" && "$TERM_PROGRAM" == "vscode
 elif command -v nvim &>/dev/null; then
   # Use nvim with diff mode for merge
   exec nvim -d "$LOCAL" "$REMOTE" "$BASE" -c "wincmd J" -c "wincmd =" "$MERGED"
-elif command -v hx &>/dev/null; then
-  exec hx "$MERGED"
 elif command -v vim &>/dev/null; then
   exec vim -d "$LOCAL" "$REMOTE" "$MERGED"
 else

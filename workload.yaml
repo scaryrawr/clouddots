@@ -150,9 +150,6 @@ userTasks:
       package: Microsoft.VisualStudioCode
   - name: ~/winget
     parameters:
-      package: Microsoft.VisualStudioCode.Insiders
-  - name: ~/winget
-    parameters:
       package: GitHub.Copilot.Prerelease
   - name: ~/winget
     parameters:
@@ -184,12 +181,6 @@ userTasks:
   - name: ~/winget
     parameters:
       package: sharkdp.fd
-  - name: ~/winget
-    parameters:
-      package: Helix.Helix
-  - name: ~/winget
-    parameters:
-      package: JesseDuffield.lazygit
   - name: ~/winget
     parameters:
       package: astral-sh.uv
@@ -230,7 +221,6 @@ userTasks:
           'vscode-langservers-extracted'
           'pyright'
           '@typescript/native-preview'
-          '@earendil-works/pi-coding-agent'
           'prettier'
           'yaml-language-server'
           'markdownlint-cli2'
