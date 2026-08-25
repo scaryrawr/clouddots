@@ -409,7 +409,7 @@ userTasks:
           "colorMode": "default",
           "model": "gpt-5.6-sol",
           "contextTier": "long_context",
-          "remote": "on",
+          "remoteSessions": true,
           "powershellFlags": ["-NoLogo"],
           "extraKnownMarketplaces": {
             "scarypilot": {
