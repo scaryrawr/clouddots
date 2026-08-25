@@ -13,9 +13,15 @@ fi
 
 AGENTS=(github-copilot codex pi opencode)
 SKILLS=(skill-creator image-gen better-init code-review blogify azure-devops)
+COPILOT_SKILLS=(skill-creator better-init code-review)
 
 for agent in "${AGENTS[@]}"; do
-  for skill in "${SKILLS[@]}"; do
+  agent_skills=("${SKILLS[@]}")
+  if [[ "$agent" == "github-copilot" ]]; then
+    agent_skills=("${COPILOT_SKILLS[@]}")
+  fi
+
+  for skill in "${agent_skills[@]}"; do
     gh skill install scaryrawr/agentic "$skill" --scope user --agent "$agent" -f
   done
 
