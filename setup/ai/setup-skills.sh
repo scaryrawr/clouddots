@@ -21,4 +21,5 @@ for agent in "${AGENTS[@]}"; do
 
   # Herdr skill is maintained outside scaryrawr/agentic (see .github/copilot-instructions.md).
   gh skill install herdrdev/herdr "skills/herdr" --scope user --agent "$agent" -f
+  gh skill install --scope user --agent "$agent" cursor/plugins cursor-team-kit/skills/deslop -f
 done
