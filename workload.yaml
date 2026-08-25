@@ -1,0 +1,602 @@
+$schema: "1.0"
+name: "mike-custom"
+description: "This definition is for Mike's customizations to https://devbox.microsoft.com"
+
+tasks:
+  - name: ~/winget
+    parameters:
+      package: ScaryRawr.SL
+  - name: ~/winget
+    parameters:
+      package: ImageMagick.ImageMagick
+  - name: ~/winget
+    parameters:
+      package: Microsoft.Git
+  - name: ~/winget
+    parameters:
+      package: Microsoft.AzureCLI
+  - name: ~/winget
+    parameters:
+      package: GitHub.cli
+  - name: ~/winget
+    parameters:
+      package: OpenJS.NodeJS.LTS
+  - name: ~/winget
+    parameters:
+      package: Neovim.Neovim
+  - name: ~/winget
+    parameters:
+      package: GoLang.Go
+  - name: ~/winget
+    parameters:
+      package: LLVM.LLVM
+  - name: ~/winget
+    parameters:
+      package: Kitware.CMake
+
+  - name: ~/powershell
+    description: Install Cascadia Code fonts
+    parameters:
+      command: |
+        $fontTempDirectory = Join-Path $env:TEMP ([IO.Path]::GetRandomFileName())
+        $fontArchive = Join-Path $fontTempDirectory 'CascadiaCode.zip'
+        $fontDirectory = Join-Path $fontTempDirectory 'CascadiaCode'
+        New-Item -Path $fontTempDirectory -ItemType Directory | Out-Null
+        try {
+          Invoke-WebRequest `
+            -Uri 'https://github.com/microsoft/cascadia-code/releases/download/v2407.24/CascadiaCode-2407.24.zip' `
+            -OutFile $fontArchive
+          Expand-Archive -Path $fontArchive -DestinationPath $fontDirectory -Force
+
+          $fonts = @(Get-ChildItem -Path (Join-Path $fontDirectory 'ttf\*.ttf'))
+          if ($fonts.Count -eq 0) {
+            throw 'The Cascadia Code archive did not contain any TTF fonts.'
+          }
+
+          $fonts | ForEach-Object {
+            $destinationPath = Join-Path $env:WINDIR "Fonts\$($_.Name)"
+            Copy-Item -LiteralPath $_.FullName -Destination $destinationPath -Force
+            New-ItemProperty `
+              -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' `
+              -Name $_.BaseName `
+              -Value $_.Name `
+              -PropertyType String `
+              -Force | Out-Null
+          }
+        } finally {
+          if (Test-Path -LiteralPath $fontTempDirectory) {
+            Remove-Item -LiteralPath $fontTempDirectory -Recurse -Force
+          }
+        }
+
+  - name: ~/powershell
+    description: Configure Windows developer features
+    parameters:
+      command: |
+        $appModelUnlockPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
+        New-Item -Path $appModelUnlockPath -Force | Out-Null
+        @(
+          'AllowAllTrustedApps'
+          'AllowDevelopmentWithoutDevLicense'
+        ) | ForEach-Object {
+          New-ItemProperty `
+            -Path $appModelUnlockPath `
+            -Name $_ `
+            -Value 1 `
+            -PropertyType DWord `
+            -Force | Out-Null
+        }
+
+        & "$env:SystemRoot\System32\sudo.exe" config --enable forceNewWindow
+        if ($LASTEXITCODE -ne 0) {
+          throw "Failed to enable sudo (sudo exited with code $LASTEXITCODE)."
+        }
+
+userTasks:
+  - name: ~/powershell
+    description: Configure Windows personalization
+    parameters:
+      command: |
+        $personalizePath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+        New-Item -Path $personalizePath -Force | Out-Null
+        @(
+          'AppsUseLightTheme'
+          'SystemUsesLightTheme'
+        ) | ForEach-Object {
+          New-ItemProperty `
+            -Path $personalizePath `
+            -Name $_ `
+            -Value 0 `
+            -PropertyType DWord `
+            -Force | Out-Null
+        }
+
+        New-ItemProperty `
+          -Path 'HKCU:\Control Panel\Desktop' `
+          -Name 'AutoColorization' `
+          -Value 1 `
+          -PropertyType DWord `
+          -Force | Out-Null
+
+          $taskbarDeveloperSettingsPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings'
+          New-Item -Path $taskbarDeveloperSettingsPath -Force | Out-Null
+          New-ItemProperty `
+            -Path $taskbarDeveloperSettingsPath `
+            -Name 'TaskbarEndTask' `
+            -Value 1 `
+            -PropertyType DWord `
+            -Force | Out-Null
+
+  - name: ~/winget
+    parameters:
+      package: dandavison.delta
+  - name: ~/winget
+    parameters:
+      package: Microsoft.PowerToys
+  - name: ~/winget
+    parameters:
+      package: Microsoft.PowerShell.Preview
+  - name: ~/winget
+    parameters:
+      package: Microsoft.WindowsTerminal.Preview
+  - name: ~/winget
+    parameters:
+      package: Python.Python.3.14
+  - name: ~/winget
+    parameters:
+      package: Gyan.FFmpeg
+  - name: ~/winget
+    parameters:
+      package: Microsoft.VisualStudioCode
+  - name: ~/winget
+    parameters:
+      package: Microsoft.VisualStudioCode.Insiders
+  - name: ~/winget
+    parameters:
+      package: GitHub.Copilot.Prerelease
+  - name: ~/winget
+    parameters:
+      package: GitHub.CopilotApp
+  - name: ~/winget
+    parameters:
+      package: Schniz.fnm
+  - name: ~/winget
+    parameters:
+      package: ast-grep.ast-grep
+  - name: ~/winget
+    parameters:
+      package: junegunn.fzf
+  - name: ~/winget
+    parameters:
+      package: eza-community.eza
+  - name: ~/winget
+    parameters:
+      package: ajeetdsouza.zoxide
+  - name: ~/winget
+    parameters:
+      package: BurntSushi.ripgrep.MSVC
+  - name: ~/winget
+    parameters:
+      package: hpjansson.Chafa
+  - name: ~/winget
+    parameters:
+      package: sharkdp.bat
+  - name: ~/winget
+    parameters:
+      package: sharkdp.fd
+  - name: ~/winget
+    parameters:
+      package: Helix.Helix
+  - name: ~/winget
+    parameters:
+      package: JesseDuffield.lazygit
+  - name: ~/winget
+    parameters:
+      package: astral-sh.uv
+  - name: ~/winget
+    parameters:
+      package: Rustlang.Rustup
+  - name: ~/winget
+    parameters:
+      package: zig.zig
+  - name: ~/winget
+    parameters:
+      package: astral-sh.ruff
+  - name: ~/winget
+    parameters:
+      package: Artempyanykh.Marksman
+  - name: ~/winget
+    parameters:
+      package: zigtools.zls
+  - name: ~/winget
+    parameters:
+      package: tamasfe.taplo
+  - name: ~/winget
+    parameters:
+      package: oxc-project.oxlint
+
+  - name: ~/powershell
+    description: Install global Node.js development tools
+    parameters:
+      command: |
+        $env:PATH = @(
+          [Environment]::GetEnvironmentVariable('Path', 'Machine')
+          [Environment]::GetEnvironmentVariable('Path', 'User')
+        ) -join ';'
+
+        @(
+          'typescript'
+          'typescript-language-server'
+          'vscode-langservers-extracted'
+          'pyright'
+          '@typescript/native-preview'
+          '@earendil-works/pi-coding-agent'
+          'prettier'
+          'yaml-language-server'
+          'markdownlint-cli2'
+        ) | ForEach-Object {
+          npm install --global $_
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install npm package $_ (npm exited with code $LASTEXITCODE)."
+          }
+        }
+
+  - name: ~/powershell
+    description: Configure Git
+    parameters:
+      command: |
+        $env:PATH = @(
+          [Environment]::GetEnvironmentVariable('Path', 'Machine')
+          [Environment]::GetEnvironmentVariable('Path', 'User')
+        ) -join ';'
+
+        @(
+          @('fetch.prune', 'true')
+          @('fetch.pruneTags', 'true')
+          @('init.defaultBranch', 'main')
+          @('mergetool.keepBackup', 'false')
+          @('merge.conflictStyle', 'zdiff3')
+          @('pack.usePathWalk', 'true')
+          @('pull.rebase', 'true')
+          @('push.autoSetupRemote', 'true')
+        ) | ForEach-Object {
+          git config --global $_[0] $_[1]
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to configure Git setting $($_[0]) (git exited with code $LASTEXITCODE)."
+          }
+        }
+
+  - name: ~/powershell
+    description: Configure GitHub workspace
+    parameters:
+      command: |
+        $githubLocation = if (-not [string]::IsNullOrWhiteSpace($env:GithubLocation)) {
+          $env:GithubLocation
+        } else {
+          Join-Path $HOME 'GitHub'
+        }
+
+        New-Item -Path $githubLocation -ItemType Directory -Force | Out-Null
+        [Environment]::SetEnvironmentVariable(
+          'GithubLocation',
+          $githubLocation,
+          [EnvironmentVariableTarget]::User
+        )
+        $env:PATH = @(
+          [Environment]::GetEnvironmentVariable('Path', 'Machine')
+          [Environment]::GetEnvironmentVariable('Path', 'User')
+        ) -join ';'
+
+        @(
+          'https://github.com/scaryrawr/flare'
+          'https://github.com/scaryrawr/winwal'
+          'https://github.com/scaryrawr/base16-windows-terminal'
+          'https://github.com/scaryrawr/fedora-wsl'
+          'https://github.com/scaryrawr/fzf.pwsh'
+          'https://github.com/scaryrawr/az-auth-helpers.pwsh'
+          'https://github.com/scaryrawr/copilot.pwsh'
+        ) | ForEach-Object {
+          $repositoryName = Split-Path $_ -Leaf
+          $repositoryPath = Join-Path $githubLocation $repositoryName
+
+          if (-not (Test-Path -LiteralPath $repositoryPath)) {
+            git clone $_ $repositoryPath
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to clone $_ (git exited with code $LASTEXITCODE)."
+            }
+          }
+        }
+
+  - name: ~/powershell
+    description: Configure PowerShell profiles
+    parameters:
+      command: |
+        $profileBlock = @'
+        # >>> clouddots >>>
+        if (Get-Command fnm -ErrorAction SilentlyContinue) {
+          fnm env --use-on-cd --shell powershell |
+            Out-String |
+            Invoke-Expression
+        }
+
+        $githubLocation = if (-not [string]::IsNullOrWhiteSpace($env:GithubLocation)) {
+          $env:GithubLocation
+        } else {
+          Join-Path $HOME 'GitHub'
+        }
+        $authHelpersModule = Join-Path `
+          $githubLocation `
+          'az-auth-helpers.pwsh\az-auth-helpers.psm1'
+        if (Test-Path -LiteralPath $authHelpersModule) {
+          Import-Module -Name $authHelpersModule -Force
+        }
+        # <<< clouddots <<<
+        '@
+
+        $documentsDirectory = [Environment]::GetFolderPath('MyDocuments')
+        @(
+          (Join-Path $documentsDirectory 'PowerShell\profile.ps1')
+          (Join-Path $documentsDirectory 'WindowsPowerShell\profile.ps1')
+        ) | ForEach-Object {
+          $profilePath = $_
+          $profileDirectory = Split-Path -Parent $profilePath
+          New-Item -Path $profileDirectory -ItemType Directory -Force |
+            Out-Null
+
+          $existingContent = if (Test-Path -LiteralPath $profilePath) {
+            Get-Content -LiteralPath $profilePath -Raw
+          } else {
+            ''
+          }
+          $existingContent = [regex]::Replace(
+            $existingContent,
+            '(?ms)^# >>> clouddots >>>.*?^# <<< clouddots <<<\r?\n?',
+            ''
+          ).TrimEnd()
+          $newContent = if ([string]::IsNullOrWhiteSpace($existingContent)) {
+            $profileBlock
+          } else {
+            "$existingContent`r`n`r`n$profileBlock"
+          }
+          Set-Content `
+            -LiteralPath $profilePath `
+            -Value $newContent `
+            -Encoding utf8
+        }
+
+  - name: ~/powershell
+    description: Configure GitHub Copilot
+    parameters:
+      command: |
+        $env:PATH = @(
+          [Environment]::GetEnvironmentVariable('Path', 'Machine')
+          [Environment]::GetEnvironmentVariable('Path', 'User')
+        ) -join ';'
+        Get-Command copilot -ErrorAction Stop | Out-Null
+        Get-Command git -ErrorAction Stop | Out-Null
+        Get-Command gh -ErrorAction Stop | Out-Null
+
+        $copilotDirectory = Join-Path $HOME '.copilot'
+        $extensionsDirectory = Join-Path $copilotDirectory 'extensions'
+        New-Item -Path $extensionsDirectory -ItemType Directory -Force | Out-Null
+
+        function Merge-CopilotSettings {
+          param(
+            [Parameter(Mandatory)]
+            [pscustomobject] $Target,
+
+            [Parameter(Mandatory)]
+            [pscustomobject] $Source
+          )
+
+          $Source.PSObject.Properties | ForEach-Object {
+            $sourceProperty = $_
+            $targetProperty = $Target.PSObject.Properties[$sourceProperty.Name]
+            if (
+              $null -ne $targetProperty -and
+              $targetProperty.Value -is [pscustomobject] -and
+              $sourceProperty.Value -is [pscustomobject]
+            ) {
+              Merge-CopilotSettings `
+                -Target $targetProperty.Value `
+                -Source $sourceProperty.Value
+            } else {
+              $Target | Add-Member `
+                -MemberType NoteProperty `
+                -Name $sourceProperty.Name `
+                -Value $sourceProperty.Value `
+                -Force
+            }
+          }
+        }
+
+        $desiredSettings = @'
+        {
+          "banner": "always",
+          "experimental": true,
+          "mouse": true,
+          "bashEnv": true,
+          "theme": "auto",
+          "effortLevel": "medium",
+          "colorMode": "default",
+          "model": "gpt-5.6-sol",
+          "contextTier": "long_context",
+          "remote": "on",
+          "powershellFlags": ["-NoLogo"],
+          "extraKnownMarketplaces": {
+            "scarypilot": {
+              "source": {
+                "source": "github",
+                "repo": "scaryrawr/scarypilot"
+              },
+              "autoUpdate": true
+            }
+          },
+          "enabledPlugins": {
+            "copilot@scarypilot": true,
+            "pstack@scarypilot": true,
+            "digivolution@scarypilot": true
+          },
+          "subagents": {
+            "agents": {
+              "explore": {
+                "model": "gpt-5.6-luna",
+                "effortLevel": "medium"
+              },
+              "task": {
+                "model": "gpt-5.6-luna",
+                "effortLevel": "medium"
+              },
+              "research": {
+                "model": "gpt-5.6-terra",
+                "effortLevel": "medium",
+                "contextTier": "default"
+              },
+              "security-review": {
+                "model": "gpt-5.6-sol",
+                "effortLevel": "high",
+                "contextTier": "default"
+              }
+            }
+          }
+        }
+        '@ | ConvertFrom-Json
+
+        $settingsPath = Join-Path $copilotDirectory 'settings.json'
+        $settings = if (Test-Path -LiteralPath $settingsPath) {
+          Get-Content -LiteralPath $settingsPath -Raw | ConvertFrom-Json
+        } else {
+          [pscustomobject]@{}
+        }
+        Merge-CopilotSettings -Target $settings -Source $desiredSettings
+        $settings |
+          ConvertTo-Json -Depth 20 |
+          Set-Content -LiteralPath $settingsPath -Encoding utf8
+
+        @'
+        # Coding Preferences
+
+        Write code that is easy for future consumers to understand and change.
+
+        - Document functions, types, interfaces, classes, modules, and other reusable APIs with concise comments that explain their purpose, inputs, outputs, errors, and important constraints. Do not over-document obvious implementation details.
+        - Add brief comments for complex internal logic only when they clarify intent, tradeoffs, or non-obvious behavior.
+        - Follow SOLID design principles where they improve maintainability, especially single responsibility, explicit dependencies, and dependency inversion. Keep designs simple and avoid abstractions that are not yet justified.
+        - Use test-driven development when practical: describe or add a failing test first, implement the smallest useful change, then refactor while keeping tests green.
+        - Prefer dependency injection and small interfaces or protocols at boundaries so behavior can be tested without relying on concrete infrastructure.
+        - Consider established design patterns when they fit the problem, but do not force a pattern where straightforward code is clearer.
+        - Prefer modern language and library features when they improve correctness, clarity, performance, or maintainability. Reconsider older default approaches when newer standard capabilities provide a better fit.
+        - Treat your built-in knowledge of APIs, library versions, and idioms as potentially out-of-date. It is fine for an initial implementation, but verify current APIs, defaults, and recommended practices against authoritative sources (official docs, the installed version's types/signatures) before finalizing.
+
+        # CLI Tooling
+
+        Use installed command-line tools to investigate, edit, and validate efficiently, but verify optional tools before relying on them. Prefer non-interactive commands, structured output, and repo-provided scripts, lockfiles, and toolchain files over global defaults.
+
+        - Prefer `gh` for GitHub issues, pull requests, releases, workflow runs, and repository metadata; check `gh auth status` before authenticated operations and avoid exposing tokens or private data.
+        - Prefer `git` for local status, diffs, branches, and commits; avoid destructive history or working-tree operations unless explicitly requested.
+        - Prefer `rg`, `fd`, `jq`, and syntax-aware tools like `ast-grep` when available for fast discovery and safer rewrites.
+        - Use language and package tools that match the repository configuration, such as Node/npm, Python/uv/ruff/pyright, Go, Rust, .NET, or similar.
+        - Do not install new tools, start services, change cloud resources, run costly operations, or use interactive TUIs unless the user asks or approves.
+
+        '@ | Set-Content `
+          -LiteralPath (Join-Path $copilotDirectory 'copilot-instructions.md') `
+          -Encoding utf8
+
+        @'
+        {
+          "lspServers": {
+            "typescript": {
+              "command": "npx",
+              "args": ["-y", "@typescript/native-preview", "--lsp", "--stdio"],
+              "fileExtensions": {
+                ".ts": "typescript",
+                ".tsx": "typescriptreact",
+                ".js": "javascript",
+                ".jsx": "javascriptreact",
+                ".mts": "typescript",
+                ".cts": "typescript",
+                ".mjs": "javascript",
+                ".cjs": "javascript"
+              }
+            },
+            "zig": {
+              "command": "zls",
+              "fileExtensions": {
+                ".zig": "zig",
+                ".zon": "zig"
+              }
+            },
+            "clangd": {
+              "command": "clangd",
+              "fileExtensions": {
+                ".c": "c",
+                ".h": "c",
+                ".cpp": "cpp",
+                ".hpp": "cpp",
+                ".cc": "cpp",
+                ".cxx": "cpp",
+                ".hxx": "cpp",
+                ".m": "objective-c",
+                ".mm": "objective-cpp"
+              }
+            }
+          }
+        }
+        '@ | Set-Content `
+          -LiteralPath (Join-Path $copilotDirectory 'lsp-config.json') `
+          -Encoding utf8
+
+        @(
+          'scaryrawr/copilot-cheap'
+          'scaryrawr/copilot-local-llm'
+        ) | ForEach-Object {
+          $extensionName = Split-Path $_ -Leaf
+          $extensionPath = Join-Path $extensionsDirectory $extensionName
+
+          if (Test-Path -LiteralPath (Join-Path $extensionPath '.git')) {
+            git -C $extensionPath fetch --prune origin
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to fetch Copilot extension $_ (git exited with code $LASTEXITCODE)."
+            }
+
+            git -C $extensionPath remote set-head origin --auto
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to determine the default branch for Copilot extension $_."
+            }
+            $defaultBranch = git -C $extensionPath symbolic-ref --short refs/remotes/origin/HEAD
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to resolve the default branch for Copilot extension $_."
+            }
+
+            git -C $extensionPath reset --hard $defaultBranch
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to update Copilot extension $_ (git exited with code $LASTEXITCODE)."
+            }
+          } else {
+            git clone "https://github.com/$($_).git" $extensionPath
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to clone Copilot extension $_ (git exited with code $LASTEXITCODE)."
+            }
+          }
+        }
+
+        gh skill --help *> $null
+        if ($LASTEXITCODE -eq 0) {
+          @(
+            'skill-creator'
+            'image-gen'
+            'better-init'
+            'code-review'
+            'blogify'
+            'azure-devops'
+          ) | ForEach-Object {
+            gh skill install scaryrawr/agentic $_ `
+              --scope user `
+              --agent github-copilot `
+              -f
+            if ($LASTEXITCODE -ne 0) {
+              Write-Warning "Unable to install Copilot skill $_."
+            }
+          }
+        } else {
+          Write-Warning "The installed GitHub CLI does not support 'gh skill'; skipping Copilot skill installation."
+        }

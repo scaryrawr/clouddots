@@ -8,14 +8,30 @@
   "colorMode": "default",
   "model": "gpt-5.6-sol",
   "contextTier": "long_context",
+  "remote": "on",
+  "powershellFlags": ["-NoLogo"],
+  "extraKnownMarketplaces": {
+    "scarypilot": {
+      "source": {
+        "source": "github",
+        "repo": "scaryrawr/scarypilot"
+      },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "copilot@scarypilot": true,
+    "pstack@scarypilot": true,
+    "digivolution@scarypilot": true
+  },
   "subagents": {
     "agents": {
       "explore": {
-        "model": "mai-code-1-flash-picker",
+        "model": "gpt-5.6-luna",
         "effortLevel": "medium"
       },
       "task": {
-        "model": "mai-code-1-flash-picker",
+        "model": "gpt-5.6-luna",
         "effortLevel": "medium"
       },
       "research": {
