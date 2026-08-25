@@ -28,7 +28,7 @@ Scripts are organized by function for clarity and maintainability:
     - **setup/terminal/setup-git.sh** (no-op unless Codespaces/DevPod): Wires [hunk](https://github.com/modem-dev/hunk) as the git pager and difftool; delta stays for `git add -p` and fzf previews.
     - **setup/terminal/setup-bat.sh**: Configures bat theme.
   - **setup/ai/**: AI tooling config.
-    - **setup/ai/setup-copilot.sh**: Configures Copilot CLI plugins.
+    - **setup/ai/setup-copilot.sh**: Configures Copilot CLI plugins from the ScaryPilot marketplace.
     - **setup/ai/setup-pi.sh**: Configures the Pi agent.
   - **setup/shims/**: Command wrapper scripts symlinked to `~/.local/bin/`.
   - **setup/setup-editors.sh**, **setup/setup-terminal.sh**, **setup/setup-ai.sh**, **setup/setup-shims.sh**: Category runners.
@@ -68,4 +68,4 @@ Scripts are organized by function for clarity and maintainability:
   - [zoxide.fish](https://github.com/scaryrawr/zoxide.fish)
   - [copilot.fish](https://github.com/scaryrawr/copilot.fish)
 - **npm tools**: typescript, typescript-language-server, vscode-langservers-extracted, pyright, @typescript/native-preview
-- **AI tools**: copilot-cli and Herdr (via Homebrew), with Herdr integrations for Pi and Copilot CLI.
+- **AI tools**: copilot-cli and Herdr (via Homebrew), with ScaryPilot plugins for Azure DevOps and local OMLX media workflows plus Herdr integrations for Pi and Copilot CLI.
