@@ -87,8 +87,13 @@ done
 export PATH
 unset path_entry
 
-if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd --shell bash)"
+if [[ ! -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]] &&
+  command -v fnm >/dev/null 2>&1; then
+  if [[ $- == *i* ]]; then
+    eval "$(fnm env --use-on-cd --shell bash)"
+  else
+    eval "$(fnm env --shell bash)"
+  fi
 fi
 
 [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] &&

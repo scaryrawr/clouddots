@@ -128,8 +128,12 @@ path=(
   $path
 )
 
-if (( $+commands[fnm] )); then
-  eval "$(fnm env --use-on-cd --shell zsh)"
+if [[ ! -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]] && (( $+commands[fnm] )); then
+  if [[ -o interactive ]]; then
+    eval "$(fnm env --use-on-cd --shell zsh)"
+  else
+    eval "$(fnm env --shell zsh)"
+  fi
 fi
 
 [[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] &&
