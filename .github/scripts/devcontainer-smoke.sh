@@ -24,6 +24,7 @@ grep -Fxq "zstyle ':antidote:bundle:*' defer-options '-m'" "$HOME/.zshrc"
 grep -Fq 'scaryrawr/zsh-macos-keybindings branch:fish-like-editing' "$HOME/.zsh_plugins.txt"
 TERM="${TERM:-xterm-256color}" zsh -lic '
   (( $+functions[antidote] )) &&
+    (( $+functions[.autocomplete__main] )) &&
     [[ "$WORDCHARS" != */* ]] &&
     [[ "$(bindkey -M main "^[^?")" == *backward-kill-word ]] &&
     [[ "$(bindkey -M main "^[[1;3D")" == *backward-word ]]
