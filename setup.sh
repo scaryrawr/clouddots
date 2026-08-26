@@ -26,20 +26,28 @@ elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-# Install fnm even when the devcontainer already provides Node so project
-# version files and non-interactive shells use the same version manager.
-if ! command -v fnm &>/dev/null; then
-  curl -fsSL https://fnm.vercel.app/install | bash
-fi
-
-export PATH="$HOME/.local/share/fnm:$PATH"
-eval "$(fnm env --shell bash)"
-
-# Install Node only when the base environment does not already provide it.
+# Prefer Node and nvm supplied by the host environment; use fnm only as fallback.
 if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
-  # Install latest LTS node and set as default
-  fnm install 24
-  fnm default 24
+  nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+  if [[ -s "$nvm_dir/nvm.sh" ]]; then
+    export NVM_DIR="$nvm_dir"
+    # shellcheck disable=SC1091 # NVM is provided by the host environment.
+    source "$NVM_DIR/nvm.sh"
+    nvm install 24
+    nvm alias default 24
+  else
+    if ! command -v fnm &>/dev/null; then
+      curl -fsSL https://fnm.vercel.app/install | bash
+    fi
+    export PATH="$HOME/.local/share/fnm:$PATH"
+    if ! command -v fnm &>/dev/null; then
+      echo "Unable to install fnm" >&2
+      exit 1
+    fi
+    eval "$(fnm env --shell bash)"
+    fnm install 24
+    fnm default 24
+  fi
 fi
 
 # Install global npm tools
