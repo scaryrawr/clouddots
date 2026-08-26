@@ -1,165 +1,140 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # Managed blocks intentionally contain literal shell expressions.
 set -e
 
-touch "$HOME/.bashrc"
-
-# Just prepend to bashrc if it's not in it.
-prepend_entries=(
-  'export PATH="$HOME/.local/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'
-  'export SHELL=$(which bash)'
-  'export EDITOR=nvim'
-  'export COPILOT_HOOK_ALLOW_LOCALHOST=1'
-  '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] && export BROWSER="$HOME/browser-opener.sh"'
-)
-
-for entry in "${prepend_entries[@]}"; do
-  # Extract variable name if this is a variable assignment
-  var_name=""
-  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="${BASH_REMATCH[2]}"
-  fi
-  
-  # Remove old entries if this is a variable assignment
-  if [[ -n "$var_name" ]]; then
-    # Escape special regex characters in var_name
-    escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-    sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.bashrc"
-  fi
-  
-  # Add entry at the beginning (it will be added even if similar entry exists with different value)
-  echo "$entry
-$(cat $HOME/.bashrc)" >"$HOME/.bashrc"
-done
-
-# Just append to bashrc if it's not in it.
-append_entries=(
-  '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
-  '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
-  'command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd --shell bash)"'
-  '[ -f "$HOME/notification-sender.sh" ] && source "$HOME/notification-sender.sh"'
-)
-
-for entry in "${append_entries[@]}"; do
-  # Extract variable name if this is a variable assignment or alias
-  var_name=""
-  if [[ "$entry" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="${BASH_REMATCH[2]}"
-  elif [[ "$entry" =~ ^alias[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="alias ${BASH_REMATCH[1]}"
-  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)\(\) ]]; then
-    # Function definition
-    var_name="${BASH_REMATCH[1]}()"
-  fi
-  
-  # Remove old entries if this is a variable assignment, alias, or function
-  if [[ -n "$var_name" ]]; then
-    if [[ "$var_name" =~ ^alias ]]; then
-      alias_name="${var_name#alias }"
-      # Escape special regex characters in alias_name
-      escaped_alias_name=$(printf '%s\n' "$alias_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-      sed -i "/^alias[[:space:]]\+${escaped_alias_name}=/d" "$HOME/.bashrc"
-    elif [[ "$var_name" =~ \(\)$ ]]; then
-      func_name="${var_name%()*}"
-      # Escape special regex characters in func_name
-      escaped_func_name=$(printf '%s\n' "$func_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-      # Use awk to properly remove function with brace counting
-      awk -v func_name="${escaped_func_name}" '
-        BEGIN { in_func=0; brace_count=0 }
-        {
-          if (in_func == 0 && $0 ~ "^" func_name "\\(\\)[[:space:]]*{") {
-            in_func=1
-            brace_count=1
-            next
-          }
-          if (in_func) {
-            brace_count += gsub(/{/, "{")
-            brace_count -= gsub(/}/, "}")
-            if (brace_count == 0) {
-              in_func=0
-            }
-            next
-          }
-          print
-        }
-      ' "$HOME/.bashrc" > "$HOME/.bashrc.tmp" && mv "$HOME/.bashrc.tmp" "$HOME/.bashrc"
-    else
-      # Escape special regex characters in var_name
-      escaped_var_name=$(printf '%s\n' "$var_name" | sed 's/[[\.*^$()+?{|]/\\&/g')
-      sed -i "/^export[[:space:]]\+${escaped_var_name}=/d; /^${escaped_var_name}=/d" "$HOME/.bashrc"
-    fi
-  fi
-  
-  # Add entry at the end if not already present
-  grep -Fxq "$entry" "$HOME/.bashrc" || echo "$entry" >>"$HOME/.bashrc"
-done
-
-# =============================================================================
-# Setup BASH_ENV for non-interactive shells
-# =============================================================================
-# Check if BASH_ENV is set to the desired value, if not set it to ~/.bashenv
 bashenv_file="$HOME/.bashenv"
-if ! grep -q "^export BASH_ENV=\"$bashenv_file\"$" "$HOME/.bashrc"; then
-  # Remove any existing BASH_ENV export first
-  sed -i "/^export BASH_ENV=/d" "$HOME/.bashrc"
-  echo "export BASH_ENV=\"$bashenv_file\"" >> "$HOME/.bashrc"
+bashrc_file="$HOME/.bashrc"
+managed_start="# >>> clouddots >>>"
+managed_end="# <<< clouddots <<<"
+codespace_start="# >>> codespace-env >>>"
+codespace_end="# <<< codespace-env <<<"
+
+touch "$bashenv_file" "$bashrc_file"
+
+remove_block() {
+  local target_file="$1"
+  local start_marker="$2"
+  local end_marker="$3"
+  local temp_file="${target_file}.tmp.$$"
+
+  awk -v start="$start_marker" -v end="$end_marker" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    !skip
+  ' "$target_file" > "$temp_file"
+  mv "$temp_file" "$target_file"
+}
+
+for target_file in "$bashenv_file" "$bashrc_file"; do
+  remove_block "$target_file" "$managed_start" "$managed_end"
+  remove_block "$target_file" "$codespace_start" "$codespace_end"
+
+  legacy_az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
+  grep -Fxv "$legacy_az_function" "$target_file" > "${target_file}.tmp.$$" || true
+  mv "${target_file}.tmp.$$" "$target_file"
+done
+
+# Remove entries generated by older clouddots versions.
+sed -i.bak \
+  -e '/^export EDITOR=nvim$/d' \
+  -e '/^export COPILOT_HOOK_ALLOW_LOCALHOST=1$/d' \
+  -e '/^\[\[ -d "\$HOME\/.local\/bin" && .*export PATH=/d' \
+  "$bashenv_file"
+rm -f "${bashenv_file}.bak"
+
+sed -i.bak \
+  -e '/^export PATH=.*linuxbrew.*fnm.*npm-global.*cargo/d' \
+  -e '/^export SHELL=.*bash/d' \
+  -e '/^export EDITOR=nvim$/d' \
+  -e '/^export COPILOT_HOOK_ALLOW_LOCALHOST=1$/d' \
+  -e '/^export BASH_ENV=/d' \
+  -e '/^\[\[ -n "\$SSH_CONNECTION\$SSH_CLIENT\$SSH_TTY\$DEVPOD\$REMOTE_CONTAINERS" \]\].*BROWSER=/d' \
+  -e '/^\[\[ -x \/home\/linuxbrew\/.linuxbrew\/bin\/brew \]\].*shellenv/d' \
+  -e '/^\[\[ -d "\$HOME\/.local\/bin" \]\].*PATH=/d' \
+  -e '/^command -v fnm .*fnm env --use-on-cd --shell bash/d' \
+  -e '/^\[ -f "\$HOME\/notification-sender.sh" \] && source "\$HOME\/notification-sender.sh"$/d' \
+  -e '/^source "\$HOME\/notification-sender.sh"$/d' \
+  -e '/^\. "\$HOME\/notification-sender.sh"$/d' \
+  "$bashrc_file"
+rm -f "${bashrc_file}.bak"
+
+cat >> "$bashenv_file" <<'BASHENV'
+# >>> clouddots >>>
+export EDITOR="${EDITOR:-nvim}"
+export VISUAL="${VISUAL:-$EDITOR}"
+export COPILOT_HOOK_ALLOW_LOCALHOST=1
+export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"
+export SHELL="$(command -v bash)"
+
+for path_entry in \
+  "/usr/local/sbin" \
+  "/usr/local/bin" \
+  "/opt/homebrew/sbin" \
+  "/opt/homebrew/bin" \
+  "/home/linuxbrew/.linuxbrew/sbin" \
+  "/home/linuxbrew/.linuxbrew/bin" \
+  "$HOME/.bun/bin" \
+  "$HOME/go/bin" \
+  "$HOME/.cargo/bin" \
+  "$HOME/.npm-global/bin" \
+  "$HOME/.local/share/fnm" \
+  "$HOME/.local/bin"
+do
+  if [[ -d "$path_entry" && ":$PATH:" != *":$path_entry:"* ]]; then
+    PATH="$path_entry:$PATH"
+  fi
+done
+export PATH
+unset path_entry
+
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell bash)"
 fi
 
-# Create bashenv file if it doesn't exist
-touch "$bashenv_file"
+[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] &&
+  export BROWSER="$HOME/browser-opener.sh"
 
-# Remove the retired ADO auth function without touching the feature-provided az function.
-legacy_az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
-for target_file in "$HOME/.bashrc" "$bashenv_file"; do
-  grep -Fxv "$legacy_az_function" "$target_file" >"$target_file.tmp" || true
-  mv "$target_file.tmp" "$target_file"
-done
-
-# Keep EDITOR aligned for non-interactive bash shells too
-sed -i '/^export[[:space:]]\+EDITOR=/d; /^EDITOR=/d' "$bashenv_file"
-echo 'export EDITOR=nvim' >>"$bashenv_file"
-
-# Keep Copilot hook localhost access aligned for non-interactive bash shells too
-sed -i '/^export[[:space:]]\+COPILOT_HOOK_ALLOW_LOCALHOST=/d; /^COPILOT_HOOK_ALLOW_LOCALHOST=/d' "$bashenv_file"
-echo 'export COPILOT_HOOK_ALLOW_LOCALHOST=1' >>"$bashenv_file"
-
-# Ensure ~/.local/bin is on PATH for non-interactive bash shells too
-local_bin_line='[[ -d "$HOME/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="$HOME/.local/bin:$PATH"'
-grep -Fxq "$local_bin_line" "$bashenv_file" || echo "$local_bin_line" >>"$bashenv_file"
-
-# =============================================================================
-# Codespace SSH environment loading (mirrors codespaces.fish)
-# =============================================================================
-cs_start="# >>> codespace-env >>>"
-cs_end="# <<< codespace-env <<<"
-
-for target_file in "$HOME/.bashrc" "$bashenv_file"; do
-  # Remove existing block if present
-  if grep -qF "$cs_start" "$target_file" 2>/dev/null; then
-    awk -v start="$cs_start" -v end="$cs_end" '
-      $0 == start { skip=1; next }
-      $0 == end { skip=0; next }
-      !skip
-    ' "$target_file" > "$target_file.tmp" && mv "$target_file.tmp" "$target_file"
-  fi
-
-  cat >> "$target_file" << 'CSEOF'
 # >>> codespace-env >>>
 if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]]; then
   while IFS= read -r line; do
     key="${line%%=*}"
     value="${line#*=}"
-    decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
+    decoded_value="$(printf '%s' "$value" | base64 -d 2>/dev/null)" || continue
     if [[ "$key" == "PATH" ]]; then
-      # Merge PATH — append entries not already present so shell-managed paths keep priority
       IFS=: read -ra env_paths <<< "$decoded_value"
       for p in "${env_paths[@]}"; do
-        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
+        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && PATH="$PATH:$p"
       done
+      export PATH
     else
       export "$key=$decoded_value"
     fi
   done < /workspaces/.codespaces/shared/.env-secrets
 fi
 # <<< codespace-env <<<
-CSEOF
-done
+# <<< clouddots <<<
+BASHENV
+
+bashrc_tmp="${bashrc_file}.tmp.$$"
+cat > "$bashrc_tmp" <<'BASHRC'
+# >>> clouddots >>>
+[[ -r "$HOME/.bashenv" ]] && source "$HOME/.bashenv"
+
+if [[ $- == *i* ]]; then
+  alias l='ls -lah'
+  if command -v nvim >/dev/null 2>&1; then
+    alias vi='nvim'
+    alias vim='nvim'
+  fi
+
+  [[ -f "$HOME/notification-sender.sh" ]] && source "$HOME/notification-sender.sh"
+fi
+# <<< clouddots <<<
+BASHRC
+cat "$bashrc_file" >> "$bashrc_tmp"
+mv "$bashrc_tmp" "$bashrc_file"
+
+profile_entry='[[ -r "$HOME/.bashrc" ]] && source "$HOME/.bashrc"'
+touch "$HOME/.bash_profile"
+grep -Fxq "$profile_entry" "$HOME/.bash_profile" ||
+  printf '\n%s\n' "$profile_entry" >> "$HOME/.bash_profile"

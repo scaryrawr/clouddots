@@ -3,7 +3,7 @@ romkatv/powerlevel10k
 scaryrawr/p10k-ext
 
 # Tools
-romkatv/zsh-bench kind:defer
+romkatv/zsh-bench kind:path
 
 # Completions
 zsh-users/zsh-completions kind:fpath path:src
@@ -34,3 +34,4 @@ ziglang/shell-completions kind:defer
 scaryrawr/fzf.zsh kind:defer
 scaryrawr/copilot.zsh kind:defer
 marlonrichert/zsh-autocomplete
+scaryrawr/zsh-macos-keybindings branch:fish-like-editing

@@ -1,197 +1,56 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # Migration entries intentionally match literal Zsh expressions.
 set -e
 
-script_dir=$(dirname "$(readlink -f "$0")")
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+zshenv_file="$HOME/.zshenv"
+zshrc_file="$HOME/.zshrc"
+managed_start="# >>> clouddots >>>"
+managed_end="# <<< clouddots <<<"
+codespace_start="# >>> codespace-env >>>"
+codespace_end="# <<< codespace-env <<<"
 
-cp "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"
-cp "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
+cp -f "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"
+cp -f "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
+touch "$zshenv_file" "$zshrc_file"
 
-# =============================================================================
-# Setup .zshenv for environment variables (loaded before .zshrc, faster startup)
-# =============================================================================
-zshenv_entries=(
-  'export PATH="$HOME/.local/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/share/fnm:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.bun/bin:$PATH"'
-  'export SHELL=${commands[zsh]:-/bin/zsh}'
-  '[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] && export BROWSER="$HOME/browser-opener.sh"'
-  'export EDITOR=nvim'
-  'export COPILOT_HOOK_ALLOW_LOCALHOST=1'
-  'export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"'
-  'WORDCHARS=${WORDCHARS/\//}'
-)
+remove_block() {
+  local target_file="$1"
+  local start_marker="$2"
+  local end_marker="$3"
+  local temp_file="${target_file}.tmp.$$"
 
-touch "$HOME/.zshenv"
-touch "$HOME/.zshrc"
-
-# Remove the retired ADO auth function without touching the feature-provided az function.
-legacy_az_function='az() { AZURE_DEVOPS_EXT_PAT=$(ado-auth-helper get-access-token) command az "$@"; }'
-grep -Fxv "$legacy_az_function" "$HOME/.zshenv" >"$HOME/.zshenv.tmp" || true
-mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
-
-for entry in "${zshenv_entries[@]}"; do
-  # Extract variable name from export or plain assignment
-  if [[ "$entry" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="${BASH_REMATCH[1]}"
-    # Remove any existing export assignment for this variable
-    sed -i "/^export[[:space:]]\+${var_name}=/d" "$HOME/.zshenv"
-  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    var_name="${BASH_REMATCH[1]}"
-    # Remove any existing plain assignment for this variable
-    sed -i "/^${var_name}=/d" "$HOME/.zshenv"
-  fi
-  # Append the entry
-  echo "$entry" >>"$HOME/.zshenv"
-done
-
-# =============================================================================
-# Codespace SSH environment loading (mirrors codespaces.fish)
-# =============================================================================
-cs_start="# >>> codespace-env >>>"
-cs_end="# <<< codespace-env <<<"
-
-# Remove existing block if present
-if grep -qF "$cs_start" "$HOME/.zshenv" 2>/dev/null; then
-  awk -v start="$cs_start" -v end="$cs_end" '
+  awk -v start="$start_marker" -v end="$end_marker" '
     $0 == start { skip=1; next }
     $0 == end { skip=0; next }
     !skip
-  ' "$HOME/.zshenv" > "$HOME/.zshenv.tmp" && mv "$HOME/.zshenv.tmp" "$HOME/.zshenv"
-fi
+  ' "$target_file" > "$temp_file"
+  mv "$temp_file" "$target_file"
+}
 
-cat >> "$HOME/.zshenv" << 'CSEOF'
-# >>> codespace-env >>>
-if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]]; then
-  while IFS= read -r line; do
-    key="${line%%=*}"
-    value="${line#*=}"
-    decoded_value="$(echo "$value" | base64 -d 2>/dev/null)" || continue
-    if [[ "$key" == "PATH" ]]; then
-      # Merge PATH — append entries not already present so shell-managed paths keep priority
-      IFS=: read -rA env_paths <<< "$decoded_value"
-      for p in "${env_paths[@]}"; do
-        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && export PATH="$PATH:$p"
-      done
-    else
-      export "$key=$decoded_value"
-    fi
-  done < /workspaces/.codespaces/shared/.env-secrets
-fi
-# <<< codespace-env <<<
-CSEOF
+remove_block "$zshenv_file" "$managed_start" "$managed_end"
+remove_block "$zshenv_file" "$codespace_start" "$codespace_end"
+remove_block "$zshrc_file" "$managed_start" "$managed_end"
 
-# =============================================================================
-# Clean up old entries that are now in .zshenv
-# =============================================================================
-# Remove exports that are now in .zshenv
-sed -i '/^export PATH=.*fnm.*npm-global.*cargo/d' "$HOME/.zshrc"
-sed -i '/^export SHELL=/d' "$HOME/.zshrc"
-sed -i '/^export NODE_OPTIONS=/d' "$HOME/.zshrc"
-sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshrc"
-sed -i '/^export TMUX_POWERLINE_BUBBLE_SEPARATORS=/d' "$HOME/.zshenv"
-sed -i '/^ZSH_TMUX_\(AUTOSTART\|AUTONAME_SESSION\|AUTOREFRESH\)=/d' "$HOME/.zshrc"
-sed -i '/stty -ixon < \/dev\/tty/d' "$HOME/.zshrc"
+# Remove entries generated by older clouddots versions.
+sed -i.bak \
+  -e '/^export PATH=.*fnm.*npm-global.*cargo/d' \
+  -e '/^export SHELL=/d' \
+  -e '/^export EDITOR=nvim$/d' \
+  -e '/^export COPILOT_HOOK_ALLOW_LOCALHOST=1$/d' \
+  -e '/^export BASH_ENV=/d' \
+  -e '/^WORDCHARS=/d' \
+  -e '/^\[\[ -n "\$SSH_CONNECTION\$SSH_CLIENT\$SSH_TTY\$DEVPOD\$REMOTE_CONTAINERS" \]\].*BROWSER=/d' \
+  "$zshenv_file"
+rm -f "${zshenv_file}.bak"
 
-# =============================================================================
-# Comment out OMZ
-# =============================================================================
-sed -i 's/^source \$ZSH\/oh-my-zsh.sh/# source \$ZSH\/oh-my-zsh.sh/' "$HOME/.zshrc"
-sed -i 's/^plugins=/# plugins=/' "$HOME/.zshrc"
-sed -i 's/^ZSH_THEME=/# ZSH_THEME=/' "$HOME/.zshrc"
-sed -i 's/^export ZSH=/# export ZSH=/' "$HOME/.zshrc"
-
-# =============================================================================
-# Prepend entries to .zshrc (these go after instant prompt, before oh-my-zsh)
-# =============================================================================
-prepend_entries=(
+legacy_zshrc_entries=(
+  'setopt HIST_IGNORE_SPACE'
   'autoload -Uz promptinit && promptinit && prompt powerlevel10k'
   'antidote load'
   '! (( $+functions[antidote] )) && source "$HOME/.antidote/antidote.zsh"'
   '[[ ! -d "$HOME/.antidote" ]] && git clone --depth=1 https://github.com/mattmc3/antidote.git "$HOME/.antidote"'
-  "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'"
-  "zstyle ':omz:plugins:eza' 'icons' yes"
   'ZSH_AUTOSUGGEST_STRATEGY=(history completion)'
-  "bindkey -M viins '^[^?' backward-kill-word # Alt+Backspace"
-  "bindkey -M viins '^[d' kill-word           # Alt+D"
-  "bindkey -M viins '^[[1;3D' backward-word   # Alt+Left"
-  "bindkey -M viins '^[[1;3C' forward-word    # Alt+Right"
-  "bindkey -M viins '^[b' backward-word       # Alt+B"
-  "bindkey -M viins '^[f' forward-word        # Alt+F"
-  "bindkey '^[[C' forward-char"
-  "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'"
-  "zstyle ':autocomplete:*' insert-unambiguous yes"
-  "zstyle ':autocomplete:*' widget-style menu-select"
-  "zstyle ':autocomplete:*' fzf-completion yes"
-  "zstyle ':completion:*' group-name ''"
-  "zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'"
-  "zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'"
-  "zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'"
-  "zstyle ':completion:*' list-colors \${(s.:.)LS_COLORS}"
-)
-
-for entry in "${prepend_entries[@]}"; do
-  # Build a sed pattern to match existing entries with same key but possibly different value
-  if [[ "$entry" =~ ^zstyle[[:space:]]+\'([^\']+)\'[[:space:]]+\'([^\']+)\' ]]; then
-    # zstyle: match on context and style name
-    sed -i "/^zstyle '${BASH_REMATCH[1]}' '${BASH_REMATCH[2]}'/d" "$HOME/.zshrc"
-  elif [[ "$entry" =~ ^([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-    # Variable assignment: match on variable name
-    sed -i "/^${BASH_REMATCH[1]}=/d" "$HOME/.zshrc"
-  else
-    # For other entries, use grep -F for literal string matching (no regex issues)
-    grep -Fxv "$entry" "$HOME/.zshrc" >"$HOME/.zshrc.tmp" || true
-    mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
-  fi
-  # Prepend entry
-  echo "$entry
-$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
-done
-
-# =============================================================================
-# Enable Powerlevel10k instant prompt (must be at very top of .zshrc)
-# =============================================================================
-INSTANT_PROMPT_CODE='# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi'
-
-# Remove any existing instant prompt block and add fresh one at top
-sed -i '/# Enable Powerlevel10k instant prompt/,/^fi$/d' "$HOME/.zshrc"
-echo "$INSTANT_PROMPT_CODE
-$(cat $HOME/.zshrc)" >"$HOME/.zshrc"
-
-ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
-mkdir -p "$ZSH_CUSTOM"
-
-# Array of plugins to clone
-plugins=(
-  "https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k"
-  "https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions"
-  "https://github.com/zdharma-continuum/fast-syntax-highlighting.git $ZSH_CUSTOM/plugins/fast-syntax-highlighting"
-  "https://github.com/scaryrawr/fzf.zsh $ZSH_CUSTOM/plugins/fzf"
-  "https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-completions"
-  "https://github.com/marlonrichert/zsh-autocomplete $ZSH_CUSTOM/plugins/zsh-autocomplete"
-  "https://github.com/scaryrawr/p10k-ext $ZSH_CUSTOM/plugins/p10k-ext"
-  "https://github.com/scaryrawr/copilot.zsh $ZSH_CUSTOM/plugins/copilot"
-)
-
-# Clone or pull each plugin
-for plugin in "${plugins[@]}"; do
-  repo_url=$(echo "$plugin" | awk '{print $1}')
-  clone_dir=$(echo "$plugin" | awk '{print $2}')
-  if [ -d "$clone_dir" ] && [ "$(ls -A $clone_dir)" ]; then
-    (cd "$clone_dir" && git pull)
-  else
-    git clone "$repo_url" "$clone_dir"
-  fi
-done
-
-sed -i 's/ZSH_THEME=\(.*\)/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
-
-sed -i 's/plugins=\(.*\)/plugins=(gh fzf p10k-ext fast-syntax-highlighting copilot yarn zsh-autosuggestions zsh-completions zoxide zsh-autocomplete eza)/' "$HOME/.zshrc"
-
-# Just append to zshrc if it's not in it.
-append_entries=(
   '[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
   '[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"'
   '(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"'
@@ -201,8 +60,147 @@ append_entries=(
   'alias l="ls -lah"'
   '[[ $- == *i* && -t 0 ]] && stty -ixon'
   '[[ -f "$HOME/notification-sender.sh" ]] && source "$HOME/notification-sender.sh"'
+  "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'"
+  "zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'"
+  "zstyle ':autocomplete:*' insert-unambiguous yes"
+  "zstyle ':autocomplete:*' widget-style menu-select"
+  "zstyle ':autocomplete:*' fzf-completion yes"
+  "zstyle ':completion:*' group-name ''"
+  "zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'"
+  "zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'"
+  "zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'"
+  "zstyle ':completion:*' list-colors \${(s.:.)LS_COLORS}"
+  "zstyle ':omz:plugins:eza' 'icons' yes"
+  "bindkey -M viins '^[^?' backward-kill-word # Alt+Backspace"
+  "bindkey -M viins '^[d' kill-word           # Alt+D"
+  "bindkey -M viins '^[[1;3D' backward-word   # Alt+Left"
+  "bindkey -M viins '^[[1;3C' forward-word    # Alt+Right"
+  "bindkey -M viins '^[b' backward-word       # Alt+B"
+  "bindkey -M viins '^[f' forward-word        # Alt+F"
+  "bindkey '^[[C' forward-char"
+)
+for entry in "${legacy_zshrc_entries[@]}"; do
+  grep -Fxv "$entry" "$zshrc_file" > "${zshrc_file}.tmp.$$" || true
+  mv "${zshrc_file}.tmp.$$" "$zshrc_file"
+done
+
+sed -i.bak \
+  -e '/# Enable Powerlevel10k instant prompt/,/^fi$/d' \
+  -e '/^source \$ZSH\/oh-my-zsh.sh/s/^/# /' \
+  -e '/^plugins=/s/^/# /' \
+  -e '/^ZSH_THEME=/s/^/# /' \
+  -e '/^export ZSH=/s/^/# /' \
+  "$zshrc_file"
+rm -f "${zshrc_file}.bak"
+
+cat >> "$zshenv_file" <<'ZSHENV'
+# >>> clouddots >>>
+export EDITOR="${EDITOR:-nvim}"
+export VISUAL="${VISUAL:-$EDITOR}"
+export COPILOT_HOOK_ALLOW_LOCALHOST=1
+export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"
+export SHELL="${commands[zsh]:-/bin/zsh}"
+
+typeset -U path PATH
+path=(
+  "$HOME/.local/bin"
+  "$HOME/.local/share/fnm"
+  "$HOME/.npm-global/bin"
+  "$HOME/.cargo/bin"
+  "$HOME/go/bin"
+  "$HOME/.bun/bin"
+  /home/linuxbrew/.linuxbrew/bin
+  /home/linuxbrew/.linuxbrew/sbin
+  /opt/homebrew/bin
+  /opt/homebrew/sbin
+  /usr/local/bin
+  /usr/local/sbin
+  $path
 )
 
-for entry in "${append_entries[@]}"; do
-  grep -qxF "$entry" "$HOME/.zshrc" || echo "$entry" >>"$HOME/.zshrc"
-done
+if (( $+commands[fnm] )); then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+
+[[ -n "$SSH_CONNECTION$SSH_CLIENT$SSH_TTY$DEVPOD$REMOTE_CONTAINERS" ]] &&
+  export BROWSER="$HOME/browser-opener.sh"
+
+# >>> codespace-env >>>
+if [[ -n "$SSH_CONNECTION" && -f /workspaces/.codespaces/shared/.env-secrets ]]; then
+  while IFS= read -r line; do
+    key="${line%%=*}"
+    value="${line#*=}"
+    decoded_value="$(printf '%s' "$value" | base64 -d 2>/dev/null)" || continue
+    if [[ "$key" == "PATH" ]]; then
+      IFS=: read -rA env_paths <<< "$decoded_value"
+      for p in "${env_paths[@]}"; do
+        [[ -n "$p" && ":$PATH:" != *":$p:"* ]] && path+=("$p")
+      done
+    else
+      export "$key=$decoded_value"
+    fi
+  done < /workspaces/.codespaces/shared/.env-secrets
+fi
+# <<< codespace-env <<<
+# <<< clouddots <<<
+ZSHENV
+
+if [[ -d "$HOME/.antidote/.git" ]]; then
+  git -C "$HOME/.antidote" pull --ff-only
+else
+  git clone --depth=1 https://github.com/mattmc3/antidote.git "$HOME/.antidote"
+fi
+
+plugins_tmp="$HOME/.zsh_plugins.zsh.tmp.$$"
+if ZDOTDIR="$HOME" zsh -c '
+  source "$HOME/.antidote/antidote.zsh"
+  zstyle ":antidote:bundle:*" defer-options "-m"
+  antidote bundle < "$HOME/.zsh_plugins.txt" > "$1"
+' zsh "$plugins_tmp"; then
+  mv "$plugins_tmp" "$HOME/.zsh_plugins.zsh"
+else
+  rm -f "$plugins_tmp"
+  exit 1
+fi
+
+zshrc_tmp="${zshrc_file}.tmp.$$"
+cat > "$zshrc_tmp" <<'ZSHRC'
+# >>> clouddots >>>
+# Enable Powerlevel10k instant prompt. Keep this close to the top.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+setopt HIST_IGNORE_SPACE
+zstyle ':antidote:bundle:*' defer-options '-m'
+[[ -r "$HOME/.zsh_plugins.zsh" ]] && source "$HOME/.zsh_plugins.zsh"
+zstyle ':completion:*' matcher-list \
+  'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
+  'r:|[._-]=* r:|=*' \
+  'l:|=* r:|=*'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'
+zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':autocomplete:*' insert-unambiguous yes
+zstyle ':autocomplete:*' widget-style menu-select
+zstyle ':autocomplete:*' fzf-completion yes
+zstyle ':omz:plugins:eza' icons yes
+
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZFUNCDIR="$HOME/.config/zsh/functions"
+
+alias l='ls -lah'
+if (( $+commands[nvim] )); then
+  alias vi='nvim'
+  alias vim='nvim'
+fi
+
+[[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
+[[ $- == *i* && -t 0 ]] && stty -ixon
+[[ -f "$HOME/notification-sender.sh" ]] && source "$HOME/notification-sender.sh"
+# <<< clouddots <<<
+ZSHRC
+cat "$zshrc_file" >> "$zshrc_tmp"
+mv "$zshrc_tmp" "$zshrc_file"

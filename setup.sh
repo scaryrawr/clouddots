@@ -26,26 +26,20 @@ elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-# Check for node and npm before installing fnm
+# Install fnm even when the devcontainer already provides Node so project
+# version files and non-interactive shells use the same version manager.
+if ! command -v fnm &>/dev/null; then
+  curl -fsSL https://fnm.vercel.app/install | bash
+fi
+
+export PATH="$HOME/.local/share/fnm:$PATH"
+eval "$(fnm env --shell bash)"
+
+# Install Node only when the base environment does not already provide it.
 if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
-  # Install fnm if not present
-  if ! command -v fnm &>/dev/null; then
-    curl -fsSL https://fnm.vercel.app/install | bash
-    export PATH="$HOME/.local/share/fnm:$PATH"
-  fi
-
-  # Ensure fnm is initialized for this script
-  export PATH="$HOME/.local/share/fnm:$PATH"
-  eval "$(fnm env --shell bash)"
-
   # Install latest LTS node and set as default
   fnm install 24
   fnm default 24
-fi
-
-# Ensure fnm-managed node is on PATH for subsequent scripts
-if command -v fnm &>/dev/null; then
-  eval "$(fnm env --shell bash)"
 fi
 
 # Install global npm tools
