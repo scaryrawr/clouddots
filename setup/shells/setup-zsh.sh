@@ -173,8 +173,7 @@ fi
 
 setopt HIST_IGNORE_SPACE
 zstyle ':antidote:bundle:*' defer-options '-m'
-source "$HOME/.zsh_plugins.zsh"
-
+[[ -r "$HOME/.zsh_plugins.zsh" ]] && source "$HOME/.zsh_plugins.zsh"
 zstyle ':completion:*' matcher-list \
   'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
   'r:|[._-]=* r:|=*' \
