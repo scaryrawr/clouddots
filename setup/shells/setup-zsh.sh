@@ -10,6 +10,8 @@ managed_end="# <<< clouddots <<<"
 codespace_start="# >>> codespace-env >>>"
 codespace_end="# <<< codespace-env <<<"
 
+mkdir -p "$HOME/.local/share/zsh"
+
 cp -f "$script_dir/p10k.zsh" "$HOME/.p10k.zsh"
 cp -f "$script_dir/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
 touch "$zshenv_file" "$zshrc_file"
@@ -101,6 +103,14 @@ export COPILOT_HOOK_ALLOW_LOCALHOST=1
 export BASH_ENV="${BASH_ENV:-$HOME/.bashenv}"
 export SHELL="${commands[zsh]:-/bin/zsh}"
 
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
 typeset -U path PATH
 path=(
   "$HOME/.local/bin"
@@ -173,6 +183,7 @@ fi
 
 setopt HIST_IGNORE_SPACE
 zstyle ':antidote:bundle:*' defer-options '-m'
+[[ -r "$HOME/.antidote/antidote.zsh" ]] && source "$HOME/.antidote/antidote.zsh"
 [[ -r "$HOME/.zsh_plugins.zsh" ]] && source "$HOME/.zsh_plugins.zsh"
 zstyle ':completion:*' matcher-list \
   'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
