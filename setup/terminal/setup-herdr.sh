@@ -7,4 +7,4 @@ config_dir="$script_dir/../config/herdr"
 mkdir -p "$HOME/.config/herdr"
 cp -f "$config_dir/config.toml" "$HOME/.config/herdr/config.toml"
 
-herdr plugin install -y scaryrawr/herdr-agent-title
+herdr plugin install scaryrawr/herdr-agent-title
