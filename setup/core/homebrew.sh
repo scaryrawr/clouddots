@@ -44,26 +44,71 @@ brew install -y \
   uv \
   worktrunk
 
+ensure_brew_command() {
+  local formula_name="$1"
+  local command_name="$2"
+
+  if ! command -v "$command_name" &>/dev/null; then
+    brew install -y "$formula_name"
+  fi
+
+  if ! command -v "$command_name" &>/dev/null; then
+    echo "Unable to install $command_name" >&2
+    exit 1
+  fi
+}
+
 # Language toolchains and LSP servers/formatters expected by our LazyVim config
 # (https://github.com/scaryrawr/lazyvim). These are normally installed on demand
 # by Mason, which fails on some Codespaces; pre-install them so the enabled
 # language extras work out-of-the-box. Servers already provided elsewhere are
-# omitted: marksman (above), pyright/typescript/tsgo/json/eslint LSPs (npm-tools.sh),
+# omitted: marksman (above), pyright/typescript/json/eslint LSPs (npm-tools.sh),
 # python via uv, and node-based tools (prettier, yaml-language-server,
 # markdownlint-cli2) which are installed via npm in npm-tools.sh so Homebrew
 # never pulls in its own `node` (Codespaces ships a global node install).
 brew install -y \
   go \
-  gopls \
   gofumpt \
   delve \
   rust \
-  rust-analyzer \
   zig \
-  zls \
-  llvm \
   cmake \
   cmake-language-server \
   ruff \
   taplo \
   oxlint
+
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$HOME/go/bin:$HOME/.cargo/bin:$PATH"
+
+ensure_brew_command gopls gopls
+ensure_brew_command rust-analyzer rust-analyzer
+ensure_brew_command zls zls
+
+if ! command -v clangd &>/dev/null; then
+  brew install -y llvm
+  ln -sfn "$(brew --prefix llvm)/bin/clangd" "$HOME/.local/bin/clangd"
+fi
+if ! command -v clangd &>/dev/null; then
+  echo "Unable to install clangd" >&2
+  exit 1
+fi
+
+if [[ -x "$HOME/.dotnet/tools/roslyn-language-server" ]] &&
+  ! command -v roslyn-language-server &>/dev/null; then
+  ln -sfn \
+    "$HOME/.dotnet/tools/roslyn-language-server" \
+    "$HOME/.local/bin/roslyn-language-server"
+fi
+
+if ! command -v roslyn-language-server &>/dev/null; then
+  ensure_brew_command dotnet dotnet
+  dotnet tool install \
+    --tool-path "$HOME/.local/bin" \
+    roslyn-language-server \
+    --prerelease
+fi
+if ! command -v roslyn-language-server &>/dev/null; then
+  echo "Unable to install roslyn-language-server" >&2
+  exit 1
+fi

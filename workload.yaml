@@ -215,19 +215,25 @@ userTasks:
           [Environment]::GetEnvironmentVariable('Path', 'User')
         ) -join ';'
 
-        @(
-          'typescript'
-          'typescript-language-server'
-          'vscode-langservers-extracted'
-          'pyright'
-          '@typescript/native-preview'
-          'prettier'
-          'yaml-language-server'
-          'markdownlint-cli2'
-        ) | ForEach-Object {
-          npm install --global $_
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to install npm package $_ (npm exited with code $LASTEXITCODE)."
+        $npmTools = @(
+          @{ Command = 'tsc'; Package = 'typescript' }
+          @{ Command = 'typescript-language-server'; Package = 'typescript-language-server' }
+          @{ Command = 'vscode-json-language-server'; Package = 'vscode-langservers-extracted' }
+          @{ Command = 'pyright'; Package = 'pyright' }
+          @{ Command = 'prettier'; Package = 'prettier' }
+          @{ Command = 'yaml-language-server'; Package = 'yaml-language-server' }
+          @{ Command = 'markdownlint-cli2'; Package = 'markdownlint-cli2' }
+        )
+
+        $npmTools | ForEach-Object {
+          if (-not (Get-Command $_.Command -ErrorAction SilentlyContinue)) {
+            npm install --global $_.Package
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to install npm package $($_.Package) (npm exited with code $LASTEXITCODE)."
+            }
+          }
+          if (-not (Get-Command $_.Command -ErrorAction SilentlyContinue)) {
+            throw "npm package $($_.Package) did not provide $($_.Command)."
           }
         }
 
@@ -497,8 +503,8 @@ userTasks:
         {
           "lspServers": {
             "typescript": {
-              "command": "npx",
-              "args": ["-y", "@typescript/native-preview", "--lsp", "--stdio"],
+              "command": "typescript-language-server",
+              "args": ["--stdio"],
               "fileExtensions": {
                 ".ts": "typescript",
                 ".tsx": "typescriptreact",
