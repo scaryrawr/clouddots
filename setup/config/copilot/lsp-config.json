@@ -1,8 +1,8 @@
 {
   "lspServers": {
     "typescript": {
-      "command": "npx",
-      "args": ["-y", "@typescript/native-preview", "--lsp", "--stdio"],
+      "command": "typescript-language-server",
+      "args": ["--stdio"],
       "fileExtensions": {
         ".ts": "typescript",
         ".tsx": "typescriptreact",
@@ -21,11 +21,8 @@
       }
     },
     "csharp": {
-      "command": "dotnet",
+      "command": "roslyn-language-server",
       "args": [
-        "tool",
-        "run",
-        "roslyn-language-server",
         "--stdio",
         "--autoLoadProjects"
       ],
