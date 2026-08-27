@@ -64,3 +64,5 @@ bash $BASH_FLAGS "$script_dir/setup/setup-editors.sh"
 bash $BASH_FLAGS "$script_dir/setup/setup-terminal.sh"
 bash $BASH_FLAGS "$script_dir/setup/setup-ai.sh"
 bash $BASH_FLAGS "$script_dir/setup/setup-shims.sh"
+
+sudo chsh -s $(which fish) $USER
