@@ -432,6 +432,7 @@ userTasks:
             "digivolution@scarypilot": true,
             "pstack@scarypilot": true
           },
+          "enabledMcpServers": ["computer-use"],
           "subagents": {
             "agents": {
               "explore": {
