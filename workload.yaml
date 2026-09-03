@@ -373,6 +373,7 @@ userTasks:
 
         $copilotDirectory = Join-Path $HOME '.copilot'
         $extensionsDirectory = Join-Path $copilotDirectory 'extensions'
+        New-Item -Path $copilotDirectory -ItemType Directory -Force | Out-Null
 
         function Merge-CopilotSettings {
           param(
@@ -402,6 +403,76 @@ userTasks:
                 -Force
             }
           }
+        }
+
+        function Get-CopilotRepositoryRoots {
+          param(
+            [Parameter(Mandatory)]
+            [AllowEmptyString()]
+            [string[]] $SearchRoots
+          )
+
+          $repositoryRoots = [System.Collections.Generic.List[string]]::new()
+          $seenRoots = [System.Collections.Generic.HashSet[string]]::new(
+            [System.StringComparer]::OrdinalIgnoreCase
+          )
+
+          foreach ($searchRoot in $SearchRoots) {
+            if (
+              [string]::IsNullOrWhiteSpace($searchRoot) -or
+              -not (Test-Path -LiteralPath $searchRoot -PathType Container)
+            ) {
+              continue
+            }
+
+            $candidates = @(
+              Get-ChildItem `
+                -LiteralPath $searchRoot `
+                -Directory `
+                -Force `
+                -ErrorAction SilentlyContinue
+            )
+            foreach ($candidate in $candidates) {
+              $gitMarker = Join-Path $candidate.FullName '.git'
+              if (-not (Test-Path -LiteralPath $gitMarker)) {
+                continue
+              }
+
+              $gitOutput = @(
+                & git `
+                  -c "safe.directory=$($candidate.FullName)" `
+                  -C $candidate.FullName `
+                  rev-parse --show-toplevel `
+                  2>$null
+              )
+              if ($LASTEXITCODE -ne 0 -or $gitOutput.Count -ne 1) {
+                continue
+              }
+
+              $repositoryRoot = $gitOutput[0]
+              if (
+                [string]::IsNullOrWhiteSpace($repositoryRoot) -or
+                $repositoryRoot.Contains("`n") -or
+                $repositoryRoot.Contains("`r")
+              ) {
+                continue
+              }
+
+              $resolvedRoot = Resolve-Path `
+                -LiteralPath $repositoryRoot `
+                -ErrorAction SilentlyContinue
+              if ($null -eq $resolvedRoot) {
+                continue
+              }
+
+              $repositoryRoot = $resolvedRoot.ProviderPath
+              if ($seenRoots.Add($repositoryRoot)) {
+                [void] $repositoryRoots.Add($repositoryRoot)
+              }
+            }
+          }
+
+          return @($repositoryRoots | Sort-Object)
         }
 
         $desiredSettings = @'
@@ -470,31 +541,33 @@ userTasks:
           ConvertTo-Json -Depth 20 |
           Set-Content -LiteralPath $settingsPath -Encoding utf8
 
-        @'
-        # Coding Preferences
-
-        Write code that is easy for future consumers to understand and change.
-
-        - Document functions, types, interfaces, classes, modules, and other reusable APIs with concise comments that explain their purpose, inputs, outputs, errors, and important constraints. Do not over-document obvious implementation details.
-        - Add brief comments for complex internal logic only when they clarify intent, tradeoffs, or non-obvious behavior.
-        - Follow SOLID design principles where they improve maintainability, especially single responsibility, explicit dependencies, and dependency inversion. Keep designs simple and avoid abstractions that are not yet justified.
-        - Use test-driven development when practical: describe or add a failing test first, implement the smallest useful change, then refactor while keeping tests green.
-        - Prefer dependency injection and small interfaces or protocols at boundaries so behavior can be tested without relying on concrete infrastructure.
-        - Consider established design patterns when they fit the problem, but do not force a pattern where straightforward code is clearer.
-        - Prefer modern language and library features when they improve correctness, clarity, performance, or maintainability. Reconsider older default approaches when newer standard capabilities provide a better fit.
-        - Treat your built-in knowledge of APIs, library versions, and idioms as potentially out-of-date. It is fine for an initial implementation, but verify current APIs, defaults, and recommended practices against authoritative sources (official docs, the installed version's types/signatures) before finalizing.
-
-        # CLI Tooling
-
-        Use installed command-line tools to investigate, edit, and validate efficiently, but verify optional tools before relying on them. Prefer non-interactive commands, structured output, and repo-provided scripts, lockfiles, and toolchain files over global defaults.
-
-        - Prefer `gh` for GitHub issues, pull requests, releases, workflow runs, and repository metadata; check `gh auth status` before authenticated operations and avoid exposing tokens or private data.
-        - Prefer `git` for local status, diffs, branches, and commits; avoid destructive history or working-tree operations unless explicitly requested.
-        - Prefer `rg`, `fd`, `jq`, and syntax-aware tools like `ast-grep` when available for fast discovery and safer rewrites.
-        - Use language and package tools that match the repository configuration, such as Node/npm, Python/uv/ruff/pyright, Go, Rust, .NET, or similar.
-        - Do not install new tools, start services, change cloud resources, run costly operations, or use interactive TUIs unless the user asks or approves.
-
-        '@ | Set-Content `
+        $githubLocation = [Environment]::GetEnvironmentVariable(
+          'GithubLocation',
+          [EnvironmentVariableTarget]::User
+        )
+        $repositoryRoots = @(
+          Get-CopilotRepositoryRoots -SearchRoots @(
+            $githubLocation
+            (Join-Path $HOME 'GitHub')
+            'D:\git'
+            'C:\git'
+          )
+        )
+        $instructionLines = @('# Local Git repository roots', '')
+        if ($repositoryRoots.Count -gt 0) {
+          $instructionLines += @(
+            'Git repository roots available on this machine:'
+            ''
+          )
+          $instructionLines += $repositoryRoots | ForEach-Object {
+            "    $_"
+          }
+        } else {
+          $instructionLines += (
+            'No Git repositories were found in the standard workspace locations.'
+          )
+        }
+        $instructionLines | Set-Content `
           -LiteralPath (Join-Path $copilotDirectory 'copilot-instructions.md') `
           -Encoding utf8
 
