@@ -22,7 +22,7 @@
   "enabledPlugins": {
     "azure-devops@scarypilot": true,
     "copilot-autoresearch@scarypilot": true,
-    "copilot-local-llm@scarypilot": true,
+    "copilot-local-llm@scarypilot": false,
     "digivolution@scarypilot": true,
     "omlx-media@scarypilot": true,
     "pstack@scarypilot": true
