@@ -17,7 +17,7 @@ plugin_is_installed() {
     return 1
   fi
 
-  grep -Eq "\"plugin_id\"[[:space:]]*:[[:space:]]*\"$plugin_id\"" <<<"$plugins"
+  tr -d '[:space:]' <<<"$plugins" | grep -Fq "\"plugin_id\":\"$plugin_id\""
 }
 
 if ! plugin_is_installed; then
