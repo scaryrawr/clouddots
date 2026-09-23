@@ -30,15 +30,15 @@
   "subagents": {
     "agents": {
       "explore": {
-        "model": "gpt-5.6-luna",
+        "model": "gpt-6-luna",
         "effortLevel": "medium"
       },
       "task": {
-        "model": "gpt-5.6-luna",
+        "model": "gpt-6-luna",
         "effortLevel": "medium"
       },
       "research": {
-        "model": "gpt-5.6-terra",
+        "model": "gpt-6-sol",
         "effortLevel": "medium",
         "contextTier": "default"
       },
