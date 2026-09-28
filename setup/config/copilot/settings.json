@@ -22,7 +22,6 @@
   "enabledPlugins": {
     "azure-devops@scarypilot": true,
     "anti-slop@scarypilot": true,
-    "better-init@scarypilot": true,
     "copilot-autoresearch@scarypilot": true,
     "copilot-local-llm@scarypilot": false,
     "digivolution@scarypilot": true,
