@@ -499,6 +499,8 @@ userTasks:
           },
           "enabledPlugins": {
             "azure-devops@scarypilot": true,
+            "better-init@scarypilot": true,
+            "anti-slop@scarypilot": true,
             "copilot-autoresearch@scarypilot": true,
             "digivolution@scarypilot": true,
             "pstack@scarypilot": true
