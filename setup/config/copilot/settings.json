@@ -6,7 +6,7 @@
   "theme": "auto",
   "effortLevel": "medium",
   "colorMode": "default",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6.1-sol",
   "contextTier": "long_context",
   "remoteSessions": true,
   "powershellFlags": ["-NoLogo"],
@@ -39,12 +39,12 @@
         "effortLevel": "medium"
       },
       "research": {
-        "model": "gpt-6-sol",
+        "model": "gpt-6.1-sol",
         "effortLevel": "medium",
         "contextTier": "default"
       },
       "security-review": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6.1-sol",
         "effortLevel": "high",
         "contextTier": "default"
       }
