@@ -289,7 +289,7 @@ userTasks:
           'https://github.com/scaryrawr/base16-windows-terminal'
           'https://github.com/scaryrawr/fedora-wsl'
           'https://github.com/scaryrawr/fzf.pwsh'
-          'https://github.com/scaryrawr/az-auth-helpers.pwsh'
+          'https://github.com/scaryrawr/az-auth'
           'https://github.com/scaryrawr/copilot.pwsh'
         ) | ForEach-Object {
           $repositoryName = Split-Path $_ -Leaf
@@ -322,7 +322,7 @@ userTasks:
         }
         $authHelpersModule = Join-Path `
           $githubLocation `
-          'az-auth-helpers.pwsh\az-auth-helpers.psm1'
+          'az-auth\powershell\AzAuthHelpers.psd1'
         if (Test-Path -LiteralPath $authHelpersModule) {
           Import-Module -Name $authHelpersModule -Force
         }
