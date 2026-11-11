@@ -1,0 +1,17 @@
+{
+  "extraKnownMarketplaces": {
+    "scarypilot": {
+      "source": {
+        "source": "github",
+        "repo": "scaryrawr/scarypilot"
+      },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "anti-slop@scarypilot": true,
+    "copilot-autoresearch@scarypilot": true,
+    "digivolution@scarypilot": true,
+    "pstack@scarypilot": true
+  }
+}

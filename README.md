@@ -1,8 +1,16 @@
 # Cloud Dots
 
-**Cloud Dots** provides development environment customizations for [GitHub Codespaces](https://docs.github.com/en/codespaces/setting-your-user-preferences/personalizing-github-codespaces-for-your-account), [VS Code Devcontainers](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories), and [Microsoft Dev Box](https://devbox.microsoft.com).
+**Cloud Dots** provides development environment customizations for [GitHub Codespaces](https://docs.github.com/en/codespaces/setting-your-user-preferences/personalizing-github-codespaces-for-your-account), [VS Code Devcontainers](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories), [Microsoft Dev Box](https://devbox.microsoft.com), and [Copilot cloud sandboxes](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/personalize-cloud-sessions).
 
 The root-level [workload.yaml](workload.yaml) is the self-contained Microsoft Dev Box customization definition uploaded to Dev Box. Repositories are cloned under the user-level `GithubLocation` environment variable when set and fall back to `$HOME\GitHub` otherwise.
+
+## Copilot cloud sandboxes
+
+The root [`.copilot/settings.json`](.copilot/settings.json) is a minimal, separate profile for cloud sandboxes. It enables the ScaryPilot behavior and workflow plugins: Anti-Slop, Copilot Autoresearch, Digivolution, and pstack. It does not include Herdr, Azure DevOps, OMLX/local LLM integrations, desktop notifications, or local LSP configuration. The full Codespaces/Devcontainer profile remains in `setup/config/copilot/`, and Dev Box settings remain in `workload.yaml`.
+
+Enable dotfiles in your personal **Copilot > Cloud** settings and select this repository (the selection is shared with Codespaces). Start or resume a **Cloud** session to apply changes; GitHub Actions-based sessions do not use this personalization.
+
+Copilot copies the entire dotfiles repository into the sandbox's home directory, including `.copilot/`, but does not run `setup.sh` or any other installer. Keep this profile ready to use without setup scripts. Plugin fetching and any runtime downloads remain subject to the sandbox's network allowlist. Anti-Slop needs Node.js/npm and registry access for its first lint run; Autoresearch and Digivolution require a host with Copilot native extension support. Optional pstack workflows still require their documented tools (such as Bun, Java/TLC, or `gh-stack`); this profile does not install them.
 
 ## Script Organization
 
